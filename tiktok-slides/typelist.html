@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia 20タイプ一覧画像ジェネレータ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --bg-card:#12122a;
+    --accent:#9d8fff;
+    --text:#ffffff;
+    --text-muted:#b4b4cc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    padding:24px;
+    min-height:100vh;
+  }
+  header{
+    max-width:1200px;
+    margin:0 auto 24px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:var(--bg-card);
+  }
+  header h1{
+    font-family:"Fredoka",sans-serif;
+    font-size:24px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  header p{font-size:14px;color:var(--text-muted);line-height:1.7}
+  .controls{
+    max-width:1200px;
+    margin:0 auto 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .controls button{
+    background:var(--accent);
+    color:#000;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
+    transition:transform 0.1s;
+  }
+  .controls button:hover{transform:translateY(-1px);opacity:0.9}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .status{
+    max-width:1200px;
+    margin:0 auto 24px;
+    padding:12px 20px;
+    border-radius:8px;
+    background:rgba(157,143,255,0.1);
+    border:1px solid rgba(157,143,255,0.3);
+    color:var(--text-muted);
+    font-size:13px;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+  }
+  .preview-wrap{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    justify-content:center;
+  }
+  .preview-card{
+    aspect-ratio:1080/1920;
+    width:min(540px,90vw);
+    overflow:hidden;
+    position:relative;
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:14px;
+    background:#0a0a1a;
+  }
+  .preview-card .scaled{
+    width:1080px;
+    height:1920px;
+    transform:scale(calc(540 / 1080));
+    transform-origin:top left;
+    position:absolute;
+    top:0;left:0;
+  }
+
+  /* ====== MAIN CARD (1080x1920) ====== */
+  #renderRoot{
+    position:fixed;
+    left:-99999px;
+    top:0;
+  }
+  .card{
+    width:1080px;
+    height:1920px;
+    position:relative;
+    overflow:hidden;
+    background:#0a0a1a;
+    color:#fff;
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+  }
+  .card .bg-gradient{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 20% 10%,rgba(157,143,255,0.22) 0%,transparent 45%),
+      radial-gradient(circle at 85% 90%,rgba(255,180,110,0.18) 0%,transparent 45%),
+      radial-gradient(circle at 50% 50%,rgba(40,20,80,0.25) 0%,transparent 70%);
+  }
+  .card .orb1,.card .orb2,.card .orb3{
+    position:absolute;border-radius:50%;filter:blur(90px);
+  }
+  .card .orb1{width:500px;height:500px;left:-120px;top:-120px;background:rgba(157,143,255,0.35)}
+  .card .orb2{width:400px;height:400px;right:-100px;top:400px;background:rgba(255,180,120,0.22)}
+  .card .orb3{width:520px;height:520px;left:-180px;bottom:-160px;background:rgba(120,100,255,0.28)}
+
+  .card .head{
+    position:relative;z-index:2;
+    padding:64px 60px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:14px;
+  }
+  .card .head .brand{
+    font-family:"Fredoka",sans-serif;
+    font-size:42px;
+    color:#b9aeff;
+    letter-spacing:0.05em;
+    text-shadow:0 4px 24px rgba(157,143,255,0.6);
+  }
+  .card .head .h1{
+    font-family:"Kiwi Maru",serif;
+    font-size:58px;
+    font-weight:500;
+    line-height:1.35;
+    margin-top:6px;
+  }
+  .card .head .h1 .accent{color:#ffd154}
+  .card .head .sub{
+    font-size:26px;
+    color:#c4c4d8;
+    letter-spacing:0.1em;
+    margin-top:2px;
+  }
+
+  .axis-group{
+    position:relative;
+    z-index:2;
+    padding:16px 56px 0;
+  }
+  .axis-title{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:8px;
+    padding:0 6px;
+  }
+  .axis-title .dot{
+    width:14px;height:14px;border-radius:50%;
+  }
+  .axis-title .jp{
+    font-family:"Kiwi Maru",serif;
+    font-size:28px;
+    font-weight:500;
+    letter-spacing:0.08em;
+    color:#e8e8f5;
+  }
+  .axis-title .en{
+    font-family:"Fredoka",sans-serif;
+    font-size:22px;
+    color:#888aa8;
+    letter-spacing:0.22em;
+    margin-left:6px;
+  }
+
+  .type-row{
+    display:flex;
+    align-items:center;
+    padding:13px 14px;
+    margin-bottom:6px;
+    background:rgba(30,22,60,0.45);
+    border:1px solid rgba(157,143,255,0.13);
+    border-radius:14px;
+    gap:18px;
+  }
+  .type-row .code{
+    font-family:"Fredoka",sans-serif;
+    font-size:38px;
+    font-weight:700;
+    letter-spacing:0.02em;
+    min-width:82px;
+    text-align:center;
+    line-height:1;
+  }
+  .type-row .name{
+    font-family:"Kiwi Maru",serif;
+    font-size:26px;
+    font-weight:500;
+    color:#fff;
+    white-space:nowrap;
+    min-width:180px;
+  }
+  .type-row .catch{
+    font-size:22px;
+    color:#d4d4e6;
+    font-weight:500;
+    line-height:1.45;
+    flex:1;
+  }
+
+  /* axis colorsets */
+  .axis-O .dot{background:#ffd154;box-shadow:0 0 12px rgba(255,209,84,0.6)}
+  .axis-O .code{color:#ffd154}
+  .axis-C .dot{background:#8cd0ff;box-shadow:0 0 12px rgba(140,208,255,0.55)}
+  .axis-C .code{color:#8cd0ff}
+  .axis-E .dot{background:#ffb07a;box-shadow:0 0 12px rgba(255,176,122,0.55)}
+  .axis-E .code{color:#ffb07a}
+  .axis-A .dot{background:#ffc8b0;box-shadow:0 0 12px rgba(255,200,176,0.5)}
+  .axis-A .code{color:#ffc8b0}
+  .axis-N .dot{background:#b9aeff;box-shadow:0 0 12px rgba(185,174,255,0.6)}
+  .axis-N .code{color:#b9aeff}
+
+  .card .foot{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:22px 60px 36px;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .card .foot .cta{
+    font-family:"Kiwi Maru",serif;
+    font-size:32px;
+    color:#fff;
+    font-weight:500;
+  }
+  .card .foot .cta .accent{color:#ffd154;font-family:"Fredoka",sans-serif;letter-spacing:0.04em}
+  .card .foot .url{
+    font-family:"Fredoka",sans-serif;
+    font-size:26px;
+    color:#b9aeff;
+    letter-spacing:0.04em;
+  }
+  .card .foot .mini{
+    font-size:18px;
+    color:#888aa8;
+    letter-spacing:0.18em;
+    margin-top:2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia / 20タイプ一覧画像ジェネレータ</h1>
+  <p>
+    LINE トーク・VOOM・TikTok Photo Mode・Instagram Story / Reels で使える、<br>
+    1080 × 1920 の縦長 1 枚画像で全 20 タイプをまとめて紹介。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="dlBtn">PNG ダウンロード</button>
+</div>
+
+<div class="status" id="status">プレビュー描画中…</div>
+
+<div class="preview-wrap">
+  <div class="preview-card">
+    <div class="scaled" id="scaled"></div>
+  </div>
+</div>
+
+<div id="renderRoot"></div>
+
+<script>
+// ====================================================
+// Type data (axis grouped)
+// ====================================================
+const AXES = [
+  {
+    id:"O", jp:"開放性 / Openness", en:"CURIOSITY",
+    types:[
+      { code:"OC", name:"星の設計者",   catch:"混沌に秩序を見る、宇宙を設計する知性" },
+      { code:"OE", name:"虹色の旅人",   catch:"100の興味が止まらない、アイデアの泉" },
+      { code:"OA", name:"墨の語り部",   catch:"余白を愛する、静かな美意識" },
+      { code:"ON", name:"夢の建築家",   catch:"不安と想像が交差する、幻想作家" },
+    ],
+  },
+  {
+    id:"C", jp:"誠実性 / Conscientiousness", en:"DISCIPLINE",
+    types:[
+      { code:"CO", name:"氷の観測者",   catch:"冷静の奥に真理がある、科学者の目" },
+      { code:"CE", name:"道筋の司令",   catch:"複雑を整える、組織化の匠" },
+      { code:"CA", name:"藍色の守り手", catch:"続ける力が最強、伝統の職人" },
+      { code:"CN", name:"震えの書記",   catch:"心配性が精度を生む、完璧主義者" },
+    ],
+  },
+  {
+    id:"E", jp:"外向性 / Extraversion", en:"ENERGY",
+    types:[
+      { code:"EO", name:"夜空の革命児", catch:"派手と新しさを振りまく花火" },
+      { code:"EC", name:"黄金の王",     catch:"規律と輝きを両立、王道のリーダー" },
+      { code:"EA", name:"祭りの先導者", catch:"人を繋ぐ、暖かい太陽" },
+      { code:"EN", name:"赤色の咆哮",   catch:"感情を燃やす、情熱の表現者" },
+    ],
+  },
+  {
+    id:"A", jp:"協調性 / Agreeableness", en:"EMPATHY",
+    types:[
+      { code:"AO", name:"森を紡ぐ者",   catch:"見えない糸を結ぶ、知恵の支え手" },
+      { code:"AC", name:"毛糸の匠",     catch:"丁寧に結ぶ、慈しみの手仕事" },
+      { code:"AE", name:"陽だまりの主", catch:"和ませる、癒しの中心" },
+      { code:"AN", name:"花びらの詩",   catch:"繊細さが才能、共感の天才(HSP)" },
+    ],
+  },
+  {
+    id:"N", jp:"神経症傾向 / Neuroticism", en:"SENSITIVITY",
+    types:[
+      { code:"NO", name:"時を溶かす者",   catch:"闇から作品を生む、ダーク・クリエイター" },
+      { code:"NC", name:"点描の巡礼",     catch:"繰り返しに完璧を求める、求道の職人" },
+      { code:"NE", name:"警鐘を鳴らす者", catch:"危機を察知する、鋭い直感" },
+      { code:"NA", name:"雨音の詩人",     catch:"憂いを美しさに変える、柔らかい感性" },
+    ],
+  },
+];
+
+// ====================================================
+// Render
+// ====================================================
+function renderCard(){
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = "mainCard";
+
+  let axisHtml = "";
+  AXES.forEach((ax)=>{
+    let rowsHtml = "";
+    ax.types.forEach((t)=>{
+      rowsHtml += `
+        <div class="type-row">
+          <div class="code">${t.code}</div>
+          <div class="name">${t.name}</div>
+          <div class="catch">${t.catch}</div>
+        </div>
+      `;
+    });
+    axisHtml += `
+      <div class="axis-group axis-${ax.id}">
+        <div class="axis-title">
+          <div class="dot"></div>
+          <div class="jp">${ax.jp.split(" / ")[0]}</div>
+          <div class="en">${ax.en}</div>
+        </div>
+        ${rowsHtml}
+      </div>
+    `;
+  });
+
+  card.innerHTML = `
+    <div class="bg-gradient"></div>
+    <div class="orb1"></div>
+    <div class="orb2"></div>
+    <div class="orb3"></div>
+
+    <div class="head">
+      <div class="brand">paternia</div>
+      <div class="h1">あなたは <span class="accent">どのタイプ?</span><br>Big5 で分かる 20 の性格</div>
+      <div class="sub">SCIENCE-BACKED · FREE 45Q</div>
+    </div>
+
+    ${axisHtml}
+
+    <div class="foot">
+      <div class="cta">無料で診断する <span class="accent">→</span></div>
+      <div class="url">paternia.netlify.app</div>
+      <div class="mini">BIG 5 RESEARCH · paternia</div>
+    </div>
+  `;
+  return card;
+}
+
+const renderRoot = document.getElementById("renderRoot");
+const scaled = document.getElementById("scaled");
+const statusEl = document.getElementById("status");
+
+function buildAll(){
+  renderRoot.innerHTML = "";
+  scaled.innerHTML = "";
+  const card = renderCard();
+  renderRoot.appendChild(card);
+  scaled.appendChild(card.cloneNode(true));
+  statusEl.textContent = "描画完了。「PNG ダウンロード」で 1080 × 1920 画像を保存。";
+}
+
+async function download(){
+  const btn = document.getElementById("dlBtn");
+  btn.disabled = true;
+  statusEl.textContent = "画像を生成中…";
+  const el = document.getElementById("mainCard");
+  const canvas = await html2canvas(el, {
+    width: 1080,
+    height: 1920,
+    scale: 1,
+    backgroundColor: "#0a0a1a",
+    useCORS: true,
+    logging: false,
+  });
+  canvas.toBlob((blob)=>{
+    saveAs(blob, `paternia-20types-overview.png`);
+    statusEl.textContent = "ダウンロード完了。LINE・TikTok・Instagram で使えます。";
+    btn.disabled = false;
+  },"image/png");
+}
+
+document.getElementById("dlBtn").addEventListener("click", download);
+window.addEventListener("load", ()=>{
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(()=>setTimeout(buildAll, 100));
+  } else {
+    setTimeout(buildAll, 400);
+  }
+});
+</script>
+
+</body>
+</html>

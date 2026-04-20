@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia OGP カード生成 (1200x630)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="./pattern-canvas.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#14141f;color:#eee;font-family:"M PLUS Rounded 1c",sans-serif;padding:24px;min-height:100vh}
+  header{max-width:1400px;margin:0 auto 24px;padding:20px;border:1px solid rgba(255,255,255,0.1);border-radius:16px;background:#1e1e2e}
+  header h1{font-family:"Fredoka",sans-serif;font-size:22px;color:#9d8fff;margin-bottom:8px}
+  header p{font-size:14px;color:#aaa;line-height:1.7}
+  .controls{max-width:1400px;margin:0 auto 24px;display:flex;gap:8px}
+  .controls button{background:#9d8fff;color:#000;border:none;padding:10px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .controls .secondary{background:transparent;border:1px solid #9d8fff;color:#9d8fff}
+  .status{max-width:1400px;margin:0 auto 24px;padding:12px 20px;border-radius:8px;background:rgba(157,143,255,0.08);border:1px solid rgba(157,143,255,0.25);color:#ccc;font-size:13px;min-height:44px;display:flex;align-items:center}
+  .grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .mini{border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:#1e1e2e}
+  .mini:hover{transform:scale(1.02);transition:transform 0.15s}
+  .mini-prev{aspect-ratio:1200/630;overflow:hidden;position:relative}
+  .mini-prev .scaled{width:1200px;height:630px;transform:scale(calc(320 / 1200));transform-origin:top left;position:absolute;top:0;left:0}
+  .mini-meta{padding:8px 12px;font-size:12px;color:#aaa;display:flex;justify-content:space-between}
+  .mini-meta .code{font-family:"Fredoka";color:#9d8fff;font-weight:700}
+
+  /* ============== OGP CARD (1200 x 630) ============== */
+  #renderRoot{position:fixed;left:-99999px;top:0}
+  .card{
+    width:1200px;height:630px;position:relative;overflow:hidden;
+    background:#0a0a1a;color:#fff;
+    font-family:"M PLUS Rounded 1c",sans-serif;
+    display:flex;align-items:center;
+  }
+  .card .bg-gradient{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 25% 30%,rgba(157,143,255,0.2) 0%,transparent 50%),
+      radial-gradient(circle at 80% 70%,rgba(255,180,110,0.13) 0%,transparent 45%);
+  }
+  .card .orb1,.card .orb2{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+  .card .orb1{width:380px;height:380px;left:-120px;top:-120px;background:var(--orb-a,rgba(157,143,255,0.3))}
+  .card .orb2{width:300px;height:300px;right:-80px;bottom:-80px;background:var(--orb-b,rgba(255,180,120,0.2))}
+
+  /* LEFT: pattern art */
+  .card .art-wrap{
+    width:540px;height:630px;position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .card .art-wrap canvas{
+    width:480px;height:480px;border-radius:50%;
+    display:block;
+    filter:drop-shadow(0 8px 40px rgba(157,143,255,0.3));
+  }
+
+  /* RIGHT: text */
+  .card .info{
+    flex:1;
+    position:relative;z-index:2;
+    padding:36px 60px 36px 20px;
+    display:flex;flex-direction:column;justify-content:center;
+    gap:14px;
+  }
+  .card .tag{
+    display:flex;align-items:center;gap:10px;
+    font-family:"Fredoka",sans-serif;font-size:18px;
+    color:#d0d0e8;letter-spacing:0.3em;font-weight:600;
+  }
+  .card .tag::before{
+    content:"";width:9px;height:9px;border-radius:50%;
+    background:var(--axis-color,#9d8fff);
+    box-shadow:0 0 14px rgba(157,143,255,0.8);
+  }
+  .card .code{
+    font-family:"Fredoka",sans-serif;font-size:140px;font-weight:700;
+    color:var(--code-color,#ffd154);line-height:1;
+    letter-spacing:0.03em;
+    text-shadow:0 8px 40px rgba(255,209,84,0.35);
+  }
+  .card .name{
+    font-family:"Kiwi Maru",serif;font-size:52px;font-weight:500;
+    color:#fff;letter-spacing:0.08em;line-height:1.2;
+  }
+  .card .catch{
+    font-size:22px;font-weight:500;color:#d4d4e6;
+    line-height:1.55;letter-spacing:0.02em;max-width:520px;
+    margin-top:8px;
+  }
+  .card .foot{
+    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+    margin-top:auto;padding-top:18px;border-top:1px solid rgba(157,143,255,0.2);
+  }
+  .card .foot .brand{
+    font-family:"Fredoka",sans-serif;font-size:28px;color:#b9aeff;
+    letter-spacing:0.04em;text-shadow:0 4px 20px rgba(157,143,255,0.4);
+  }
+  .card .foot .url{
+    font-family:"Fredoka",sans-serif;font-size:17px;color:#888aa8;letter-spacing:0.04em;
+  }
+
+  /* axis color variants */
+  .card.var-O{--code-color:#ffd154;--axis-color:#ffd154}
+  .card.var-C{--code-color:#8cd0ff;--axis-color:#8cd0ff}
+  .card.var-E{--code-color:#ffb07a;--axis-color:#ffb07a}
+  .card.var-A{--code-color:#ffc8b0;--axis-color:#ffc8b0}
+  .card.var-N{--code-color:#b9aeff;--axis-color:#b9aeff}
+  .card.var-site{--code-color:#ffd154;--axis-color:#9d8fff}
+
+  /* SITE-WIDE variant (no pattern, paternia hero) */
+  .card.site{flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px;gap:18px}
+  .card.site .art-wrap{width:100%;height:auto}
+  .card.site .art-wrap canvas{display:none}
+  .card.site .info{padding:0;align-items:center;gap:20px;flex:none}
+  .card.site .brand-big{
+    font-family:"Fredoka",sans-serif;font-size:120px;font-weight:600;
+    color:#b9aeff;letter-spacing:0.02em;line-height:1;
+    text-shadow:0 10px 60px rgba(157,143,255,0.5);
+  }
+  .card.site .tag-line{
+    font-family:"Kiwi Maru",serif;font-size:48px;font-weight:500;
+    color:#fff;letter-spacing:0.1em;
+  }
+  .card.site .sub-line{
+    font-size:26px;color:#d0d0e8;letter-spacing:0.14em;
+    margin-top:10px;
+  }
+  .card.site .meta{
+    font-family:"Fredoka",sans-serif;font-size:20px;color:#9d8fff;
+    letter-spacing:0.28em;margin-top:16px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia / OGP カード生成ツール (1200 × 630)</h1>
+  <p>
+    SNS (X / LINE / Discord / Facebook) でシェアされたとき、URL の下に表示される画像。<br>
+    20タイプ個別 + サイト共通 = 合計 21枚。ダウンロード後 <code>public/og/</code> に配置してください。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="dlAllBtn">全21枚ダウンロード (ZIP)</button>
+  <button class="secondary" id="reloadBtn">再描画</button>
+</div>
+
+<div class="status" id="status">準備中…</div>
+
+<div class="grid" id="grid"></div>
+<div id="renderRoot"></div>
+
+<script>
+// ============================================
+// 20 types + 1 site default
+// ============================================
+const TYPES = [
+  { code:"OC", primary:"O", secondary:"C", name:"星の設計者",   catch:"混沌に秩序を見つける、宇宙を設計する知性", t:3.2 },
+  { code:"OE", primary:"O", secondary:"E", name:"虹色の旅人",   catch:"100の興味が止まらない、アイデアの源泉", t:2.0 },
+  { code:"OA", primary:"O", secondary:"A", name:"墨の語り部",   catch:"余白を愛する、静かな美意識", t:1.5 },
+  { code:"ON", primary:"O", secondary:"N", name:"夢の建築家",   catch:"不安と想像が交差する、幻想作家", t:5.2 },
+  { code:"CO", primary:"C", secondary:"O", name:"氷の観測者",   catch:"冷静の奥に真理がある、科学者の目", t:2.6 },
+  { code:"CE", primary:"C", secondary:"E", name:"道筋の司令",   catch:"複雑を整える、組織化の匠", t:1.0 },
+  { code:"CA", primary:"C", secondary:"A", name:"藍色の守り手", catch:"続ける力が最強、伝統の職人", t:1.2 },
+  { code:"CN", primary:"C", secondary:"N", name:"震えの書記",   catch:"心配性が精度を生む、完璧主義者", t:1.5 },
+  { code:"EO", primary:"E", secondary:"O", name:"夜空の革命児", catch:"派手と新しさを振りまく花火", t:1.8 },
+  { code:"EC", primary:"E", secondary:"C", name:"黄金の王",     catch:"規律と輝きを両立、王道のリーダー", t:2.2 },
+  { code:"EA", primary:"E", secondary:"A", name:"祭りの先導者", catch:"人を繋ぐ、暖かい太陽", t:1.2 },
+  { code:"EN", primary:"E", secondary:"N", name:"赤色の咆哮",   catch:"感情を燃やす、情熱の表現者", t:2.0 },
+  { code:"AO", primary:"A", secondary:"O", name:"森を紡ぐ者",   catch:"見えない糸を結ぶ、知恵の支え手", t:3.5 },
+  { code:"AC", primary:"A", secondary:"C", name:"毛糸の匠",     catch:"丁寧に結ぶ、慈しみの手仕事", t:1.2 },
+  { code:"AE", primary:"A", secondary:"E", name:"陽だまりの主", catch:"和ませる、癒しの中心", t:1.8 },
+  { code:"AN", primary:"A", secondary:"N", name:"花びらの詩",   catch:"繊細さが才能、共感の天才 (HSP)", t:2.5 },
+  { code:"NO", primary:"N", secondary:"O", name:"時を溶かす者",   catch:"闇から作品を生む、ダーク・クリエイター", t:2.0 },
+  { code:"NC", primary:"N", secondary:"C", name:"点描の巡礼",     catch:"繰り返しに完璧を求める、求道の職人", t:2.8 },
+  { code:"NE", primary:"N", secondary:"E", name:"警鐘を鳴らす者", catch:"危機を察知する、鋭い直感", t:0.6 },
+  { code:"NA", primary:"N", secondary:"A", name:"雨音の詩人",     catch:"憂いを美しさに変える、柔らかい感受性", t:1.8 },
+];
+
+// ============================================
+// Pattern draw (site と一致、260 座標系)
+// ============================================
+function makeScores(p, s){
+  const scores = { O:0.3, C:0.3, E:0.3, A:0.3, N:0.3 };
+  scores[p] = 0.9; scores[s] = 0.7;
+  return scores;
+}
+function drawPatternToCanvas(canvas, type){
+  const displaySize = 480;
+  const drawSize = 260;
+  const scale = displaySize / drawSize;
+  canvas.width = displaySize; canvas.height = displaySize;
+  const ctx = canvas.getContext("2d");
+  const scores = makeScores(type.primary, type.secondary);
+  const seed = Math.round(scores.O*1000 + scores.C*777 + scores.E*333 + scores.A*111 + scores.N*55);
+  const drawFn = window.PATERNIA_DRAW_FUNCTIONS && window.PATERNIA_DRAW_FUNCTIONS[type.code];
+  const noise = window.PATERNIA_CREATE_NOISE && window.PATERNIA_CREATE_NOISE(seed);
+  if(!drawFn || !noise){ctx.fillStyle="#12122a";ctx.fillRect(0,0,displaySize,displaySize);return;}
+  const t = typeof type.t === "number" ? type.t : 0.5;
+  ctx.scale(scale, scale);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(drawSize/2, drawSize/2, drawSize/2-1, 0, Math.PI*2);
+  ctx.clip();
+  drawFn(ctx, drawSize, scores, noise, t);
+  ctx.restore();
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(drawSize/2, drawSize/2, drawSize/2-1, 0, Math.PI*2);
+  ctx.stroke();
+}
+
+// ============================================
+// Render
+// ============================================
+function renderTypeCard(type){
+  const card = document.createElement("div");
+  card.className = "card var-" + type.primary;
+  card.dataset.code = type.code;
+  card.innerHTML = `
+    <div class="bg-gradient"></div>
+    <div class="orb1"></div>
+    <div class="orb2"></div>
+    <div class="art-wrap"><canvas></canvas></div>
+    <div class="info">
+      <div class="tag">BIG 5 RESEARCH</div>
+      <div class="code">${type.code}</div>
+      <div class="name">${type.name}</div>
+      <div class="catch">${type.catch}</div>
+      <div class="foot">
+        <div class="brand">paternia</div>
+        <div class="url">paternia.netlify.app</div>
+      </div>
+    </div>
+  `;
+  drawPatternToCanvas(card.querySelector("canvas"), type);
+  return card;
+}
+
+function renderSiteCard(){
+  const card = document.createElement("div");
+  card.className = "card var-site site";
+  card.dataset.code = "site";
+  card.innerHTML = `
+    <div class="bg-gradient"></div>
+    <div class="orb1"></div>
+    <div class="orb2"></div>
+    <div class="info">
+      <div class="tag">BIG 5 RESEARCH</div>
+      <div class="brand-big">paternia</div>
+      <div class="tag-line">あなたの性格が、模様になる</div>
+      <div class="sub-line">Big5 × 20タイプ × ジェネラティブアート</div>
+      <div class="meta">FREE · 45Q · 3 MIN</div>
+    </div>
+  `;
+  return card;
+}
+
+const renderRoot = document.getElementById("renderRoot");
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+
+function buildAll(){
+  if(!window.PATERNIA_DRAW_FUNCTIONS){
+    statusEl.textContent = "pattern-canvas.js 読み込み中…";
+    setTimeout(buildAll, 300);
+    return;
+  }
+  renderRoot.innerHTML = "";
+  grid.innerHTML = "";
+
+  // Site-wide
+  const siteCard = renderSiteCard();
+  renderRoot.appendChild(siteCard);
+  const siteMini = document.createElement("div");
+  siteMini.className = "mini";
+  siteMini.innerHTML = `
+    <div class="mini-prev"><div class="scaled"></div></div>
+    <div class="mini-meta"><span class="code">site</span><span>paternia (全体)</span></div>
+  `;
+  siteMini.querySelector(".scaled").appendChild(siteCard.cloneNode(true));
+  siteMini.addEventListener("click", ()=>downloadOne("site"));
+  grid.appendChild(siteMini);
+
+  // Types
+  TYPES.forEach((t)=>{
+    const card = renderTypeCard(t);
+    renderRoot.appendChild(card);
+    const mini = document.createElement("div");
+    mini.className = "mini";
+    mini.innerHTML = `
+      <div class="mini-prev"><div class="scaled" data-code="${t.code}"></div></div>
+      <div class="mini-meta"><span class="code">${t.code}</span><span>${t.name}</span></div>
+    `;
+    const clone = card.cloneNode(true);
+    drawPatternToCanvas(clone.querySelector("canvas"), t);
+    mini.querySelector(".scaled").appendChild(clone);
+    mini.addEventListener("click", ()=>downloadOne(t.code));
+    grid.appendChild(mini);
+  });
+  statusEl.textContent = `${TYPES.length + 1}枚 (20タイプ + サイト共通) 描画完了。`;
+}
+
+async function captureCard(code){
+  const el = renderRoot.querySelector(`.card[data-code="${code}"]`);
+  if(!el) return null;
+  return await html2canvas(el,{width:1200,height:630,scale:1,backgroundColor:"#0a0a1a",useCORS:true,logging:false});
+}
+
+async function downloadOne(code){
+  statusEl.textContent = `${code} 生成中…`;
+  const c = await captureCard(code);
+  if(!c){statusEl.textContent="失敗";return;}
+  c.toBlob((b)=>{
+    const name = code === "site" ? "paternia-default" : code.toLowerCase();
+    saveAs(b, `og-${name}.png`);
+    statusEl.textContent = `${code} DL完了`;
+  },"image/png");
+}
+
+async function downloadAll(){
+  const btn = document.getElementById("dlAllBtn");
+  btn.disabled = true;
+  const zip = new JSZip();
+  // Site
+  statusEl.textContent = "サイト共通 生成中…";
+  const siteC = await captureCard("site");
+  if(siteC){
+    const b64 = siteC.toDataURL("image/png").split(",")[1];
+    zip.file("og-paternia-default.png", b64, {base64:true});
+  }
+  // Types
+  for(let i=0;i<TYPES.length;i++){
+    const t = TYPES[i];
+    statusEl.textContent = `ZIP生成中 ${i+1}/${TYPES.length} (${t.code})…`;
+    const c = await captureCard(t.code);
+    if(!c) continue;
+    const b64 = c.toDataURL("image/png").split(",")[1];
+    zip.file(`og-${t.code.toLowerCase()}.png`, b64, {base64:true});
+  }
+  const b = await zip.generateAsync({type:"blob"});
+  saveAs(b, "paternia-ogp-cards.zip");
+  btn.disabled = false;
+  statusEl.textContent = `全${TYPES.length + 1}枚 DL完了`;
+}
+
+document.getElementById("dlAllBtn").addEventListener("click", downloadAll);
+document.getElementById("reloadBtn").addEventListener("click", buildAll);
+window.addEventListener("load", ()=>{
+  if(document.fonts && document.fonts.ready){document.fonts.ready.then(()=>setTimeout(buildAll,200));}
+  else{setTimeout(buildAll,500);}
+});
+</script>
+</body>
+</html>

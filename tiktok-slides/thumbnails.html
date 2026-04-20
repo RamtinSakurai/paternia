@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia note Thumbnail Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --bg-card:#12122a;
+    --accent:#9d8fff;
+    --text:#ffffff;
+    --text-muted:#b4b4cc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    padding:24px;
+    min-height:100vh;
+  }
+  header{
+    max-width:1400px;
+    margin:0 auto 24px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:var(--bg-card);
+  }
+  header h1{
+    font-family:"Fredoka",sans-serif;
+    font-size:24px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  header p{font-size:14px;color:var(--text-muted);line-height:1.7}
+  .controls{
+    max-width:1400px;
+    margin:0 auto 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .controls button{
+    background:var(--accent);
+    color:#000;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
+    transition:transform 0.1s;
+  }
+  .controls button:hover{transform:translateY(-1px);opacity:0.9}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .controls .secondary{
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+  }
+  .status{
+    max-width:1400px;
+    margin:0 auto 24px;
+    padding:12px 20px;
+    border-radius:8px;
+    background:rgba(157,143,255,0.1);
+    border:1px solid rgba(157,143,255,0.3);
+    color:var(--text-muted);
+    font-size:13px;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+  }
+  .grid{
+    max-width:1400px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px;
+  }
+  .card{
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    background:var(--bg-card);
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform 0.1s,border-color 0.1s;
+  }
+  .card:hover{transform:scale(1.02);border-color:var(--accent)}
+  .card-preview{
+    aspect-ratio:1280/670;
+    overflow:hidden;
+    position:relative;
+  }
+  .card-preview .scaled{
+    width:1280px;
+    height:670px;
+    transform:scale(calc(300 / 1280));
+    transform-origin:top left;
+    position:absolute;
+    top:0;
+    left:0;
+  }
+  .card-meta{
+    padding:10px 14px;
+    font-size:12px;
+    color:var(--text-muted);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .card-meta .id{font-family:"Fredoka",sans-serif;color:var(--accent);font-weight:600}
+
+  /* ================ Thumbnail layout (1280 x 670) ================ */
+  .thumb{
+    width:1280px;
+    height:670px;
+    position:relative;
+    overflow:hidden;
+    background:#0a0a1a;
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    color:#fff;
+  }
+  .thumb .bg-gradient{
+    position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 40%,rgba(157,143,255,0.22) 0%,transparent 55%),
+               radial-gradient(circle at 75% 70%,rgba(255,180,110,0.14) 0%,transparent 50%);
+  }
+  .thumb .bg-orbs::before,
+  .thumb .bg-orbs::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    filter:blur(80px);
+  }
+  .thumb .bg-orbs::before{
+    width:400px;height:400px;
+    left:-100px;top:-100px;
+    background:var(--orb1,rgba(157,143,255,0.45));
+  }
+  .thumb .bg-orbs::after{
+    width:360px;height:360px;
+    right:-80px;bottom:-120px;
+    background:var(--orb2,rgba(255,170,120,0.3));
+  }
+  .thumb .badge{
+    position:absolute;
+    top:40px;
+    left:52px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    font-size:22px;
+    color:#d0d0e8;
+    letter-spacing:0.14em;
+    font-weight:600;
+  }
+  .thumb .badge::before{
+    content:"";
+    width:8px;height:8px;border-radius:50%;
+    background:#9d8fff;
+    box-shadow:0 0 16px rgba(157,143,255,0.8);
+  }
+  .thumb .brand{
+    position:absolute;
+    top:40px;
+    right:52px;
+    font-family:"Fredoka",sans-serif;
+    font-size:30px;
+    color:#b9aeff;
+    letter-spacing:0.03em;
+    text-shadow:0 4px 24px rgba(157,143,255,0.6);
+  }
+  .thumb .main{
+    position:absolute;
+    left:0;right:0;
+    top:50%;transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding:0 80px;
+    text-align:center;
+  }
+  .thumb .code{
+    font-family:"Fredoka",sans-serif;
+    font-size:200px;
+    font-weight:700;
+    line-height:0.9;
+    color:var(--code-color,#ffd154);
+    text-shadow:0 12px 80px rgba(255,209,84,0.55);
+    letter-spacing:0.02em;
+  }
+  .thumb .code.size-lg{font-size:240px}
+  .thumb .code.size-sm{font-size:160px}
+  .thumb .name{
+    font-family:"Kiwi Maru",serif;
+    font-size:64px;
+    font-weight:500;
+    letter-spacing:0.05em;
+    color:#fff;
+    margin-top:4px;
+  }
+  .thumb .catch{
+    font-size:34px;
+    color:#dcdcee;
+    font-weight:600;
+    letter-spacing:0.04em;
+    line-height:1.5;
+    margin-top:6px;
+  }
+  .thumb .foot{
+    position:absolute;
+    bottom:38px;
+    left:52px;
+    right:52px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:22px;
+    color:#a0a0b8;
+    letter-spacing:0.12em;
+  }
+  .thumb .foot .price{
+    font-family:"Fredoka",sans-serif;
+    font-size:30px;
+    color:#ffd154;
+    font-weight:600;
+    letter-spacing:0.05em;
+  }
+  .thumb .foot .price.free{color:#9d8fff}
+  .thumb .deco{
+    position:absolute;
+    width:100%;height:100%;
+    pointer-events:none;
+  }
+  .thumb .deco .dot{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.5);
+  }
+
+  /* Variant: N-dominant (紫主体) */
+  .thumb.var-N{--orb1:rgba(157,143,255,0.5);--orb2:rgba(200,140,220,0.3);--code-color:#b9aeff}
+  .thumb.var-C{--orb1:rgba(80,160,220,0.45);--orb2:rgba(140,200,220,0.28);--code-color:#8cd0ff}
+  .thumb.var-E{--orb1:rgba(255,140,90,0.45);--orb2:rgba(255,100,120,0.3);--code-color:#ffb07a}
+  .thumb.var-A{--orb1:rgba(255,170,180,0.45);--orb2:rgba(240,190,140,0.3);--code-color:#ffc8b0}
+  .thumb.var-O{--orb1:rgba(220,170,70,0.42);--orb2:rgba(157,143,255,0.35);--code-color:#ffd154}
+  .thumb.var-U{
+    --orb1:rgba(157,143,255,0.55);
+    --orb2:rgba(255,200,100,0.35);
+    --code-color:#ffd154;
+  }
+  .thumb.var-U::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 20% 20%,rgba(255,215,120,0.15) 0%,transparent 30%),
+      radial-gradient(circle at 80% 80%,rgba(157,143,255,0.15) 0%,transparent 30%);
+    pointer-events:none;
+  }
+  .thumb.var-intro{--orb1:rgba(157,143,255,0.55);--orb2:rgba(130,110,220,0.35);--code-color:#b9aeff}
+
+  /* Render area */
+  #renderRoot{
+    position:fixed;
+    left:-99999px;
+    top:0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia / note Thumbnail Generator</h1>
+  <p>
+    23記事分(20タイプ + U1 相性マトリクス + U2 恋愛完全ガイド + 00 はじめに)のnoteサムネイル(1280×670)を一括生成。<br>
+    プレビューをクリック → 単体ダウンロード。または「全てダウンロード」でZIP取得。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="downloadAllBtn">全てダウンロード (ZIP)</button>
+  <button class="secondary" id="reloadBtn">再描画</button>
+</div>
+
+<div class="status" id="status">準備中…</div>
+
+<div class="grid" id="grid"></div>
+
+<div id="renderRoot"></div>
+
+<script>
+// ===================================================
+// THUMBS data
+// ===================================================
+// code: 表示コード / variant: カラーバリアント(N/C/E/A/O/U/intro)
+// name: 日本語タイプ名 / catch: 記事の告知コピー(サムネで表示)
+// price: 円 (0なら 無料)
+const THUMBS = [
+  // --- O支配 ---
+  { id:"OC", code:"OC", variant:"O", name:"星の設計者", catch:"アイデアを形にする戦略", price:580 },
+  { id:"OE", code:"OE", variant:"O", name:"虹色の旅人", catch:"100の興味を武器にする", price:500 },
+  { id:"OA", code:"OA", variant:"O", name:"墨の語り部", catch:"感性を貴重資源として使う", price:580 },
+  { id:"ON", code:"ON", variant:"O", name:"夢の建築家", catch:"闇を作品に変える設計図", price:580 },
+  // --- C支配 ---
+  { id:"CO", code:"CO", variant:"C", name:"氷の観測者", catch:"論理と感情を翻訳する", price:500 },
+  { id:"CE", code:"CE", variant:"C", name:"道筋の司令", catch:"任せる技術の設計図", price:780 },
+  { id:"CA", code:"CA", variant:"C", name:"藍色の守り手", catch:"続ける力を武器にする", price:500 },
+  { id:"CN", code:"CN", variant:"C", name:"震えの書記", catch:"心配性を武器に変える", price:580 },
+  // --- E支配 ---
+  { id:"EO", code:"EO", variant:"E", name:"夜空の革命児", catch:"燃え尽きない革新者設計", price:580 },
+  { id:"EC", code:"EC", variant:"E", name:"黄金の王", catch:"弱さを戦略的に見せる", price:780 },
+  { id:"EA", code:"EA", variant:"E", name:"祭りの先導者", catch:"みんなの太陽から降りる", price:500 },
+  { id:"EN", code:"EN", variant:"E", name:"赤色の咆哮", catch:"感情の洪水を創造に", price:580 },
+  // --- A支配 ---
+  { id:"AO", code:"AO", variant:"A", name:"森を紡ぐ者", catch:"与えすぎないギバー再設計", price:580 },
+  { id:"AC", code:"AC", variant:"A", name:"毛糸の匠", catch:"見えない努力を愛に変える", price:580 },
+  { id:"AE", code:"AE", variant:"A", name:"陽だまりの主", catch:"共感を枯らさない境界線", price:580 },
+  { id:"AN", code:"AN", variant:"A", name:"花びらの詩", catch:"HSP完全生存戦略", price:780 },
+  // --- N支配 ---
+  { id:"NO", code:"NO", variant:"N", name:"時を溶かす者", catch:"欠点を作品に変える", price:580 },
+  { id:"NC", code:"NC", variant:"N", name:"点描の巡礼", catch:"完璧主義を手放す練習帳", price:780 },
+  { id:"NE", code:"NE", variant:"N", name:"警鐘を鳴らす者", catch:"不安を使命に変える設計図", price:580 },
+  { id:"NA", code:"NA", variant:"N", name:"雨音の詩人", catch:"憂いを美しさに変える", price:780 },
+  // --- Universal ---
+  { id:"U1", code:"U1", variant:"U", name:"相性マトリクス完全版", catch:"Big5 × 20タイプ × 190ペアの全地図", price:1480, codeSize:"size-lg" },
+  { id:"U2", code:"U2", variant:"U", name:"恋愛完全ガイド", catch:"Big5で解く、愛し方と別れの100法則", price:980, codeSize:"size-lg" },
+  // --- Profile landing ---
+  { id:"intro", code:"00", variant:"intro", name:"paternia について", catch:"あなたの性格が模様になる、Big5診断", price:0, codeSize:"size-lg" },
+];
+
+// ===================================================
+// Rendering
+// ===================================================
+function renderThumb(thumb){
+  const d = document.createElement("div");
+  d.className = "thumb var-" + thumb.variant;
+  d.dataset.id = thumb.id;
+  const priceText = thumb.price === 0
+    ? '<span class="price free">FREE</span>'
+    : `<span class="price">¥${thumb.price.toLocaleString()}</span>`;
+  d.innerHTML = `
+    <div class="bg-gradient"></div>
+    <div class="bg-orbs"></div>
+    <div class="deco"></div>
+    <div class="badge">BIG 5 RESEARCH</div>
+    <div class="brand">paternia</div>
+    <div class="main">
+      <div class="code ${thumb.codeSize || ""}">${thumb.code}</div>
+      <div class="name">${thumb.name}</div>
+      <div class="catch">${thumb.catch}</div>
+    </div>
+    <div class="foot">
+      <span>note.com/paternia</span>
+      ${priceText}
+    </div>
+  `;
+  return d;
+}
+
+const renderRoot = document.getElementById("renderRoot");
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+
+function buildAll(){
+  renderRoot.innerHTML = "";
+  grid.innerHTML = "";
+  THUMBS.forEach((thumb)=>{
+    const el = renderThumb(thumb);
+    renderRoot.appendChild(el);
+
+    // preview card
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-preview">
+        <div class="scaled" data-id="${thumb.id}"></div>
+      </div>
+      <div class="card-meta">
+        <span class="id">${thumb.code}</span>
+        <span>${thumb.name}</span>
+        <span>${thumb.price === 0 ? "FREE" : "¥" + thumb.price}</span>
+      </div>
+    `;
+    card.querySelector(".scaled").appendChild(el.cloneNode(true));
+    card.addEventListener("click",()=>downloadOne(thumb.id));
+    grid.appendChild(card);
+  });
+  statusEl.textContent = `${THUMBS.length}枚を描画完了。プレビューをクリックで個別DL、右上ボタンでZIP一括DL。`;
+}
+
+// ===================================================
+// Download
+// ===================================================
+async function captureThumb(id){
+  const el = renderRoot.querySelector(`.thumb[data-id="${id}"]`);
+  if(!el) return null;
+  const canvas = await html2canvas(el, {
+    width: 1280,
+    height: 670,
+    scale: 1,
+    backgroundColor: "#0a0a1a",
+    useCORS: true,
+    logging: false,
+  });
+  return canvas;
+}
+
+async function downloadOne(id){
+  const thumb = THUMBS.find(t=>t.id===id);
+  if(!thumb) return;
+  statusEl.textContent = `${thumb.code} のサムネを生成中…`;
+  const canvas = await captureThumb(id);
+  if(!canvas) { statusEl.textContent = "生成に失敗しました"; return; }
+  canvas.toBlob((blob)=>{
+    saveAs(blob, `paternia-thumb-${thumb.id}.png`);
+    statusEl.textContent = `${thumb.code} ダウンロード完了。`;
+  },"image/png");
+}
+
+async function downloadAll(){
+  const btn = document.getElementById("downloadAllBtn");
+  btn.disabled = true;
+  const zip = new JSZip();
+  for(let i=0;i<THUMBS.length;i++){
+    const t = THUMBS[i];
+    statusEl.textContent = `ZIP生成中: ${i+1}/${THUMBS.length} (${t.code})…`;
+    const canvas = await captureThumb(t.id);
+    if(!canvas) continue;
+    const dataUrl = canvas.toDataURL("image/png");
+    const base64 = dataUrl.split(",")[1];
+    zip.file(`paternia-thumb-${t.id}.png`, base64, { base64: true });
+  }
+  statusEl.textContent = "ZIP書き出し中…";
+  const blob = await zip.generateAsync({ type: "blob" });
+  saveAs(blob, `paternia-note-thumbnails.zip`);
+  btn.disabled = false;
+  statusEl.textContent = `全${THUMBS.length}枚、ZIPダウンロード完了。`;
+}
+
+// ===================================================
+// Init
+// ===================================================
+document.getElementById("downloadAllBtn").addEventListener("click", downloadAll);
+document.getElementById("reloadBtn").addEventListener("click", buildAll);
+window.addEventListener("load", ()=>{
+  // wait for fonts
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(()=>setTimeout(buildAll, 100));
+  } else {
+    setTimeout(buildAll, 500);
+  }
+});
+</script>
+
+</body>
+</html>

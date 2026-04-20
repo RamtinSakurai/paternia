@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia TikTok Slide Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --bg-card:#12122a;
+    --accent:#9d8fff;
+    --text:#ffffff;
+    --text-muted:#b4b4cc;
+    --axis-o:#00d4ff;
+    --axis-c:#ffb020;
+    --axis-e:#ff6b6b;
+    --axis-a:#7ee8c7;
+    --axis-n:#a78bfa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    padding:24px;
+    min-height:100vh;
+  }
+  header{
+    max-width:1200px;
+    margin:0 auto 24px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:var(--bg-card);
+  }
+  header h1{
+    font-family:"Fredoka",sans-serif;
+    font-size:24px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  header p{font-size:14px;color:var(--text-muted);line-height:1.7}
+  .controls{
+    max-width:1200px;
+    margin:0 auto 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .controls button{
+    background:var(--accent);
+    color:#000;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
+    transition:transform 0.1s;
+  }
+  .controls button:hover{transform:translateY(-1px);opacity:0.9}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .controls .secondary{
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+  }
+  .status{
+    max-width:1200px;
+    margin:0 auto 24px;
+    padding:12px 20px;
+    border-radius:8px;
+    background:rgba(157,143,255,0.1);
+    border:1px solid rgba(157,143,255,0.3);
+    color:var(--text-muted);
+    font-size:13px;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+  }
+  .posts{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+  .post{
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:20px;
+    background:var(--bg-card);
+  }
+  .post-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+  }
+  .post-title{font-size:18px;font-weight:700}
+  .post-id{font-family:"Fredoka",sans-serif;color:var(--accent);font-size:12px}
+  .slides-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:12px;
+  }
+  .slide-thumb{
+    aspect-ratio:9/16;
+    background:var(--bg);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px;
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+    transition:transform 0.1s;
+  }
+  .slide-thumb:hover{transform:scale(1.03);border-color:var(--accent)}
+  .slide-thumb .scaled{
+    width:1080px;
+    height:1920px;
+    transform:scale(calc(160/1080));
+    transform-origin:top left;
+    position:absolute;
+    top:0;
+    left:0;
+  }
+  .post .post-caption{
+    margin-top:16px;
+    padding:12px;
+    background:rgba(255,255,255,0.05);
+    border-radius:8px;
+    font-size:12px;
+    color:var(--text-muted);
+    line-height:1.7;
+    white-space:pre-wrap;
+  }
+
+  /* === Actual slide rendering === */
+  .slide{
+    width:1080px;
+    height:1920px;
+    background:linear-gradient(135deg,#0a0a1a 0%,#1a1030 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:120px 80px;
+    position:relative;
+    font-family:"M PLUS Rounded 1c",sans-serif;
+    color:#fff;
+    overflow:hidden;
+  }
+  .slide::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(circle at 20% 30%,rgba(157,143,255,0.15) 0%,transparent 40%),radial-gradient(circle at 80% 70%,rgba(0,212,255,0.08) 0%,transparent 40%);
+    pointer-events:none;
+  }
+  .slide-content{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:40px;
+  }
+  .slide-main{
+    font-size:120px;
+    font-weight:800;
+    line-height:1.4;
+    letter-spacing:0.02em;
+    text-shadow:0 4px 40px rgba(157,143,255,0.4);
+  }
+  .slide-main.size-md{font-size:96px}
+  .slide-main.size-sm{font-size:72px}
+  .slide-main .accent{color:#9d8fff}
+  .slide-main .danger{color:#ff7b7b}
+  .slide-main .gold{color:#ffd154}
+  .slide-sub{
+    font-size:52px;
+    line-height:1.6;
+    color:#c9c9e0;
+    font-weight:500;
+  }
+  .slide-caption{
+    position:absolute;
+    bottom:100px;
+    font-size:32px;
+    color:#8888a8;
+    font-weight:400;
+  }
+  .slide-brand{
+    position:absolute;
+    top:80px;
+    right:80px;
+    font-family:"Fredoka",sans-serif;
+    font-size:40px;
+    color:#9d8fff;
+    opacity:0.85;
+    letter-spacing:0.05em;
+    text-transform:lowercase;
+  }
+  .slide-badge{
+    position:absolute;
+    top:80px;
+    left:80px;
+    font-family:"Fredoka",sans-serif;
+    font-size:28px;
+    color:#8888a8;
+    letter-spacing:0.2em;
+  }
+  /* Research credibility badge -- visible on every slide */
+  .slide-research{
+    position:absolute;
+    top:180px;
+    left:80px;
+    font-size:26px;
+    color:#d4c9ff;
+    background:rgba(157,143,255,0.18);
+    border:2px solid rgba(157,143,255,0.45);
+    padding:10px 22px;
+    border-radius:999px;
+    font-weight:700;
+    letter-spacing:0.05em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .slide-research::before{
+    content:"📊";
+    font-size:28px;
+  }
+
+  /* Hook slide (1st slide) -- extra impact */
+  .slide.is-hook{
+    background:radial-gradient(circle at 50% 30%,#1a1040 0%,#0a0a1a 70%);
+  }
+  .slide.is-hook::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 50% 50%,rgba(157,143,255,0.2) 0%,transparent 55%);
+    pointer-events:none;
+  }
+  .slide.is-hook .slide-main{
+    font-size:160px;
+    font-weight:900;
+    text-shadow:0 8px 60px rgba(157,143,255,0.6);
+  }
+  .slide.is-hook .slide-main.size-md{font-size:130px}
+  .slide.is-hook .slide-main.size-sm{font-size:96px}
+  .slide.is-hook .slide-sub{
+    font-size:56px;
+    color:#d9d9f0;
+    font-weight:600;
+    margin-top:20px;
+  }
+
+  /* Swipe-indicator pulse (hook slides only) */
+  .swipe-hint{
+    position:absolute;
+    bottom:110px;
+    left:50%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    z-index:5;
+    pointer-events:none;
+    animation:swipePulse 1.4s ease-in-out infinite;
+  }
+  .swipe-hint .arrow{
+    font-size:96px;
+    line-height:1;
+    color:rgba(255,255,255,0.92);
+    font-weight:400;
+    letter-spacing:-0.05em;
+    text-shadow:0 4px 24px rgba(255,255,255,0.25);
+  }
+  .swipe-hint .label{
+    font-size:32px;
+    color:rgba(255,255,255,0.7);
+    font-weight:600;
+    letter-spacing:0.28em;
+    font-family:"Fredoka",sans-serif;
+  }
+  @keyframes swipePulse{
+    0%,100%{transform:translateX(-50%) translateX(0);opacity:0.7}
+    50%{transform:translateX(-50%) translateX(28px);opacity:1}
+  }
+
+  /* Big number emphasis block for hook */
+  .hook-number-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:24px;
+  }
+  .hook-number{
+    font-family:"Fredoka",sans-serif;
+    font-size:380px;
+    font-weight:600;
+    color:#ffd154;
+    line-height:0.95;
+    text-shadow:0 12px 80px rgba(255,209,84,0.5);
+    max-width:900px;
+    text-align:center;
+  }
+  .hook-number.size-sm{font-size:260px}
+  .hook-number.size-xs{font-size:200px}
+  .hook-number.color-accent{color:#b9aeff;text-shadow:0 12px 80px rgba(157,143,255,0.6)}
+  .hook-number.color-danger{color:#ff8c8c;text-shadow:0 12px 80px rgba(255,107,107,0.5)}
+  .hook-number .unit{font-size:0.5em;color:#e0e0ef;margin-left:10px}
+  .hook-label{
+    font-size:64px;
+    font-weight:700;
+    color:#fff;
+    line-height:1.4;
+    text-align:center;
+  }
+  .hook-compare{
+    display:flex;
+    flex-direction:column;
+    gap:40px;
+    align-items:stretch;
+    width:100%;
+  }
+  .hook-compare-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:44px 56px;
+    border-radius:32px;
+    font-size:82px;
+    font-weight:800;
+    gap:24px;
+  }
+  .hook-compare-row.bad{background:rgba(255,123,123,0.15);border:3px solid rgba(255,123,123,0.4);color:#ffb0b0}
+  .hook-compare-row.good{background:rgba(157,143,255,0.2);border:3px solid rgba(157,143,255,0.55);color:#d4c9ff}
+  .hook-compare-row .num{
+    font-family:"Fredoka",sans-serif;
+    font-size:112px;
+    white-space:nowrap;
+  }
+  .hook-compare .hook-label{
+    font-size:68px;
+    max-width:900px;
+  }
+  .compare{
+    display:flex;
+    gap:60px;
+    width:100%;
+    justify-content:center;
+    align-items:stretch;
+  }
+  .compare-col{
+    flex:1;
+    padding:60px 40px;
+    border-radius:32px;
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+    align-items:center;
+  }
+  .compare-col.col-mbti{background:rgba(255,123,123,0.1);border:2px solid rgba(255,123,123,0.3)}
+  .compare-col.col-big5{background:rgba(157,143,255,0.15);border:2px solid rgba(157,143,255,0.5)}
+  .compare-title{font-size:72px;font-weight:800}
+  .compare-col.col-mbti .compare-title{color:#ff9b9b}
+  .compare-col.col-big5 .compare-title{color:#b9aeff}
+  .compare-body{font-size:52px;line-height:1.6;font-weight:500;color:#e0e0ef}
+  .list{text-align:left;display:flex;flex-direction:column;gap:20px}
+  .list-item{font-size:68px;font-weight:700;line-height:1.4}
+  .num-display{
+    font-family:"Fredoka",sans-serif;
+    font-size:280px;
+    font-weight:600;
+    color:#9d8fff;
+    line-height:1;
+    text-shadow:0 8px 60px rgba(157,143,255,0.5);
+  }
+  .num-display .unit{font-size:120px;color:#c9c9e0}
+  .arrow-next{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    font-size:60px;
+    font-weight:700;
+    color:#ffd154;
+  }
+  .cta-box{
+    padding:40px 50px;
+    border-radius:32px;
+    background:rgba(157,143,255,0.15);
+    border:3px solid rgba(157,143,255,0.5);
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    align-items:center;
+  }
+  .cta-url{
+    font-family:"Fredoka",sans-serif;
+    font-size:56px;
+    color:#9d8fff;
+    font-weight:600;
+  }
+  .render-stage{
+    position:fixed;
+    top:0;
+    left:-99999px;
+    pointer-events:none;
+    z-index:-1;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia TikTok Slide Generator</h1>
+  <p>
+    10投稿 × 約8枚 = 約80枚のTikTok画像スライドを一括生成。<br>
+    「全て生成」ボタンを押すと ZIP ファイルでダウンロードされます（数分かかります）。<br>
+    個別にダウンロードしたい場合は各投稿の「この投稿を生成」ボタン。スライドをクリックすると拡大プレビュー。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="btn-all">全て生成してZIPダウンロード</button>
+  <button class="secondary" id="btn-preview-toggle">プレビューを拡大/縮小</button>
+</div>
+
+<div class="status" id="status">準備完了。ボタンを押してください。</div>
+
+<div class="posts" id="posts"></div>
+
+<div class="render-stage" id="render-stage"></div>
+
+<script>
+// ===================================================
+// Slide data: 10 posts × slides
+// ===================================================
+const POSTS = [
+  {
+    id:1,
+    title:"MBTI vs Big5",
+    caption:`MBTIってもう科学的には古いって知ってた?\n\n半分の人が5週間で別タイプに変わるMBTIと、90%ブレないBig5。\n心理学論文で今使われてるのはどっちだろう。\n\nBig5で「自分の性格が模様になる」診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#MBTI #性格診断 #ビッグファイブ #心理学 #Z世代`,
+    slides:[
+      {type:"hook-compare",label:`診断の精度、\n実は<span class="danger">3倍近く</span>違う`,badName:"MBTI",badValue:"50%",goodName:"Big5",goodValue:"90%",caption:"再テスト一致率 (McCrae & Costa)"},
+      {type:"fact",main:`<span class="danger">50%</span>の人が\n<span class="danger">5週間</span>で\n違うタイプに変わる`,caption:"McCrae & Costa 1989"},
+      {type:"fact",main:`でも\n<span class="accent">ビッグファイブ</span>は\n<span class="gold">90%以上</span>ブレない`},
+      {type:"compare",mbtiTitle:"MBTI",mbtiBody:"白黒で分ける\nI型 or E型",big5Title:"Big5",big5Body:"0〜100%\n連続値で測る"},
+      {type:"fact",main:`心理学論文の\n<span class="accent">9割</span>は\nBig5を使ってる`},
+      {type:"cta",main:`自分のBig5が\n「模様」になる診断`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n<span class="gold">誠実性が高い人</span>の\n年収がヤバい件`,sub:"▶ フォローで続き"},
+    ],
+  },
+  {
+    id:2,
+    title:"誠実性=年収16.7%UP",
+    caption:`性格だけで、生涯年収が17%変わる話。\n\nミシガン大学の研究で、ある性格特性が1段階高い人は約56万ドル多く稼いでいた。\nしかも職種は関係なく、全部の仕事で効果があった唯一の特性。\n\n自分のその性格スコア、診断サイトで測れます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格診断 #年収 #ビッグファイブ #キャリア #自己分析`,
+    slides:[
+      {type:"hook-big",number:"+16.7",unit:"%",numberColor:"",label:`この性格の人、\n生涯年収が<span class="gold">高い</span>`,sub:"ミシガン大学の研究結果",caption:"Big5 × 年収の長期研究"},
+      {type:"fact",main:`ある性格が\n1段階高いと\n生涯年収が\n<span class="gold">+16.7%</span>`},
+      {type:"fact",main:`それが\n<span class="accent">「誠実性」</span>`},
+      {type:"fact",mainClass:"size-md",main:`特徴:\n・計画を立てる\n・約束を守る\n・先延ばししない\n・コツコツ続ける`},
+      {type:"fact",main:`職種を問わず\n成績と相関する\n<span class="accent">唯一</span>の性格`,caption:"Barrick & Mount 1991"},
+      {type:"fact",main:`ミシガン大学の\n研究で証明\n<span class="gold">+56.7万ドル</span>差`},
+      {type:"cta",main:`自分の誠実性を\n測ってみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\nいい人ほど\n<span class="danger">年収低い</span>話`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:3,
+    title:"いい人ペナルティ",
+    caption:`「いい人」って言われる男性ほど、年収が26%低いって組織心理学の研究で出てる。\n\n理由は交渉で譲歩しすぎたり、昇給を要求しにくかったり。\n女性ではわずか2.6%差なのに、男性だと差が大きい。\n\n自分の優しさレベル、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格診断 #ビッグファイブ #年収 #働き方 #Z世代`,
+    slides:[
+      {type:"hook-big",number:"-26",unit:"%",numberColor:"color-danger",label:`<span class="danger">優しい男性</span>ほど\n年収が低いという事実`,sub:"協調性スコアが高い男性",caption:"組織心理学研究より"},
+      {type:"fact",main:`協調性が高い男性の\n年収は\n<span class="danger">26%低い</span>`},
+      {type:"fact",main:`差額\n<span class="danger">約1万ドル/年</span>`,caption:"組織心理学研究"},
+      {type:"fact",main:`特に高収入帯\n(上位10%) ほど\n差が<span class="danger">広がる</span>`},
+      {type:"fact",main:`女性では\nわずか<span class="accent">2.6%</span>差`},
+      {type:"fact",mainClass:"size-md",main:`理由:\n・交渉で譲歩しやすい\n・昇給要求しにくい\n・助ける側に回る`},
+      {type:"cta",main:`いい人すぎる\nかもと思った人`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n稼ぐのに<span class="danger">貯金ゼロ</span>\nの性格タイプ`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:4,
+    title:"外向性高=貯まらない",
+    caption:`稼ぐ力と貯める力は、性格で完全に別物だったという話。\n\nハーバードの研究によると、外向性が高い人は収入は高いのに純資産は無相関。\n飲み会、交際費、体験にお金を使う傾向で、手元に残らない。\n\n自分のお金タイプ、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格診断 #ビッグファイブ #お金 #投資 #貯金`,
+    slides:[
+      {type:"hook-compare",label:`稼ぐ力と貯める力、\n性格で<span class="accent">全く違う</span>`,badName:"純資産",badValue:"無相関",goodName:"収入",goodValue:"高い",caption:"外向性とお金 (ハーバード)"},
+      {type:"fact",main:`それ\n<span class="accent">「外向性」</span>が\n高すぎるから`},
+      {type:"fact",mainClass:"size-md",main:`外向性高の特徴:\n・社交的\n・人と会うのが楽しい\n・話して元気が出る`},
+      {type:"fact",main:`ハーバードの研究\n収入:<span class="gold">高い</span>\n純資産:<span class="danger">無相関</span>`},
+      {type:"fact",mainClass:"size-md",main:`理由:\n・飲み会多い\n・交際費多い\n・体験にお金使う`},
+      {type:"fact",main:`<span class="accent">誠実性高の人</span>は\n収入を\n純資産に変換できる`},
+      {type:"cta",main:`自分のバランスを\n見てみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n最も<span class="accent">恋愛</span>が\nうまくいく性格`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:5,
+    title:"恋愛満足度の予測因子",
+    caption:`恋愛がうまくいくかどうかは、相手より「自分の性格」でほぼ決まるって研究結果。\n\nPMCの縦断研究で判明。パートナーの性格はほぼ影響なし。\n特に「神経症傾向が低い」が最強の予測因子だった。\n\n自分の恋愛性格タイプ、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#恋愛 #性格診断 #ビッグファイブ #カップル #恋愛心理`,
+    slides:[
+      {type:"hook-big",number:"90",unit:"%",numberColor:"color-accent",label:`恋愛の満足度は\n<span class="accent">自分の性格</span>で決まる`,sub:"相手の性格は、ほぼ関係ない",caption:"PMC 2024 縦断研究"},
+      {type:"fact",main:`<span class="accent">「神経症傾向が低い」</span>\nこれが\n最強の予測因子`},
+      {type:"fact",main:`複数研究のまとめ\n満足度への影響力\n<span class="gold">No.1</span>`,caption:"Malouff メタ分析"},
+      {type:"fact",mainClass:"size-md",main:`神経症傾向が高いと:\n・嫉妬しやすい\n・不安を感じやすい\n・感情的になりやすい`},
+      {type:"fact",main:`意外な事実\nパートナーの性格は\n<span class="danger">ほぼ無関係</span>`},
+      {type:"fact",main:`<span class="accent">「自分の性格」</span>が\n90%以上\n満足度を決める`,caption:"PMC 2024"},
+      {type:"cta",main:`相手を変えるのでなく\n自分を知ろう`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n「真逆の人がいい」\nは<span class="danger">嘘</span>`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:6,
+    title:"真逆の人がいいは嘘",
+    caption:`85%の人が「真逆の人と付き合いたい」って言うけど、実際に選んでるのは「似た性格」の人。\n\nScienceDirectのマッチングアプリ分析で判明。\n特に似てるのは開放性、協調性、外向性の3つ。\nただし似すぎると長期的に満足度が下がる罠もある。\n\n相性がわかるBig5診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#恋愛 #性格診断 #相性 #カップル #Z世代`,
+    slides:[
+      {type:"hook-big",number:"85",unit:"%",numberColor:"",label:`<span class="gold">「真逆の人がいい」</span>\nでも実際は<span class="danger">似た人</span>を選ぶ`,sub:"マッチングアプリ分析で判明",caption:"ScienceDirect 2023"},
+      {type:"fact",main:`実は<span class="gold">85%</span>の人が\nそう答える\nでも…`},
+      {type:"fact",main:`実際に選ぶのは\n<span class="accent">「似た性格」</span>`,caption:"ScienceDirect 2023"},
+      {type:"fact",mainClass:"size-md",main:`特に似てる軸:\n・開放性 (O)\n・協調性 (A)\n・外向性 (E)`},
+      {type:"fact",main:`カップルの\nマッチングアプリ\n分析で判明`},
+      {type:"fact",main:`ただし\n<span class="danger">似すぎる</span>と\n長期的に\n満足度が下がる`},
+      {type:"cta",main:`自分のタイプと\n相性確認`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n<span class="danger">浮気しやすい</span>\n性格TOP3`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:7,
+    title:"考えすぎる=クリエイティブ",
+    caption:`「考えすぎ」って言われたことある人、それクリエイティブの源泉だったという神経科学的な話。\n\nPerkins 2015の研究で、神経症傾向が高い人は内側前頭前皮質が活発で、反すうが独自の発想を生むって。\nカフカもウルフもポーも、みんなそっち側。\n\n自分のその傾向、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格診断 #HSP #クリエイティブ #自己分析 #メンタル`,
+    slides:[
+      {type:"hook-big",label:`<span class="accent">考えすぎる</span>人の脳\n実は<span class="gold">クリエイティブ</span>だった`,sub:"神経症傾向が高い人の脳の特徴",caption:"Perkins 2015"},
+      {type:"fact",main:`それ\n<span class="accent">クリエイティブ</span>の\n源泉です`},
+      {type:"fact",mainClass:"size-md",main:`神経症傾向 高\n= 反すう しやすい\n= 創造性が生まれる`,caption:"Perkins 2015"},
+      {type:"fact",mainClass:"size-md",main:`有名な例:\n・カフカ\n・ヴァージニア・ウルフ\n・エドガー・アラン・ポー`},
+      {type:"fact",main:`脳では\n内側前頭前皮質が\n<span class="accent">活発</span>`},
+      {type:"fact",main:`その「反すう」が\n<span class="gold">独自の発想</span>を生む`},
+      {type:"cta",main:`自分の神経症傾向を\n見てみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n<span class="danger">SNS依存</span>しやすい\n性格`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:8,
+    title:"SNS依存しやすい性格",
+    caption:`SNSから離れられない人の性格プロファイル、2024年のメタ分析で判明してる。\n\n外向性と神経症傾向の両方が高い人がハマりやすい。\nE高で承認欲求、N高で不安を紛らわすという二段構え。\n逆に誠実性が高いとハマりにくい(保護因子)。\n\n自分の危険度、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#SNS依存 #性格診断 #メンタル #ビッグファイブ #Z世代`,
+    slides:[
+      {type:"hook-big",label:`SNS依存しやすい人の\n<span class="danger">性格の正体</span>、判明`,sub:`<span class="accent">外向性 高</span> + <span class="danger">神経症傾向 高</span>`,caption:"2024年メタ分析"},
+      {type:"fact",main:`答え:\n<span class="accent">外向性</span> +\n<span class="danger">神経症傾向</span>\nが高い人`},
+      {type:"fact",main:`2024年メタ分析で判明\nSNS依存の\n性格プロファイル`},
+      {type:"fact",main:`逆に\n<span class="accent">誠実性</span>が高いと\nハマりにくい\n(保護因子)`},
+      {type:"fact",mainClass:"size-md",main:`理由:\nE高 → 承認欲求\nN高 → 不安紛らわし\nC高 → 自己制御`},
+      {type:"cta",main:`自分の\n「危険度」を\n測ってみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\nよく眠れる人の\n<span class="accent">性格</span>`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:9,
+    title:"よく眠れる人の性格",
+    caption:`最近眠れないって人、原因は性格かもしれない。\n\n31,000人を対象にした2025年のメタ分析で、誠実性が高い人はよく眠れて、神経症傾向が高い人は眠れない傾向が出た。\n理由は睡眠衛生を守る習慣と、就寝前の反すう思考の差。\n\n自分の性格タイプ、Big5で測れる診断サイト作ってます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#睡眠 #不眠 #性格診断 #ビッグファイブ #健康`,
+    slides:[
+      {type:"hook-big",number:"31,000",unit:"人",numberColor:"color-accent",label:`不眠の原因、<span class="accent">性格</span>で\n<span class="gold">予測できた</span>`,sub:"31,000人を対象とした大規模研究",caption:"2025年メタ分析"},
+      {type:"fact",main:`実は睡眠の質は\n<span class="accent">性格で予測</span>できる`},
+      {type:"fact",main:`2025年メタ分析\n<span class="gold">31,000人</span>対象\nで判明`},
+      {type:"fact",mainClass:"size-md",main:`よく眠れる人:\n誠実性 (C) 高い\n\n眠れない人:\n神経症傾向 (N) 高い`},
+      {type:"fact",mainClass:"size-md",main:`理由:\nC高 → 睡眠衛生守る\nN高 → 就寝前の反すう`},
+      {type:"cta",main:`自分の睡眠タイプを\n知る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n幸福度は性格で\n<span class="accent">半分決まる</span>`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:10,
+    title:"幸福度は性格で半分決まる",
+    caption:`幸せかどうかの45%は、性格で決まってる。\n\nSun 2020のメタ分析によると、Big5で幸福感の45〜54%が説明できる。\nお金や環境より性格の影響が大きい。\n一番効くのは神経症傾向の低さ、次に外向性、協調性、誠実性の高さ。\n\n自分の性格を知ることが、幸せの第一歩かもしれない🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#幸せ #性格診断 #ビッグファイブ #メンタルヘルス #自己分析`,
+    slides:[
+      {type:"hook-big",number:"45",unit:"%",numberColor:"",label:`幸せかどうかの\n<span class="gold">半分</span>は性格で決まる`,sub:"お金でも環境でもなく、性格特性",caption:"Sun 2020 メタ分析"},
+      {type:"fact",main:`Big5で\n幸福感の\n<span class="gold">45-54%</span>が\n説明できる`,caption:"Sun 2020 メタ分析"},
+      {type:"fact",main:`影響力 No.1\n<span class="accent">神経症傾向 低</span>`},
+      {type:"fact",mainClass:"size-md",main:`続いて影響:\n・外向性 高\n・協調性 高\n・誠実性 高\n・開放性 中`},
+      {type:"fact",main:`つまり\nお金や環境より\n<span class="accent">性格</span>の方が\n幸せに影響する`},
+      {type:"fact",mainClass:"size-md",main:`性格は変えられない?\n\n→ 意識で\n   半分は変えられる`},
+      {type:"cta",main:`まず自分の性格を\n見てみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`フォローで\n<span class="accent">続き</span>見れる🔮`},
+    ],
+  },
+  {
+    id:11,
+    title:"浮気しやすい性格",
+    caption:`浮気しやすさは、性格で予測できる。\n\n世界10地域の調査で、浮気経験率は性格で最大2.5倍違うと判明。誠実性が低く、外向性が高い人は不貞リスクが高い。\n逆に、誠実性が高い人は長期関係の満足度も高く、一緒に18年以上続く確率が統計的に高い。\n愛情の強さより、性格の方が先に結果を決めていた。\n\n自分と相手の性格プロファイル、診断で見られます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#浮気 #性格診断 #恋愛心理 #ビッグファイブ #カップル`,
+    slides:[
+      {type:"hook-compare",label:`浮気しやすさ、\n性格で<span class="danger">2.5倍</span>違う`,badName:"誠実性 低",badValue:"×2.5",goodName:"誠実性 高",goodValue:"×1.0",caption:"Schmitt 2004 世界10地域調査"},
+      {type:"fact",main:`53カ国・\n<span class="gold">約17,000人</span>の\n調査で判明`,caption:"Schmitt 2004"},
+      {type:"fact",mainClass:"size-md",main:`浮気しやすい人の性格:\n\n・誠実性 低\n・外向性 高\n・開放性 高`},
+      {type:"fact",main:`逆に\n<span class="accent">誠実性 高</span>の人は\n<span class="gold">18年以上</span>続く\n確率が高い`,caption:"Luo 2009"},
+      {type:"fact",mainClass:"size-md",main:`つまり\n愛情の強さより\n性格の方が\n先に結果を決める`},
+      {type:"fact",main:`相手の性格、\n知らずに\n<span class="danger">選んでない</span>?`},
+      {type:"cta",main:`自分と相手の\n性格、見てみる`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n絵の好みで\n<span class="accent">性格30%</span>バレる`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:12,
+    title:"絵の好みで性格バレる",
+    caption:`好きな絵を1枚言ってもらうだけで、性格の約30%がバレる。\n\nBig5研究の最大規模(9万人超)で、開放性が高い人は抽象画やシュルレアリスム、低い人は写実的な風景画を好む傾向が有意に出た。\n音楽・映画・ファッションの好みにも同じパターンが見られる。\n美的嗜好は無意識に性格を映すシグナルで、SNSの「いいね」履歴からも性格推定ができるほど。\n\n自分の性格、絵より詳しく見たい方は🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格診断 #ビッグファイブ #アート #心理学 #自己分析`,
+    slides:[
+      {type:"hook-big",number:"30",unit:"%",numberColor:"color-accent",label:`好きな絵を言うだけで\n性格の<span class="accent">3割</span>バレる`,sub:"9万人以上の大規模調査で判明",caption:"Chamorro-Premuzic 2009"},
+      {type:"fact",main:`<span class="gold">9万人超</span>の\n美的嗜好調査\n(史上最大規模)`,caption:"Big5 × 美的嗜好研究"},
+      {type:"fact",mainClass:"size-md",main:`開放性 高:\n・抽象画\n・シュルレアリスム\n・不思議なアート\n\n開放性 低:\n・リアルな風景画\n・写実的な絵`},
+      {type:"fact",main:`音楽・映画・\nファッションも\n<span class="accent">同じパターン</span>`},
+      {type:"fact",mainClass:"size-md",main:`SNSの\n「いいね」履歴から\n性格推定できる\nレベルで相関している`},
+      {type:"fact",main:`好きなもの =\n<span class="gold">無意識の</span>\n自己紹介`},
+      {type:"cta",main:`自分の性格、\nもっと詳しく`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n性格は<span class="accent">90日</span>で\n変えられる`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:13,
+    title:"性格は90日で変えられる",
+    caption:`「性格は生まれつき」は半分正解、半分嘘。\n\nBig5の50%は遺伝だが、残り50%は経験と意識で変えられる。Hudson & Fraley 2015の実験では、毎日意識するだけで16週間(約4ヶ月)で誠実性や外向性が有意に上がった。\nRoberts 2008の大規模縦断研究でも、性格は中年以降でも変化することが確認されている。\n変えたいと思うことが、第一歩。\n\n今の自分の性格、まず数字で見てみる🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格 #自己改善 #ビッグファイブ #性格診断 #習慣`,
+    slides:[
+      {type:"hook-big",number:"90",unit:"日",numberColor:"color-accent",label:`性格、<span class="accent">この期間</span>で\n本当に変わる`,sub:"意識するだけでスコアが上がる",caption:"Hudson & Fraley 2015"},
+      {type:"fact",main:`「生まれつき」は\n<span class="gold">半分だけ</span>`,caption:"Bouchard 2001 双子研究"},
+      {type:"fact",mainClass:"size-md",main:`Big5の50%=遺伝\n残り50%=経験と意識\n\n変えられる範囲\nが、ちゃんとある`},
+      {type:"fact",main:`<span class="accent">16週間</span>の実験で\n誠実性・外向性が\n有意に上がった`,caption:"Hudson & Fraley 2015"},
+      {type:"fact",mainClass:"size-md",main:`中年以降でも\n性格は変わる\n\n「歳だから」は\n言い訳にならない`,caption:"Roberts 2008"},
+      {type:"fact",main:`変えたい\nと思うことが、\n<span class="gold">第一歩</span>`},
+      {type:"cta",main:`今の性格、\nまず数字で見る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n<span class="accent">18年続く</span>\nカップルの性格`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:14,
+    title:"続くカップルの共通点",
+    caption:`一緒に18年以上続くカップルには、性格の共通点が1つあった。\n\nLuo 2009の縦断研究で、誠実性(Conscientiousness)が高いパートナー同士のカップルは、離別率が平均より有意に低かった。\n意外にも、愛情の強さや共通趣味より、「約束を守る」「計画的」といった誠実性の方が長期の予測力が高い。\n相手を選ぶ基準、見直すヒントかも。\n\n自分と相手の誠実性スコア、診断で見られます🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#長続きカップル #性格診断 #ビッグファイブ #恋愛心理 #結婚`,
+    slides:[
+      {type:"hook-big",number:"18",unit:"年",numberColor:"color-accent",label:`同じ人と続くカップル\n<span class="accent">共通点</span>は1つだけ`,sub:"誠実性(Conscientiousness)が高い",caption:"Luo 2009 縦断研究"},
+      {type:"fact",main:`愛情の強さでも\n共通趣味でもなく\n<span class="gold">誠実性</span>が決め手`,caption:"Luo 2009"},
+      {type:"fact",mainClass:"size-md",main:`誠実性 高 =\n・約束を守る\n・計画的\n・責任感がある\n・浮気しにくい`},
+      {type:"fact",main:`<span class="accent">両方とも</span>\n誠実性が高いと\n離別率が激減`,caption:"Big5 × 関係安定性"},
+      {type:"fact",mainClass:"size-md",main:`「合う」より\n「続く」を見るなら\n性格特性の方が\n先に効く`},
+      {type:"fact",main:`相手の性格、\n<span class="danger">知らない</span>まま\n選んでない?`},
+      {type:"cta",main:`相手とのペア\n診断する`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n同じストレスでも\n<span class="accent">半分</span>しか感じない性格`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:15,
+    title:"ストレス耐性の差",
+    caption:`同じストレスでも、感じる強さが人によって半分違う。\n\nLuo & Han 2022のメタ分析で、神経症傾向(Neuroticism)が低い人は同じ出来事でもストレス反応が約半分。痛みの知覚実験でも、同じ刺激への脳反応が有意に弱いことが確認されている。\n「メンタルが強い」はトレーニングの結果じゃなく、そもそも感じる量が違う。\n自分の神経症傾向スコアを知ることが、ケアの第一歩。\n\n自分のストレス耐性、診断で数値化🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#ストレス #メンタルヘルス #性格診断 #ビッグファイブ #HSP`,
+    slides:[
+      {type:"hook-big",number:"1/2",unit:"",numberColor:"color-accent",label:`同じストレスでも\n感じる量が<span class="accent">半分</span>`,sub:"神経症傾向が低い人の脳反応",caption:"Luo & Han 2022 メタ分析"},
+      {type:"fact",main:`「メンタルが強い」\n=訓練じゃなく\n<span class="gold">元から</span>違う`,caption:"神経症傾向の神経科学"},
+      {type:"fact",mainClass:"size-md",main:`脳画像研究で\n同じ刺激への\n扁桃体反応が\n有意に弱い`,caption:"Acevedo 2014 ほか"},
+      {type:"fact",main:`だから\n「なんで自分だけ…」\nは<span class="accent">気のせい</span>じゃない`},
+      {type:"fact",mainClass:"size-md",main:`神経症傾向 高 =\n・刺激に敏感\n・不安を感じやすい\n・実はクリエイティブ`,caption:"Perkins 2015"},
+      {type:"fact",main:`感じる量を知れば、\n<span class="gold">ケアの仕方</span>も変わる`},
+      {type:"cta",main:`自分の\nストレス耐性を知る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n天才の意外な\n<span class="accent">共通点</span>`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:16,
+    title:"天才の意外な共通点",
+    caption:`天才の共通点、実は「不安が高い」だった。\n\nPerkins 2015の研究で、神経症傾向(Neuroticism)と創造性には独立した正の相関があることが示された。カフカ、ダーウィン、ヴァージニア・ウルフ、ゴッホ。多くの歴史的天才は不安と内省の強い人だった。\nKyaga 2013のスウェーデン全国100万人調査でも、作家・アーティスト・音楽家は一般人口より気分障害の罹患率が有意に高かった。\nあなたの不安は、欠陥ではなく才能の燃料かもしれない。\n\n自分の性格、数字で見てみる🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#天才 #クリエイティブ #性格診断 #ビッグファイブ #HSP`,
+    slides:[
+      {type:"hook-big",label:`天才の意外な共通点\n実は<span class="accent">「不安が高い」</span>`,sub:"神経症傾向と創造性の正の相関",caption:"Perkins 2015"},
+      {type:"fact",main:`カフカ\nダーウィン\nウルフ\nゴッホ`,caption:"全員、神経症傾向が高かった"},
+      {type:"fact",mainClass:"size-md",main:`Perkins 2015:\n神経症傾向と創造性\nに<span class="gold">独立した正の相関</span>\n\n不安が強いほど\n発想が深くなる傾向`},
+      {type:"fact",main:`<span class="accent">スウェーデン</span>の\n100万人調査でも\n同じ傾向`,caption:"Kyaga 2013"},
+      {type:"fact",mainClass:"size-md",main:`作家・アーティスト・\n音楽家は一般人口より\n気分障害の罹患率が\n有意に高かった`,caption:"Kyaga 2013"},
+      {type:"fact",main:`あなたの不安は\n<span class="gold">欠陥</span>じゃなく\n才能の<span class="accent">燃料</span>かも`},
+      {type:"cta",main:`自分の性格、\n数字で見る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\nケンカを<span class="accent">すぐ収める</span>\n性格の特徴`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:17,
+    title:"ケンカを収める性格",
+    caption:`ケンカをすぐ収める人の性格、1つだけ共通点があった。\n\nBono 2019の研究で、開放性(Openness)が高い人は衝突時に「話し合いでの解決」を選ぶ確率が有意に高かった。\n逆に、開放性が低いと「回避」「攻撃」に傾きやすい。相手の視点を想像できる力がそのまま交渉力になる。\n恋人や家族とのケンカが長引くなら、性格の相性をチェックしてみるのも手。\n\n自分と相手の相性、診断でチェック🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#ケンカ #カップル #性格診断 #ビッグファイブ #コミュ力`,
+    slides:[
+      {type:"hook-big",label:`ケンカをすぐ収める人の\n<span class="accent">性格の特徴</span>`,sub:"話し合いで解決できる力の正体",caption:"Bono 2019"},
+      {type:"fact",main:`<span class="gold">開放性が高い</span>人\nだけが持つ\nケンカ収拾力`,caption:"Big5 × 対立解決"},
+      {type:"fact",mainClass:"size-md",main:`開放性 高 =\n・相手の視点を想像できる\n・感情より事実で話せる\n・新しい解を考えられる`},
+      {type:"fact",main:`<span class="danger">開放性 低</span>の人は\n・回避\n・攻撃\nに流れやすい`,caption:"Bono 2019"},
+      {type:"fact",mainClass:"size-md",main:`相手の視点を\n想像する力\n=そのまま\n<span class="gold">交渉力</span>になる`},
+      {type:"fact",main:`長引くケンカは\n<span class="accent">性格相性</span>の\nサインかも`},
+      {type:"cta",main:`相手との相性、\n診断する`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n性格で<span class="accent">寿命</span>が\n5年変わる`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:18,
+    title:"性格で寿命5年変わる",
+    caption:`性格で、寿命が平均で5年変わる。\n\nFriedman 2010の縦断研究(Longevity Project)で、誠実性(Conscientiousness)が高い子どもは低い子どもより平均3-5年長生きした。\n規則正しい生活、禁煙、運動、定期検診。積み重ねの差が寿命に反映される。\n性格の中で健康に一番効くのは誠実性。次に神経症傾向の低さ。\n自分の誠実性スコア、一度数字で見ておくと面白い。\n\n自分の性格を数字で把握🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#健康 #寿命 #性格診断 #ビッグファイブ #長生き`,
+    slides:[
+      {type:"hook-big",number:"5",unit:"年",numberColor:"color-accent",label:`性格で<span class="accent">寿命</span>が\n5年変わる事実`,sub:"80年の縦断研究で判明",caption:"Friedman 2010 Longevity Project"},
+      {type:"fact",main:`<span class="gold">誠実性の高い</span>\n子どもは、平均で\n3-5年長生きした`,caption:"Friedman 2010"},
+      {type:"fact",mainClass:"size-md",main:`誠実性 高 =\n・規則正しい生活\n・禁煙・節酒\n・運動の継続\n・定期検診`},
+      {type:"fact",main:`積み重ねの差が\n<span class="accent">寿命</span>に\nそのまま反映`,caption:"Bogg & Roberts 2004"},
+      {type:"fact",mainClass:"size-md",main:`健康に一番効く性格:\n\n1位 誠実性 高\n2位 神経症傾向 低\n3位 開放性 高`,caption:"Roberts 2007 メタ分析"},
+      {type:"fact",main:`「ちゃんとしてる」\nは、実は\n<span class="gold">最強の才能</span>`},
+      {type:"cta",main:`自分の誠実性、\n数字で見る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\n性格の<span class="accent">50%</span>は\n遺伝だった`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:19,
+    title:"性格の50%は遺伝",
+    caption:`性格の半分は、生まれた時点で決まっていた。\n\nBouchard & Loehlin 2001の双子研究(離れて育った一卵性双生児の比較)で、Big5の遺伝率は約40-60%と判明。特に開放性と外向性は遺伝の影響が強い。\nでも残り40-60%は環境と意識で変えられる。Roberts 2008の縦断研究では、中年以降でも性格は変化することが確認されている。\n「生まれつき」は言い訳にはならないが、「全部自分のせい」でもない。\n\n自分の性格を客観的に数字で🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#性格 #遺伝 #性格診断 #ビッグファイブ #双子研究`,
+    slides:[
+      {type:"hook-big",number:"50",unit:"%",numberColor:"",label:`性格の<span class="gold">半分</span>は\n生まれた時点で決まる`,sub:"双子研究で遺伝率40-60%",caption:"Bouchard & Loehlin 2001"},
+      {type:"fact",main:`離れて育った\n一卵性双生児が\n<span class="accent">驚くほど似ている</span>`,caption:"ミネソタ双生児研究"},
+      {type:"fact",mainClass:"size-md",main:`Big5の遺伝率:\n\n開放性 ... 57%\n外向性 ... 54%\n神経症傾向 48%\n誠実性 ... 49%\n協調性 ... 42%`,caption:"Bouchard 2001 平均値"},
+      {type:"fact",main:`でも\n残り<span class="gold">40-60%</span>は\n環境と意識で変えられる`,caption:"Roberts 2008"},
+      {type:"fact",mainClass:"size-md",main:`中年以降でも\n性格は変化する\n\n「歳だから」は\n通用しない`},
+      {type:"fact",main:`生まれつきは言い訳じゃない\n全部自分のせい<span class="accent">でもない</span>`},
+      {type:"cta",main:`自分の性格を\n数字で把握`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`次回\nお金持ちの性格\n<span class="accent">3つの特徴</span>`,sub:"▶ フォロー"},
+    ],
+  },
+  {
+    id:20,
+    title:"お金持ちの性格プロファイル",
+    caption:`富裕層には、性格の共通点が3つあった。\n\nRoberts 2007のメタ分析、Judge 2013の収入研究から浮かび上がる富裕層プロファイル:\n誠実性が高い(計画・継続・忍耐)、神経症傾向が低い(判断の安定)、外向性がミドル(過剰な消費欲は抑える)。\n意外にも、外向性が高すぎると貯金が苦手(ハーバード研究)。派手な人ほど散財しやすい。\n自分の性格が、どれくらい富裕層プロファイルに近いか見てみる🔮\n500人フォロワーになったらプロフィールにURL貼れるので応援お願いします!\n\n#お金持ち #年収 #性格診断 #ビッグファイブ #資産形成`,
+    slides:[
+      {type:"hook-big",number:"3",unit:"つ",numberColor:"color-accent",label:`富裕層の性格、\n共通点は<span class="accent">3つだけ</span>`,sub:"複数の大規模研究で浮上",caption:"Roberts 2007 / Judge 2013"},
+      {type:"fact",main:`<span class="gold">1. 誠実性 高</span>\n計画・継続・忍耐\n生涯年収+17%`,caption:"ミシガン大学研究"},
+      {type:"fact",main:`<span class="gold">2. 神経症傾向 低</span>\n判断の安定\n長期投資に有利`,caption:"Luo & Han 2022"},
+      {type:"fact",main:`<span class="gold">3. 外向性 ミドル</span>\n社交的すぎると<span class="danger">貯まらない</span>`,caption:"ハーバード研究"},
+      {type:"fact",mainClass:"size-md",main:`派手な人ほど\n散財しやすい\n\n外向性 高 =\n稼ぐが貯まらない`},
+      {type:"fact",main:`富裕層プロファイル、\n<span class="accent">あなた</span>の性格と\nどれくらい近い?`},
+      {type:"cta",main:`富裕層\n度数を測る`,ctaUrl:"🔗 paternia.netlify.app"},
+      {type:"next",main:`20投稿完走。\n<span class="accent">フォロー</span>で次シリーズ🔮`},
+    ],
+  },
+];
+
+// ===================================================
+// Slide rendering
+// ===================================================
+function renderSlide(postId, slideIdx, slide){
+  const s = document.createElement("div");
+  const isHook = slide.type === "hook-big" || slide.type === "hook";
+  s.className = "slide" + (isHook ? " is-hook" : "");
+  s.dataset.slideId = `post-${postId}-slide-${slideIdx+1}`;
+  s.innerHTML = `
+    <div class="slide-brand">paternia</div>
+    <div class="slide-research">BIG 5 研究に基づく</div>
+    <div class="slide-badge">${String(slideIdx+1).padStart(2,"0")} / ${POSTS.find(p=>p.id===postId).slides.length}</div>
+    ${renderSlideInner(slide)}
+    ${slide.caption ? `<div class="slide-caption">${slide.caption}</div>` : ""}
+    ${isHook ? `<div class="swipe-hint"><span class="arrow">→</span><span class="label">SWIPE</span></div>` : ""}
+  `;
+  return s;
+}
+
+function renderSlideInner(slide){
+  const mc = slide.mainClass || "";
+  switch(slide.type){
+    case "hook":
+    case "fact":
+    case "next":
+      return `<div class="slide-content">
+        <div class="slide-main ${mc}">${slide.main.replace(/\n/g,"<br>")}</div>
+        ${slide.sub ? `<div class="slide-sub">${slide.sub}</div>` : ""}
+      </div>`;
+    case "hook-big":
+      const numStr = slide.number ? String(slide.number) : "";
+      // Auto-size: longer numbers get smaller font
+      let numSize = "";
+      if (numStr.length >= 6) numSize = "size-xs";
+      else if (numStr.length >= 4) numSize = "size-sm";
+      return `<div class="slide-content">
+        <div class="hook-number-block">
+          ${slide.number ? `<div class="hook-number ${numSize} ${slide.numberColor || ""}">${slide.number}${slide.unit ? `<span class="unit">${slide.unit}</span>` : ""}</div>` : ""}
+          <div class="hook-label">${slide.label.replace(/\n/g,"<br>")}</div>
+        </div>
+        ${slide.sub ? `<div class="slide-sub">${slide.sub.replace(/\n/g,"<br>")}</div>` : ""}
+      </div>`;
+    case "hook-compare":
+      return `<div class="slide-content">
+        <div class="hook-label" style="margin-bottom:40px">${slide.label.replace(/\n/g,"<br>")}</div>
+        <div class="hook-compare">
+          <div class="hook-compare-row bad">
+            <span>${slide.badName}</span>
+            <span class="num">${slide.badValue}</span>
+          </div>
+          <div class="hook-compare-row good">
+            <span>${slide.goodName}</span>
+            <span class="num">${slide.goodValue}</span>
+          </div>
+        </div>
+      </div>`;
+    case "compare":
+      return `<div class="slide-content">
+        <div class="compare">
+          <div class="compare-col col-mbti">
+            <div class="compare-title">${slide.mbtiTitle}</div>
+            <div class="compare-body">${slide.mbtiBody.replace(/\n/g,"<br>")}</div>
+          </div>
+          <div class="compare-col col-big5">
+            <div class="compare-title">${slide.big5Title}</div>
+            <div class="compare-body">${slide.big5Body.replace(/\n/g,"<br>")}</div>
+          </div>
+        </div>
+      </div>`;
+    case "cta":
+      return `<div class="slide-content">
+        <div class="slide-main size-md">${slide.main.replace(/\n/g,"<br>")}</div>
+        <div class="cta-box">
+          <div class="cta-url">${slide.ctaUrl}</div>
+          <div style="font-size:34px;color:#b9aeff;margin-top:8px">スクショして、アクセス</div>
+        </div>
+      </div>`;
+    default:
+      return `<div class="slide-content"><div class="slide-main">${slide.main}</div></div>`;
+  }
+}
+
+// ===================================================
+// Build UI
+// ===================================================
+const postsContainer = document.getElementById("posts");
+POSTS.forEach(post=>{
+  const postEl = document.createElement("div");
+  postEl.className = "post";
+  postEl.innerHTML = `
+    <div class="post-header">
+      <div>
+        <span class="post-id">POST ${String(post.id).padStart(2,"0")}</span>
+      </div>
+      <button class="generate-post" data-post-id="${post.id}">この投稿を生成</button>
+    </div>
+    <div class="post-title">${post.title}</div>
+    <div class="slides-grid"></div>
+    <div class="post-caption">${post.caption}</div>
+  `;
+  const grid = postEl.querySelector(".slides-grid");
+  post.slides.forEach((slide, idx)=>{
+    const thumb = document.createElement("div");
+    thumb.className = "slide-thumb";
+    const scaled = document.createElement("div");
+    scaled.className = "scaled";
+    const slideEl = renderSlide(post.id, idx, slide);
+    scaled.appendChild(slideEl);
+    thumb.appendChild(scaled);
+    grid.appendChild(thumb);
+  });
+  postsContainer.appendChild(postEl);
+});
+
+// ===================================================
+// Export
+// ===================================================
+const status = document.getElementById("status");
+const stage = document.getElementById("render-stage");
+
+async function captureSlide(post, slideIdx){
+  const slide = post.slides[slideIdx];
+  const el = renderSlide(post.id, slideIdx, slide);
+  stage.innerHTML = "";
+  stage.appendChild(el);
+  // Give the browser a moment to apply fonts/styles
+  await new Promise(r=>setTimeout(r,80));
+  const canvas = await html2canvas(el, {
+    width:1080,
+    height:1920,
+    scale:1,
+    backgroundColor:"#0a0a1a",
+    logging:false,
+    useCORS:true,
+  });
+  return new Promise(resolve=>{
+    canvas.toBlob(b=>resolve(b),"image/png");
+  });
+}
+
+async function generatePost(postId){
+  const post = POSTS.find(p=>p.id===postId);
+  if(!post) return;
+  const zip = new JSZip();
+  const folder = zip.folder(`post-${String(post.id).padStart(2,"0")}_${post.title}`);
+  for(let i=0;i<post.slides.length;i++){
+    status.textContent = `投稿${post.id}: ${i+1}/${post.slides.length} 枚目を生成中…`;
+    const blob = await captureSlide(post, i);
+    folder.file(`${String(i+1).padStart(2,"0")}.png`, blob);
+  }
+  // Also include caption.txt
+  folder.file("caption.txt", post.caption);
+  status.textContent = `投稿${post.id}: ZIP作成中…`;
+  const zipBlob = await zip.generateAsync({type:"blob"});
+  saveAs(zipBlob, `paternia_post-${String(post.id).padStart(2,"0")}.zip`);
+  status.textContent = `投稿${post.id} のZIPをダウンロードしました ✓`;
+}
+
+async function generateAll(){
+  document.querySelectorAll("button").forEach(b=>b.disabled=true);
+  try{
+    const zip = new JSZip();
+    for(const post of POSTS){
+      const folder = zip.folder(`post-${String(post.id).padStart(2,"0")}_${post.title}`);
+      for(let i=0;i<post.slides.length;i++){
+        status.textContent = `投稿${post.id} (${POSTS.indexOf(post)+1}/${POSTS.length}) - スライド ${i+1}/${post.slides.length}`;
+        const blob = await captureSlide(post, i);
+        folder.file(`${String(i+1).padStart(2,"0")}.png`, blob);
+      }
+      folder.file("caption.txt", post.caption);
+    }
+    status.textContent = `全投稿のZIP作成中…`;
+    const zipBlob = await zip.generateAsync({type:"blob"});
+    saveAs(zipBlob, `paternia_tiktok_slides_all.zip`);
+    status.textContent = `完了 ✓ 全10投稿のZIPをダウンロードしました`;
+  } catch(e){
+    status.textContent = `エラー: ${e.message}`;
+    console.error(e);
+  } finally {
+    document.querySelectorAll("button").forEach(b=>b.disabled=false);
+  }
+}
+
+// Event listeners
+document.getElementById("btn-all").addEventListener("click",generateAll);
+document.querySelectorAll(".generate-post").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const id = Number(btn.dataset.postId);
+    document.querySelectorAll("button").forEach(b=>b.disabled=true);
+    generatePost(id).finally(()=>{
+      document.querySelectorAll("button").forEach(b=>b.disabled=false);
+    });
+  });
+});
+
+// Preview toggle (zoom thumbnails)
+let zoomed = false;
+document.getElementById("btn-preview-toggle").addEventListener("click",()=>{
+  zoomed = !zoomed;
+  document.querySelectorAll(".slides-grid").forEach(g=>{
+    g.style.gridTemplateColumns = zoomed
+      ? "repeat(auto-fill,minmax(280px,1fr))"
+      : "repeat(auto-fill,minmax(160px,1fr))";
+  });
+  document.querySelectorAll(".slide-thumb .scaled").forEach(s=>{
+    s.style.transform = zoomed
+      ? "scale(calc(280/1080))"
+      : "scale(calc(160/1080))";
+  });
+});
+
+// Click thumbnail to open full slide in new window
+document.querySelectorAll(".slide-thumb").forEach(thumb=>{
+  thumb.addEventListener("click",()=>{
+    const w = window.open("","_blank");
+    w.document.write(`<html><head><title>Preview</title><style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh}</style></head><body></body></html>`);
+    const clone = thumb.querySelector(".scaled").cloneNode(true);
+    clone.style.transform = "scale(0.4)";
+    clone.style.position = "static";
+    w.document.body.appendChild(clone);
+  });
+});
+</script>
+
+</body>
+</html>

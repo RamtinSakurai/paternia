@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia 4大悩みカード ジェネレータ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --bg-card:#12122a;
+    --accent:#9d8fff;
+    --text:#ffffff;
+    --text-muted:#b4b4cc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    padding:24px;
+    min-height:100vh;
+  }
+  header{
+    max-width:1400px;
+    margin:0 auto 24px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:var(--bg-card);
+  }
+  header h1{
+    font-family:"Fredoka",sans-serif;
+    font-size:24px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  header p{font-size:14px;color:var(--text-muted);line-height:1.7}
+  .controls{
+    max-width:1400px;
+    margin:0 auto 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .controls button{
+    background:var(--accent);color:#000;border:none;padding:10px 20px;
+    border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;
+    font-size:14px;transition:transform 0.1s;
+  }
+  .controls button:hover{transform:translateY(-1px);opacity:0.9}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .controls .secondary{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+  .status{
+    max-width:1400px;margin:0 auto 24px;padding:12px 20px;
+    border-radius:8px;background:rgba(157,143,255,0.1);
+    border:1px solid rgba(157,143,255,0.3);
+    color:var(--text-muted);font-size:13px;min-height:44px;
+    display:flex;align-items:center;
+  }
+  .grid{
+    max-width:1400px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;
+  }
+  .mini{
+    border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+    background:var(--bg-card);overflow:hidden;cursor:pointer;
+    transition:transform 0.1s,border-color 0.1s;
+  }
+  .mini:hover{transform:scale(1.03);border-color:var(--accent)}
+  .mini-prev{aspect-ratio:1600/900;overflow:hidden;position:relative}
+  .mini-prev .scaled{
+    width:1600px;height:900px;
+    transform:scale(calc(220 / 1600));
+    transform-origin:top left;position:absolute;top:0;left:0;
+  }
+  .mini-meta{
+    padding:8px 12px;font-size:12px;color:var(--text-muted);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .mini-meta .code{font-family:"Fredoka",sans-serif;color:var(--accent);font-weight:600}
+
+  /* =============== PAIN CARD (1600 x 900 landscape) =============== */
+  #renderRoot{position:fixed;left:-99999px;top:0}
+
+  .card{
+    width:1600px;height:900px;position:relative;overflow:hidden;
+    background:#0a0a1a;color:#fff;
+    font-family:"M PLUS Rounded 1c","Kiwi Maru",sans-serif;
+    display:flex;flex-direction:column;
+  }
+  .card .bg-gradient{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 20% 15%,rgba(157,143,255,0.18) 0%,transparent 50%),
+      radial-gradient(circle at 85% 85%,rgba(255,180,110,0.13) 0%,transparent 45%);
+  }
+  .card .orb1,.card .orb2{
+    position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;
+  }
+  .card .orb1{width:460px;height:460px;left:-140px;top:-140px;background:var(--orb-a,rgba(157,143,255,0.28))}
+  .card .orb2{width:380px;height:380px;right:-100px;bottom:-100px;background:var(--orb-b,rgba(255,180,120,0.18))}
+
+  .card .header{
+    position:relative;z-index:2;
+    padding:44px 64px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:30px;
+  }
+  .card .header-left{
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .card .tag{
+    display:flex;align-items:center;gap:12px;
+    font-family:"Fredoka",sans-serif;font-size:22px;
+    color:#d0d0e8;letter-spacing:0.24em;font-weight:600;
+  }
+  .card .tag::before{
+    content:"";width:11px;height:11px;border-radius:50%;
+    background:var(--axis-color,#9d8fff);
+    box-shadow:0 0 16px rgba(157,143,255,0.7);
+  }
+  .card .title-line{
+    display:flex;align-items:baseline;gap:22px;
+  }
+  .card .code{
+    font-family:"Fredoka",sans-serif;font-size:96px;font-weight:700;
+    color:var(--axis-color,#ffd154);line-height:1;letter-spacing:0.04em;
+    text-shadow:0 6px 36px rgba(255,209,84,0.3);
+  }
+  .card .name{
+    font-family:"Kiwi Maru",serif;font-size:58px;font-weight:500;
+    color:#fff;letter-spacing:0.08em;line-height:1;
+  }
+  .card .subtitle{
+    font-family:"Kiwi Maru",serif;font-size:36px;font-weight:500;
+    color:#d4d4e6;letter-spacing:0.08em;white-space:nowrap;
+  }
+  .card .subtitle .accent{color:var(--axis-color,#ffd154)}
+
+  .pain-grid{
+    position:relative;z-index:2;flex:1;
+    padding:18px 64px 28px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:22px;
+  }
+  .pain-cell{
+    display:flex;align-items:center;gap:26px;
+    padding:28px 34px;
+    background:rgba(20,14,45,0.55);
+    border:2px solid rgba(157,143,255,0.22);
+    border-radius:22px;
+  }
+  .pain-num{
+    font-family:"Fredoka",sans-serif;font-size:100px;font-weight:700;
+    color:var(--axis-color,#ffd154);line-height:1;
+    flex-shrink:0;min-width:80px;
+    text-shadow:0 0 30px rgba(255,209,84,0.3);
+  }
+  .pain-text{
+    font-size:30px;font-weight:500;color:#fff;
+    line-height:1.5;letter-spacing:0.02em;
+  }
+
+  .card .foot{
+    position:relative;z-index:2;
+    padding:0 64px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .card .foot .brand{
+    font-family:"Fredoka",sans-serif;font-size:32px;
+    color:#b9aeff;letter-spacing:0.04em;
+    text-shadow:0 4px 18px rgba(157,143,255,0.45);
+  }
+  .card .foot .url{
+    font-family:"Fredoka",sans-serif;font-size:22px;
+    color:#9d8fff;letter-spacing:0.04em;
+  }
+
+  /* axis color variants */
+  .card.axis-O{--axis-color:#ffd154;--orb-a:rgba(255,209,84,0.28);--orb-b:rgba(255,170,80,0.18)}
+  .card.axis-C{--axis-color:#8cd0ff;--orb-a:rgba(140,208,255,0.25);--orb-b:rgba(100,160,220,0.18)}
+  .card.axis-E{--axis-color:#ffb07a;--orb-a:rgba(255,176,122,0.28);--orb-b:rgba(255,100,120,0.18)}
+  .card.axis-A{--axis-color:#ffc8b0;--orb-a:rgba(255,200,176,0.25);--orb-b:rgba(240,180,140,0.18)}
+  .card.axis-N{--axis-color:#b9aeff;--orb-a:rgba(185,174,255,0.3);--orb-b:rgba(157,143,255,0.22)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia / 4 大悩みインフォグラフィック</h1>
+  <p>
+    各タイプ記事の第2章「4大悩み」を、1080 × 1500 の縦長 1 枚画像に。<br>
+    note 記事の無料部分(科学背景 → 悩み言語化)の間に挿入し、読了率を押し上げる。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="dlAllBtn">全20枚ダウンロード (ZIP)</button>
+  <button class="secondary" id="reloadBtn">再描画</button>
+</div>
+
+<div class="status" id="status">準備中…</div>
+
+<div class="grid" id="grid"></div>
+<div id="renderRoot"></div>
+
+<script>
+// ====================================================
+// Pain data (20 types x 4 pains)
+// ====================================================
+const TYPES = [
+  { code:"OC", primary:"O", name:"星の設計者", pains:[
+    "アイデアが多すぎて、1つも完成しない",
+    "完璧主義で、作品を世に出せない",
+    "頭の中の設計図を、全部は説明できない",
+    "自分の理想に、自分が追いつけない",
+  ]},
+  { code:"OE", primary:"O", name:"虹色の旅人", pains:[
+    "3週間で飽きる、そして罪悪感が残る",
+    "自分の「軸」が、毎年書き換わる",
+    "「浅い」と言われる",
+    "人間関係で「熱量差」に消耗する",
+  ]},
+  { code:"OA", primary:"O", name:"墨の語り部", pains:[
+    "美しさに涙した瞬間を、誰にも共有できない",
+    "雑な会話の場に、10分いると疲れ果てる",
+    "感性が「変」扱いされる事に慣れてしまった",
+    "言葉にできない領域が、いちばん大切に感じる",
+  ]},
+  { code:"ON", primary:"O", name:"夢の建築家", pains:[
+    "夜中、不穏な想像に飲み込まれる",
+    "「普通の人にならなきゃ」という恐怖",
+    "自分の世界を、誰にも見せられない",
+    "自分を信じられない",
+  ]},
+  { code:"CO", primary:"C", name:"氷の観測者", pains:[
+    "感情表現が、物理的に出てこない",
+    "「冷たい」と言われた記憶が、消えない",
+    "論理的な解決策で、人間関係を壊す",
+    "熱量を求められる場面で、擬態がばれる",
+  ]},
+  { code:"CE", primary:"C", name:"道筋の司令", pains:[
+    "任せたら、結局自分で直すことになる",
+    "周りの「まあ大丈夫でしょ」が怖い",
+    "責任が、全部自分に流れ込んでくる",
+    "休めない。休み方が分からない",
+  ]},
+  { code:"CA", primary:"C", name:"藍色の守り手", pains:[
+    "新しいものへの拒絶反応が強すぎる",
+    "「保守的だね」の意味が、分からない",
+    "時代についていけない、という静かな焦り",
+    "自信がない、自分の才能が分からない",
+  ]},
+  { code:"CN", primary:"C", name:"震えの書記", pains:[
+    "「何か見落としている」が永遠に消えない",
+    "心配性と言われ続けて、自己否定が積もる",
+    "他人の雑さが、生理的に許せない",
+    "ミスへの恐怖で、挑戦そのものが遅れる",
+  ]},
+  { code:"EO", primary:"E", name:"夜空の革命児", pains:[
+    "燃え上がる週と、燃え尽きる週の落差",
+    "次のアイデアで頭が走って、完成しない",
+    "「ペースが速すぎる」と言われ、孤独",
+    "同じアイデアを2度話すと、もう飽きる",
+  ]},
+  { code:"EC", primary:"E", name:"黄金の王", pains:[
+    "悩みを相談できる相手が、実はいない",
+    "「しっかりしてるね」が、呪いになる",
+    "誰かを支えるのに、自分を支える人はいない",
+    "休んでいる自分を、自分が許せない",
+  ]},
+  { code:"EA", primary:"E", name:"祭りの先導者", pains:[
+    "本音が、行方不明になっている",
+    "嫌われる恐怖で、本音が言えない",
+    "家に帰ると、急に空っぽになる",
+    "深い悲しみを、誰にも言えない",
+  ]},
+  { code:"EN", primary:"E", name:"赤色の咆哮", pains:[
+    "感情の波が、一日の中で何度も振れる",
+    "「劇的すぎる」と言われ、居場所を失う",
+    "人間関係で、消耗が早い",
+    "自分の感情に、自分が振り回される",
+  ]},
+  { code:"AO", primary:"A", name:"森を紡ぐ者", pains:[
+    "自己犠牲が止まらず、自分の時間が消える",
+    "燃え尽きが、気づかないうちに進む",
+    "裏方すぎて、報われない感覚が積もる",
+    "「いい人」疲れ ── 自分の欲が消える",
+  ]},
+  { code:"AC", primary:"A", name:"毛糸の匠", pains:[
+    "「当然」という、一番冷たい言葉",
+    "声の大きい人に、場を奪われる",
+    "ケアしているのに、愛情が届かない",
+    "「存在が薄い」と言われる",
+  ]},
+  { code:"AE", primary:"A", name:"陽だまりの主", pains:[
+    "八方美人と呼ばれてしまう",
+    "本音が、どこかに置き忘れられている",
+    "誰かの悲しみを、帰った後も引きずる",
+    "自分と他人の境界線が、わからない",
+  ]},
+  { code:"AN", primary:"A", name:"花びらの詩", pains:[
+    "「普通の刺激」が強すぎる",
+    "相手の感情を、自分のものにしてしまう",
+    "決断に時間がかかる",
+    "予定の詰め込みで壊れる",
+  ]},
+  { code:"NO", primary:"N", name:"時を溶かす者", pains:[
+    "夜中、脳が勝手に暗い物語を走らせる",
+    "自分を信じられる瞬間が、数秒しかない",
+    "作品にしないと、思考が息できなくなる",
+    "明るい集団にいるほど、内側の闇が濃くなる",
+  ]},
+  { code:"NC", primary:"N", name:"点描の巡礼", pains:[
+    "「十分」が、永遠に分からない",
+    "自分のミスが、何年経っても赦せない",
+    "他人のミスも、許せない",
+    "「まあいいか」が、生理的に言えない",
+  ]},
+  { code:"NE", primary:"N", name:"警鐘を鳴らす者", pains:[
+    "危機ばかりが、目に飛び込んでくる",
+    "周りとの「温度差」で、孤立する",
+    "「悲観的」「うるさい」とラベルを貼られる",
+    "警告が空振りした時の、強い自己嫌悪",
+  ]},
+  { code:"NA", primary:"N", name:"雨音の詩人", pains:[
+    "楽しい瞬間にも、少しだけ寂しい",
+    "他人の悲しみを、身体に取り込んでしまう",
+    "ぐるぐる思考が、夜中に止まらない",
+    "「重い」「暗い」と言われ、居場所を失う",
+  ]},
+];
+
+// ====================================================
+// Render
+// ====================================================
+function renderCard(type){
+  const card = document.createElement("div");
+  card.className = "card axis-" + type.primary;
+  card.dataset.code = type.code;
+  const painsHtml = type.pains.map((p, i) => `
+    <div class="pain-cell">
+      <div class="pain-num">${i+1}</div>
+      <div class="pain-text">${p}</div>
+    </div>
+  `).join("");
+  card.innerHTML = `
+    <div class="bg-gradient"></div>
+    <div class="orb1"></div>
+    <div class="orb2"></div>
+
+    <div class="header">
+      <div class="header-left">
+        <div class="tag">BIG 5 RESEARCH</div>
+        <div class="title-line">
+          <span class="code">${type.code}</span>
+          <span class="name">${type.name}</span>
+          <span class="subtitle">の <span class="accent">4 つの悩み</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pain-grid">${painsHtml}</div>
+
+    <div class="foot">
+      <div class="brand">paternia</div>
+      <div class="url">paternia.netlify.app</div>
+    </div>
+  `;
+  return card;
+}
+
+const renderRoot = document.getElementById("renderRoot");
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+
+function buildAll(){
+  renderRoot.innerHTML = "";
+  grid.innerHTML = "";
+  TYPES.forEach((t)=>{
+    const card = renderCard(t);
+    renderRoot.appendChild(card);
+
+    const mini = document.createElement("div");
+    mini.className = "mini";
+    mini.innerHTML = `
+      <div class="mini-prev"><div class="scaled" data-code="${t.code}"></div></div>
+      <div class="mini-meta">
+        <span class="code">${t.code}</span>
+        <span>${t.name}</span>
+      </div>
+    `;
+    mini.querySelector(".scaled").appendChild(card.cloneNode(true));
+    mini.addEventListener("click", ()=>downloadOne(t.code));
+    grid.appendChild(mini);
+  });
+  statusEl.textContent = `${TYPES.length}枚を描画完了。プレビュークリックで個別DL、上部ボタンでZIP一括DL。`;
+}
+
+// ====================================================
+// Download
+// ====================================================
+async function captureCard(code){
+  const el = renderRoot.querySelector(`.card[data-code="${code}"]`);
+  if (!el) return null;
+  return await html2canvas(el, {
+    width: 1600, height: 900, scale: 1,
+    backgroundColor: "#0a0a1a", useCORS: true, logging: false,
+  });
+}
+
+async function downloadOne(code){
+  const t = TYPES.find(x => x.code === code);
+  if (!t) return;
+  statusEl.textContent = `${code} (${t.name}) のカードを生成中…`;
+  const canvas = await captureCard(code);
+  if (!canvas){ statusEl.textContent = "生成に失敗しました"; return; }
+  canvas.toBlob((blob)=>{
+    saveAs(blob, `paternia-pains-${code}.png`);
+    statusEl.textContent = `${code} ダウンロード完了。`;
+  },"image/png");
+}
+
+async function downloadAll(){
+  const btn = document.getElementById("dlAllBtn");
+  btn.disabled = true;
+  const zip = new JSZip();
+  for (let i = 0; i < TYPES.length; i++) {
+    const t = TYPES[i];
+    statusEl.textContent = `ZIP生成中: ${i+1}/${TYPES.length} (${t.code} ${t.name})…`;
+    const canvas = await captureCard(t.code);
+    if (!canvas) continue;
+    const b64 = canvas.toDataURL("image/png").split(",")[1];
+    zip.file(`paternia-pains-${t.code}.png`, b64, { base64: true });
+  }
+  statusEl.textContent = "ZIP書き出し中…";
+  const blob = await zip.generateAsync({ type: "blob" });
+  saveAs(blob, "paternia-pain-infographics.zip");
+  btn.disabled = false;
+  statusEl.textContent = `全${TYPES.length}枚、ZIPダウンロード完了。`;
+}
+
+document.getElementById("dlAllBtn").addEventListener("click", downloadAll);
+document.getElementById("reloadBtn").addEventListener("click", buildAll);
+window.addEventListener("load", ()=>{
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(()=>setTimeout(buildAll, 150));
+  } else {
+    setTimeout(buildAll, 500);
+  }
+});
+</script>
+</body>
+</html>

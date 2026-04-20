@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia simple-posts (post 21-30)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#14141f;color:#eee;font-family:"M PLUS Rounded 1c",sans-serif;padding:24px;min-height:100vh}
+  header{max-width:1400px;margin:0 auto 24px;padding:20px;border:1px solid rgba(255,255,255,0.1);border-radius:16px;background:#1e1e2e}
+  header h1{font-family:"Fredoka",sans-serif;font-size:22px;color:#ffb4c4;margin-bottom:8px}
+  header p{font-size:14px;color:#aaa;line-height:1.7}
+  .controls{max-width:1400px;margin:0 auto 24px;display:flex;gap:8px;flex-wrap:wrap}
+  .controls button{background:#ffb4c4;color:#1a1a1a;border:none;padding:10px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+  .controls button:disabled{opacity:0.5;cursor:wait}
+  .controls .secondary{background:transparent;border:1px solid #ffb4c4;color:#ffb4c4}
+  .status{max-width:1400px;margin:0 auto 24px;padding:12px 20px;border-radius:8px;background:rgba(255,180,196,0.08);border:1px solid rgba(255,180,196,0.25);color:#ccc;font-size:13px;min-height:44px;display:flex;align-items:center}
+  .posts{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+  .post{border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;background:#1e1e2e}
+  .post-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+  .post-title{font-size:18px;font-weight:700;color:#eee}
+  .post-id{font-family:"Fredoka",sans-serif;color:#ffb4c4;font-size:14px}
+  .post-dl{background:#ffb4c4;color:#1a1a1a;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:700}
+  .slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .slide-thumb{aspect-ratio:9/16;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;border:1px solid rgba(255,255,255,0.08)}
+  .slide-thumb:hover{transform:scale(1.03);transition:transform 0.1s}
+  .slide-thumb .scaled{width:1080px;height:1920px;transform:scale(calc(140 / 1080));transform-origin:top left;position:absolute;top:0;left:0}
+  .caption-box{margin-top:14px;padding:14px 16px;background:#12121f;border:1px solid rgba(255,180,196,0.15);border-radius:10px;font-size:12px;color:#bbb;line-height:1.7;white-space:pre-wrap;font-family:inherit}
+
+  /* ============== SLIDE 1080 x 1920 ============== */
+  #renderRoot{position:fixed;left:-99999px;top:0}
+  .slide{
+    width:1080px;height:1920px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:140px 80px;color:#1a1a1a;
+    font-family:"M PLUS Rounded 1c",sans-serif;
+  }
+  .slide.bg-pink{background:#FEE5E5}
+  .slide.bg-yellow{background:#FFF7D1}
+  .slide.bg-blue{background:#DFF1FB}
+  .slide.bg-lav{background:#ECE5FB}
+  .slide.bg-cream{background:#FBF3E4}
+  .slide.bg-mint{background:#DFF3E4}
+  .slide.bg-peach{background:#FFE7D1}
+
+  .slide .paper-texture{
+    position:absolute;inset:0;pointer-events:none;opacity:0.5;
+    background-image:
+      radial-gradient(circle at 10% 15%,rgba(0,0,0,0.025) 0,transparent 1px),
+      radial-gradient(circle at 80% 70%,rgba(0,0,0,0.02) 0,transparent 1px),
+      radial-gradient(circle at 50% 90%,rgba(0,0,0,0.015) 0,transparent 1px);
+    background-size:60px 60px,80px 80px,100px 100px;
+  }
+  .slide .tape{position:absolute;width:220px;height:40px;background:rgba(255,255,255,0.65);box-shadow:0 2px 8px rgba(0,0,0,0.08);top:28px}
+  .slide .tape.left{left:40px;transform:rotate(-8deg)}
+  .slide .tape.right{right:40px;transform:rotate(7deg)}
+  .slide .brand{
+    position:absolute;top:52px;left:50%;transform:translateX(-50%);
+    font-family:"Fredoka",sans-serif;font-size:22px;letter-spacing:0.35em;
+    color:rgba(40,40,40,0.55);font-weight:600;
+  }
+  .slide .brand::before,.slide .brand::after{content:"";display:inline-block;width:40px;height:2px;background:rgba(40,40,40,0.3);margin:0 14px;vertical-align:middle}
+  .slide .page{position:absolute;top:120px;right:60px;font-family:"Fredoka",sans-serif;font-size:24px;color:rgba(40,40,40,0.4)}
+  .slide .watermark{position:absolute;bottom:52px;right:72px;font-family:"Fredoka",sans-serif;font-size:22px;color:rgba(40,40,40,0.55);letter-spacing:0.04em}
+  .slide .handle{position:absolute;bottom:52px;left:72px;font-family:"Fredoka",sans-serif;font-size:22px;color:rgba(40,40,40,0.45)}
+
+  .slide .huge-num{
+    font-family:"Fredoka",sans-serif;font-weight:700;
+    font-size:340px;line-height:1;color:#e85584;letter-spacing:0.02em;
+    position:relative;display:inline-block;
+  }
+  .slide .huge-num.size-lg{font-size:400px}
+  .slide .huge-num.size-md{font-size:280px}
+  .slide .huge-num.size-sm{font-size:220px}
+  .slide .huge-num .unit{font-size:0.32em;margin-left:14px;color:#555}
+  .slide .huge-num .underline{position:absolute;bottom:-18px;left:-8px;right:-8px;height:14px;background:#ffde7f;transform:skewX(-5deg);z-index:-1;border-radius:4px}
+
+  .slide .title{font-family:"Zen Maru Gothic","M PLUS Rounded 1c",sans-serif;font-size:78px;font-weight:900;line-height:1.5;text-align:center;color:#222;letter-spacing:0.03em}
+  .slide .title.size-md{font-size:64px}
+  .slide .title.size-sm{font-size:54px}
+  .slide .title .marker{background:linear-gradient(transparent 58%,#ffde7f 58%,#ffde7f 92%,transparent 92%);padding:0 10px}
+  .slide .title .marker-blue{background:linear-gradient(transparent 58%,#a8d8ff 58%,#a8d8ff 92%,transparent 92%);padding:0 10px}
+  .slide .title .marker-pink{background:linear-gradient(transparent 58%,#ffc0cb 58%,#ffc0cb 92%,transparent 92%);padding:0 10px}
+  .slide .title .accent{color:#e85584;font-family:"Fredoka",sans-serif}
+  .slide .title .danger{color:#d84a4a;font-family:"Fredoka",sans-serif}
+  .slide .title .good{color:#3d7c52}
+  .slide .title .gold{color:#d9a61f}
+
+  .slide .sub{font-size:38px;font-weight:500;text-align:center;color:#555;margin-top:30px;line-height:1.6;max-width:900px;letter-spacing:0.02em}
+  .slide .caption{position:absolute;bottom:140px;left:72px;right:72px;font-size:24px;color:#777;text-align:center;line-height:1.5;border-top:2px dashed rgba(40,40,40,0.18);padding-top:22px}
+
+  .slide .bullet-list{display:flex;flex-direction:column;gap:28px;margin-top:40px;max-width:820px}
+  .slide .bullet{display:flex;align-items:center;gap:22px;background:rgba(255,255,255,0.55);border-left:10px solid #e85584;padding:22px 28px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,0.04);font-family:"Zen Maru Gothic","M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:42px;color:#222}
+  .slide .bullet .pop{color:#e85584;font-family:"Fredoka",sans-serif;min-width:42px}
+  .slide .bullet.b-alt{border-left-color:#f5a623}
+  .slide .bullet.b-alt .pop{color:#f5a623}
+  .slide .bullet.b-blue{border-left-color:#4aa8d8}
+  .slide .bullet.b-blue .pop{color:#4aa8d8}
+  .slide .bullet.b-purple{border-left-color:#9d8fff}
+  .slide .bullet.b-purple .pop{color:#9d8fff}
+
+  .slide .ribbon{display:inline-block;padding:10px 22px;border-radius:8px;background:#ffb4c4;color:#fff;font-weight:900;font-size:28px;margin-bottom:36px;transform:rotate(-2deg);box-shadow:0 4px 14px rgba(0,0,0,0.08);letter-spacing:0.08em}
+  .slide .ribbon.r-yellow{background:#f5a623}
+  .slide .ribbon.r-blue{background:#4aa8d8}
+  .slide .ribbon.r-purple{background:#9d8fff}
+  .slide .ribbon.r-green{background:#3d7c52}
+
+  .slide .kira{position:absolute;font-size:56px;opacity:0.9}
+  .slide .kira.k1{top:240px;right:130px;color:#ffde7f}
+  .slide .kira.k2{bottom:300px;left:120px;color:#ffd6dc}
+  .slide .kira.k3{top:500px;left:100px;color:#a8d8ff}
+
+  .slide .cta-big{font-family:"Zen Maru Gothic","M PLUS Rounded 1c",sans-serif;font-weight:900;font-size:72px;text-align:center;line-height:1.4;color:#222}
+  .slide .cta-url{margin-top:32px;padding:20px 44px;background:#222;color:#fff;border-radius:999px;font-family:"Fredoka",sans-serif;font-size:36px;font-weight:600;letter-spacing:0.04em}
+  .slide .cta-sub{margin-top:20px;font-size:26px;color:#666}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>paternia / simple-posts (紹介 + 逆説シリーズ)</h1>
+  <p>
+    paternia サービス紹介 + 「実は欠点だと思ってたものが才能」の逆説シリーズ10本。<br>
+    手作り感重視・パステル・蛍光マーカー・超大数字のデザインで。
+  </p>
+</header>
+
+<div class="controls">
+  <button id="dlAllBtn">全10投稿 × 8スライド ZIPダウンロード</button>
+  <button class="secondary" id="reloadBtn">再描画</button>
+</div>
+
+<div class="status" id="status">準備中…</div>
+
+<div class="posts" id="posts"></div>
+<div id="renderRoot"></div>
+
+<script>
+// ===================================================================
+// POSTS : paternia紹介 + 逆説シリーズ 21-30
+// ===================================================================
+const POSTS = [
+  // ====== ABOUT: paternia サービス紹介 ======
+  {
+    id:"about", title:"paternia ってなに? (サービス紹介)", file:"post-about-paternia",
+    caption:`ついに登場、paternia(パターニア)。\nあなたの性格が、"模様"になる診断サイトです。\n\nBig5(ビッグファイブ)という心理学で一番信頼されてる性格理論をベースに、45問に答えるだけで、あなただけの抽象模様と、20タイプの中からあなたに近いタイプが分かります。\n\n・無料、メアド不要、3-5分\n・MBTIより再テスト一致率が高い(90%)\n・論文引用付きの20タイプ深掘り記事も用意してます\n\n↓ 診断はここから\npaternia.netlify.app\n\nこれから「実は欠点だと思ってたものが才能」な逆説シリーズを投稿していくので、気になったらフォローお願いします🔮\n\n#性格診断 #Big5 #ビッグファイブ #paternia #自己分析 #MBTIより正確`,
+    slides:[
+      // 01 HOOK
+      { bg:"pink", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">✨</span><span class="kira k2">★</span><span class="kira k3">♡</span>
+        <div class="ribbon">ついに登場</div>
+        <div class="huge-num size-md" style="color:#e85584;font-family:'Fredoka';font-size:220px;letter-spacing:0.02em">paternia<span class="underline"></span></div>
+        <div class="title" style="margin-top:80px">あなたの性格が、<br><span class="marker">"模様"</span>になる<br>診断サイト</div>
+      `},
+
+      // 02 性格が模様になる
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">ここが新しい</div>
+        <div class="title">45問に答えると、<br>あなただけの<br><span class="marker-blue">抽象模様</span>が生まれる</div>
+        <div class="sub">5軸のスコアから<br>ジェネラティブアートで<br>1人1人違う絵が作られます</div>
+      `},
+
+      // 03 MBTIより正確
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">科学的根拠</div>
+        <div class="title" style="font-size:64px">MBTIよりも<br><span class="marker">再テスト一致率</span>が<br><span class="accent">90%</span></div>
+        <div class="sub">Big5 は心理学論文の<br>8割以上が採用する<br>標準理論</div>
+        <div class="caption">McCrae & Costa et al.</div>
+      `},
+
+      // 04 20タイプ
+      { bg:"lav", html:`
+        <div class="ribbon r-purple">結果は20タイプ</div>
+        <div class="title" style="font-size:58px">花びらの詩・点描の巡礼<br>虹色の旅人・夢の建築家<br>...<span class="marker">全20タイプ</span></div>
+        <div class="sub">あなたに一番近いタイプが<br>1つ、決まる</div>
+      `},
+
+      // 05 何が分かる
+      { bg:"cream", html:`
+        <div class="ribbon r-yellow">分かること</div>
+        <div class="bullet-list">
+          <div class="bullet"><span class="pop">1</span>あなたのタイプ名</div>
+          <div class="bullet b-alt"><span class="pop" style="color:#f5a623">2</span>Big5スコア(5軸)</div>
+          <div class="bullet b-blue"><span class="pop">3</span>相性がいい / 悪いタイプ</div>
+        </div>
+      `},
+
+      // 06 気軽さ
+      { bg:"mint", html:`
+        <span class="kira k1">♡</span>
+        <div class="ribbon r-green">気軽さ</div>
+        <div class="title">
+          <span class="good">3〜5分</span>・<span class="good">無料</span><br>
+          <span class="marker">メアド登録なし</span><br>
+          登録一切なし
+        </div>
+        <div class="sub">思い立ったら<br>今すぐできる</div>
+      `},
+
+      // 07 CTA
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span><span class="kira k2">✨</span>
+        <div class="ribbon">無料 / 3-5分</div>
+        <div class="cta-big">
+          自分の<span class="accent">模様</span>、<br>
+          見てみる?
+        </div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+
+      // 08 フォロー + 次回予告
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">これから</div>
+        <div class="title" style="font-size:58px">
+          「実は欠点と思ってた<br>ものが才能」<br>
+          <span class="marker">逆説シリーズ</span>を投稿
+        </div>
+        <div class="sub" style="margin-top:40px">▶ フォローで見逃さない<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 21: HSPは"弱さ"じゃなくて"高性能センサー" ======
+  {
+    id:21, title:"繊細な人=高性能センサー", file:"post21-sensitive",
+    caption:`繊細で疲れやすい、それ"弱さ"じゃなくて"高性能センサー"だった。\n\nAron (1997) が発見したHSP（敏感な人）は、全人口の15-20%。\n脳が刺激を他の人より深く・丁寧に処理しているだけ、という研究結果。\n\n人混みで疲れるのは当たり前。\n代わりに、共感力、美的感覚、創造性でずば抜けてる。\n\n自分がHSPかも?と思ったら、45問の無料診断へ🔮\npaternia.netlify.app\n\n#HSP #繊細さん #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"pink", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">★</span><span class="kira k2">♡</span>
+        <div class="ribbon">BIG 5 の研究</div>
+        <div class="huge-num size-lg">15-20<span class="unit">%</span><span class="underline"></span></div>
+        <div class="title" style="margin-top:60px">全人口の5人に1人が<br><span class="marker">"繊細すぎる"</span>脳を持つ</div>
+        <div class="caption">Aron 1997 / HSPの研究</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">繊細さは<br><span class="accent">"弱さ"</span>じゃなくて<br><span class="marker">"脳の処理方式"</span></div>
+        <div class="sub">他の人の何倍も、深く・丁寧に<br>刺激を処理している</div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">繊細な人の脳</div>
+        <div class="bullet-list">
+          <div class="bullet b-blue"><span class="pop">✓</span>共感の領域が活発</div>
+          <div class="bullet b-blue"><span class="pop">✓</span>感情処理が深い</div>
+          <div class="bullet b-blue"><span class="pop">✓</span>危険察知が速い</div>
+        </div>
+        <div class="caption">Acevedo 2014 / fMRI研究</div>
+      `},
+      { bg:"mint", html:`
+        <span class="kira k1">♡</span>
+        <div class="ribbon r-green">だから</div>
+        <div class="title"><span class="good">人混みで疲れる</span>のは<br>当たり前なんです</div>
+        <div class="sub">高性能センサーは<br>電池を早く使う、それだけ</div>
+      `},
+      { bg:"cream", html:`
+        <div class="huge-num size-md" style="color:#d9a61f">才能</div>
+        <div class="title" style="margin-top:50px">繊細な人は、<br><span class="marker">共感 × 美的感覚 × 創造性</span><br>で抜きん出る</div>
+      `},
+      { bg:"lav", html:`
+        <span class="kira k1">★</span>
+        <div class="title">作家 ・ 療法士<br>デザイナー ・ 音楽家<br><span style="color:#9d8fff">繊細さが"武器"になる仕事</span></div>
+        <div class="sub">夏目漱石 樋口一葉 ヴァージニア・ウルフも<br>同じ気質でした</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分が<br><span class="accent">HSPかどうか</span><br>診断してみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">怒りっぽい人って、<br>実は<span class="marker-blue">"気配り過多"</span>の<br>裏返し?</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 22: 怒りっぽい=気配り過多の裏返し ======
+  {
+    id:22, title:"怒りっぽい=気配り過多の裏返し", file:"post22-anger",
+    caption:`怒りっぽい人、実は"気配り屋"が限界で爆発してるだけ。\n\n協調性が高い人ほど、普段は本音を飲み込みがち。\n溜まったストレスが、忘れた頃に「怒り」として噴き出す構造。\n\n「我慢できない性格」じゃなくて、「我慢しすぎる性格」が根っこ。\n小さなNOを増やすと、大きな怒りは減る。\n\n自分の協調性スコア、一度見てみる?🔮\npaternia.netlify.app\n\n#怒り #性格診断 #Big5 #感情コントロール #paternia`,
+    slides:[
+      { bg:"peach", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">💢</span>
+        <div class="ribbon">意外な研究</div>
+        <div class="title" style="margin-top:80px">怒りっぽい人って、<br>実は<br><span class="marker">"気配り過多"</span><br>の<span class="accent">裏返し</span></div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">協調性が<span class="good">高い</span>人ほど<br>本音を<span class="danger">飲み込む</span></div>
+        <div class="sub">嫌われたくない、場を乱したくない。<br>毎日、小さな我慢が積もっていく</div>
+      `},
+      { bg:"pink", html:`
+        <div class="ribbon">爆発の構造</div>
+        <div class="bullet-list">
+          <div class="bullet"><span class="pop">1</span>本音を言えない</div>
+          <div class="bullet b-alt"><span class="pop">2</span>ストレスが溜まる</div>
+          <div class="bullet"><span class="pop">3</span>忘れた頃に爆発</div>
+        </div>
+        <div class="caption">協調性 高 × ストレス耐性 低 の典型パターン</div>
+      `},
+      { bg:"blue", html:`
+        <span class="kira k1">💡</span>
+        <div class="title">「我慢できない」じゃなくて<br><span class="marker-blue">「我慢しすぎる」</span><br>が根っこ</div>
+        <div class="sub">本人が一番、自分の怒りに<br>困惑している</div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">解決策</div>
+        <div class="title"><span class="good">小さなNO</span>を<br>日常に増やす</div>
+        <div class="sub">大きな怒りを防ぐために、<br>毎日、小さく断る練習</div>
+      `},
+      { bg:"lav", html:`
+        <span class="kira k1">★</span>
+        <div class="title">「嫌だ」と言える人は、<br>実は<span style="color:#9d8fff">一番優しい</span>人。<br>怒らずに、伝えられるから</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">協調性スコア</span>、<br>見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">人見知りの正体、<br>実は<span class="marker">"深く考える脳"</span>でした</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 23: 人見知り=深く処理する脳 ======
+  {
+    id:23, title:"人見知り=深く処理する脳", file:"post23-shy",
+    caption:`人見知りは"内気"じゃなくて"深く処理する脳"。\n\n内向型は、情報を表層で流さず、1つ1つ味わう。\nだから、初対面で疲れる。代わりに1対1では誰より深い。\n\nSusan Cain『Quiet』によれば、革新的発想の半分以上は内向型から。\nダーウィン、ニュートン、ビル・ゲイツも同じ気質。\n\n自分の内向度、一度数字で見てみる?🔮\npaternia.netlify.app\n\n#人見知り #内向型 #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"blue", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">★</span>
+        <div class="ribbon r-blue">逆説シリーズ</div>
+        <div class="title" style="margin-top:80px">人見知りは<br><span class="marker-blue">"内気"</span>じゃない<br><span style="color:#4aa8d8;font-family:Fredoka">"深く処理する脳"</span></div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">内向型の脳は<br>情報を<span class="marker">表層で流さない</span></div>
+        <div class="sub">1つ1つ、じっくり味わう。<br>だから初対面で疲れる</div>
+      `},
+      { bg:"lav", html:`
+        <div class="ribbon r-purple">内向型の強み</div>
+        <div class="bullet-list">
+          <div class="bullet b-purple"><span class="pop">✓</span>1対1で深い話ができる</div>
+          <div class="bullet b-purple"><span class="pop">✓</span>集中力が持続する</div>
+          <div class="bullet b-purple"><span class="pop">✓</span>観察眼が鋭い</div>
+        </div>
+      `},
+      { bg:"mint", html:`
+        <span class="kira k1">💡</span>
+        <div class="ribbon r-green">意外な事実</div>
+        <div class="title"><span class="marker">革新的発想の半分以上</span>は<br>内向型から生まれた</div>
+        <div class="caption">Susan Cain『Quiet』より</div>
+      `},
+      { bg:"cream", html:`
+        <div class="huge-num size-md" style="color:#d9a61f">歴史</div>
+        <div class="title" style="margin-top:40px">ダーウィン ・ ニュートン<br>ビル・ゲイツ ・ スピルバーグ<br><span class="marker">みんな内向型</span></div>
+      `},
+      { bg:"blue", html:`
+        <span class="kira k1">♡</span>
+        <div class="title" style="font-size:64px">「人と話すと疲れる」は<br><span style="color:#4aa8d8">才能の副作用</span>。<br>弱さじゃない</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">内向度</span>、<br>数字で見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">夜型人間は、実は<br><span class="marker-blue">IQが高い</span>って<br>研究知ってる?</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 24: 夜型人間はIQが高い ======
+  {
+    id:24, title:"夜型人間はIQが高い", file:"post24-nightowl",
+    caption:`夜型人間はIQが高いという研究、ご存知?\n\nKanazawa & Perina (2009) の研究で、夜型の人は\n平均IQ・開放性・新規性追求で朝型より高い結果が出ている。\n\n理由は進化的背景。夜活動する祖先は、新しい環境を選ぶ開拓者だった。\n現代でも「夜が集中できる」は性格の特徴。\n\nただし夜型は健康リスクも高い。朝型化しなくていい、でも整える技術は必要。\n\n自分が夜型かどうか、性格で見てみる?🔮\npaternia.netlify.app\n\n#夜型 #IQ #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"lav", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">🌙</span><span class="kira k2">★</span>
+        <div class="ribbon r-purple">意外な研究</div>
+        <div class="title" style="margin-top:80px">夜型人間は、<br>実は<br><span class="marker">IQが高い</span></div>
+        <div class="caption">Kanazawa & Perina 2009</div>
+      `},
+      { bg:"cream", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">夜型の人は<br><span class="accent">IQ</span> ・ <span class="accent">開放性</span><br>両方で高い傾向</div>
+        <div class="sub">論文で繰り返し確認<br>されている</div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">進化的背景</div>
+        <div class="title" style="font-size:62px">夜活動する祖先は<br><span class="marker-blue">新しい環境を選ぶ</span><br>開拓者だった</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">夜型の特徴</div>
+        <div class="bullet-list">
+          <div class="bullet b-alt"><span class="pop">✓</span>新奇性の追求</div>
+          <div class="bullet b-alt"><span class="pop">✓</span>拡散的思考が強い</div>
+          <div class="bullet b-alt"><span class="pop">✓</span>ひとり時間の集中</div>
+        </div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">⚠</span>
+        <div class="ribbon">注意</div>
+        <div class="title">ただし、健康リスクは<br><span class="danger">朝型より高い</span></div>
+        <div class="sub">心疾患 ・ うつのリスクが上昇<br>(Jones 2019)</div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">結論</div>
+        <div class="title" style="font-size:64px">朝型化<span style="color:#888">しなくていい</span><br><span class="good">でも整える</span>技術は<br>必要</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分が<br><span class="accent">夜型タイプ</span>か<br>性格で見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">「気にしい」は実は<br><span class="marker">才能</span>だったという話</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 25: 「気にしい」は才能 ======
+  {
+    id:25, title:"気にしいは才能", file:"post25-worrier",
+    caption:`「気にしい」は、才能です。\n\n神経症傾向(感情の敏感さ)が高い人ほど、リスクを事前に察知できる。\nそれは生存に有利な進化の形質で、人類を繁栄させた脳の働き。\n\n問題は、現代社会で"不安"がムダ打ちになること。\n不安を"早期警戒"として使う方向に切り替えれば、精度という武器になる。\n\nジェーン・オースティン、伊能忠敬、グレン・グールドも同じ気質。\n自分の不安度、数字で見てみる?🔮\npaternia.netlify.app\n\n#心配性 #不安 #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"cream", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">⚡</span>
+        <div class="ribbon r-yellow">逆説シリーズ</div>
+        <div class="title" style="margin-top:80px">「気にしい」は<br><span class="marker">才能</span><br>だったという話</div>
+      `},
+      { bg:"pink", html:`
+        <div class="ribbon">事実 01</div>
+        <div class="title">不安は<br><span class="marker">"早期警戒システム"</span><br>として進化した</div>
+        <div class="sub">リスクを察知できる人が<br>生き残ってきた</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">神経症傾向 高の強み</div>
+        <div class="bullet-list">
+          <div class="bullet b-alt"><span class="pop">✓</span>リスクを先読み</div>
+          <div class="bullet b-alt"><span class="pop">✓</span>細部に気づく</div>
+          <div class="bullet b-alt"><span class="pop">✓</span>完成度を上げる</div>
+        </div>
+      `},
+      { bg:"blue", html:`
+        <span class="kira k1">💡</span>
+        <div class="title" style="font-size:64px">不安を<br><span class="marker-blue">"精度"</span>に<br>変えられる</div>
+        <div class="sub">完璧主義の歴史的偉人は<br>ほぼ全員、気にしいタイプ</div>
+      `},
+      { bg:"lav", html:`
+        <div class="huge-num size-sm" style="color:#9d8fff">歴史</div>
+        <div class="title" style="margin-top:40px">ジェーン・オースティン<br>伊能忠敬 ・ グレン・グールド<br><span style="color:#9d8fff">みんな気にしいタイプ</span></div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">問題は</div>
+        <div class="title">現代では<span class="danger">不安がムダ打ち</span><br>になること</div>
+        <div class="sub" style="margin-top:20px">早期警戒 → 精度という<br>方向に切り替える技術が要る</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">不安度</span>、<br>数字で見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">孤独を感じやすい<br>性格の<span class="marker">正体</span>とは?</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 26: 孤独を感じやすい性格 ======
+  {
+    id:26, title:"孤独を感じやすい性格", file:"post26-lonely",
+    caption:`孤独を感じやすい性格には、特徴があります。\n\n神経症傾向(感情の敏感さ)× 内向性 の組み合わせが一番感じやすい。\nCacioppo 2006の研究で、客観的なつながりの数より、\n"主観的な孤独感"が寿命を縮めることが確認されている。\n\n逆に、この感覚は「繋がりへの深い願望」の裏返し。\n浅く広い関係より、深く少ない関係で救われるタイプ。\n\n自分の性格、一度見てみる?🔮\npaternia.netlify.app\n\n#孤独 #性格診断 #Big5 #内向型 #paternia`,
+    slides:[
+      { bg:"lav", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">☾</span>
+        <div class="ribbon r-purple">研究シリーズ</div>
+        <div class="title" style="margin-top:80px">孤独を感じやすい<br>性格の<br><span class="marker">正体</span></div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">事実 01</div>
+        <div class="title"><span class="accent">感情の敏感さ</span> × <br><span class="accent">内向性</span><br>の組み合わせ</div>
+        <div class="sub">この2つが重なると、<br>孤独感を一番感じやすい</div>
+      `},
+      { bg:"cream", html:`
+        <div class="ribbon r-yellow">重要な研究</div>
+        <div class="title" style="font-size:62px">客観的なつながりより<br><span class="marker">主観的な孤独感</span>が<br>寿命を縮める</div>
+        <div class="caption">Cacioppo 2006</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">💭</span>
+        <div class="title">SNSでつながっていても<br><span class="danger">孤独は消えない</span></div>
+        <div class="sub">それは、あなたの性格が<br>"深さ"を求めているから</div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">逆説</div>
+        <div class="title">孤独感は、<br><span class="marker">"深い繋がりへの願望"</span><br>の裏返し</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">救いの形</div>
+        <div class="bullet-list">
+          <div class="bullet b-alt"><span class="pop">✓</span>浅く広い関係 × </div>
+          <div class="bullet b-alt"><span class="pop">✓</span>深く少ない関係 ○</div>
+          <div class="bullet b-alt"><span class="pop">✓</span>1人と月1で深く話す</div>
+        </div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分が<br><span class="accent">孤独感を持つ</span><br>タイプか知る</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">「変わり者」と言われる人の<br><span class="marker-blue">共通点</span></div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 27: 変わり者=開放性の高さ ======
+  {
+    id:27, title:"変わり者と言われる人の共通点", file:"post27-weird",
+    caption:`「変わってるね」と言われ続けた人、それ才能です。\n\nBig5で言う"開放性"が高い人は、新しい発想・抽象的思考・芸術的感性が豊か。\n社会の平均から外れるので、「変人」扱いされる。でもこの気質こそが、世界を変えてきた。\n\nダ・ヴィンチ、アインシュタイン、ピカソ、ゴッホ。みんな"変わり者"と呼ばれた人々。\n\nその感性、今どのレベル?自分の開放性スコアを見てみる?🔮\npaternia.netlify.app\n\n#変わり者 #開放性 #性格診断 #Big5 #クリエイティブ #paternia`,
+    slides:[
+      { bg:"yellow", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">★</span><span class="kira k3">✨</span>
+        <div class="ribbon r-yellow">逆説シリーズ</div>
+        <div class="title" style="margin-top:80px">「変わってるね」<br>と言われた人、<br><span class="marker">それ才能</span>です</div>
+      `},
+      { bg:"lav", html:`
+        <div class="ribbon r-purple">事実 01</div>
+        <div class="title">Big5 の<br><span class="accent">開放性</span>が高い<br>人の特徴</div>
+        <div class="sub">抽象思考 ・ 芸術感性<br>新しいアイデアへの寛容さ</div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">開放性 高の傾向</div>
+        <div class="bullet-list">
+          <div class="bullet b-blue"><span class="pop">✓</span>抽象的な話が好き</div>
+          <div class="bullet b-blue"><span class="pop">✓</span>不思議なアートを好む</div>
+          <div class="bullet b-blue"><span class="pop">✓</span>平均から外れやすい</div>
+        </div>
+      `},
+      { bg:"cream", html:`
+        <div class="huge-num size-md" style="color:#d9a61f">歴史</div>
+        <div class="title" style="margin-top:40px">ダ・ヴィンチ ・ アインシュタイン<br>ピカソ ・ ゴッホ<br><span class="marker">全員"変人"</span>扱いだった</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">💡</span>
+        <div class="title">社会の<span style="color:#888">平均</span>から<br>外れるから、<br><span class="marker">世界を変えられる</span></div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">ポイント</div>
+        <div class="title" style="font-size:64px">「普通じゃない」は<br><span class="good">診断結果</span>で<br>裏付けられる</div>
+        <div class="sub">数字で見ると、罪悪感が消える</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">開放性スコア</span>、<br>見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">「気分屋」は実は<br><span class="marker">クリエイティブ</span>の才能</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 28: 気分屋=クリエイティブの才能 ======
+  {
+    id:28, title:"気分屋はクリエイティブ", file:"post28-moody",
+    caption:`「気分屋」って、欠点じゃない。\n\nPerkins 2015 の研究で、感情の波が大きい人ほど、創造的アウトプットが多い。\nムンク、ゴッホ、ヴァージニア・ウルフ、シルヴィア・プラス。\n名作を生んだ人の多くが"気分屋"だった。\n\n感情の振れ幅 = 世界を多層的に感じ取る解像度。\n「安定しない」ことが、深い表現を可能にする。\n\n自分の感情の波の強さ、見てみる?🔮\npaternia.netlify.app\n\n#気分屋 #クリエイティブ #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"pink", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">🎨</span>
+        <div class="ribbon">逆説シリーズ</div>
+        <div class="title" style="margin-top:80px">「気分屋」って、<br><span class="marker">実は</span><br><span class="accent">クリエイティブ</span>の才能</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">感情の波が<span class="marker">大きい</span>人ほど<br>創造的アウトプットが<span class="accent">多い</span></div>
+        <div class="caption">Perkins 2015</div>
+      `},
+      { bg:"lav", html:`
+        <div class="huge-num size-sm" style="color:#9d8fff">歴史</div>
+        <div class="title" style="margin-top:40px">ムンク ・ ゴッホ<br>ヴァージニア・ウルフ<br><span class="marker">みんな気分屋タイプ</span></div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">意味</div>
+        <div class="title" style="font-size:62px">感情の振れ幅 = <br><span class="marker-blue">世界を多層的に</span><br>感じ取る<span class="accent">解像度</span></div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">逆転</div>
+        <div class="title">「安定しない」<br>ことが、<br><span class="good">深い表現</span>を可能にする</div>
+      `},
+      { bg:"cream", html:`
+        <span class="kira k1">♡</span>
+        <div class="title" style="font-size:64px">気分の波に<br><span class="marker">振り回される</span>人は<br><span class="gold">アートに向いてる</span></div>
+        <div class="sub">作家・音楽家・俳優<br>表現の世界で輝ける</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">感情の波の強さ</span>、<br>見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">「人に好かれる」と<br><span class="marker-pink">「愛される」</span>は<br>別の性格</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 29: 好かれる ≠ 愛される ======
+  {
+    id:29, title:"人に好かれる ≠ 愛される", file:"post29-liked-loved",
+    caption:`「人に好かれる」と「愛される」は、全く別物。\n\n協調性が高い人は、表層的に好かれやすい。でも深い愛着の予測因子は、誠実性。\n「優しい」と「約束を守る」は、脳が別の場所で評価している。\n\n八方美人で疲れるなら、好かれるより"信頼を積み上げる"方向に舵を切るほうが、\n長期的に愛される。\n\n自分の性格バランス、見てみる?🔮\npaternia.netlify.app\n\n#人間関係 #恋愛 #性格診断 #Big5 #paternia`,
+    slides:[
+      { bg:"peach", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">♡</span><span class="kira k2">♡</span>
+        <div class="ribbon">逆説シリーズ</div>
+        <div class="title" style="margin-top:80px">「人に好かれる」と<br><span class="marker-pink">「愛される」</span>は<br><span class="danger">別物</span></div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">好かれる人は<br><span class="accent">協調性</span>高い人</div>
+        <div class="sub">でも、それは"表層的"な評価。<br>深さはまだ測れていない</div>
+      `},
+      { bg:"blue", html:`
+        <div class="ribbon r-blue">意外な事実</div>
+        <div class="title">深い愛着の<br>一番の予測因子は<br><span class="marker-blue">"誠実性"</span></div>
+        <div class="caption">Luo 2009 / 縦断研究</div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">脳の話</div>
+        <div class="title" style="font-size:62px">「優しい」と<br>「約束を守る」は<br><span class="marker">脳が別の場所</span>で評価</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">⚠</span>
+        <div class="ribbon">注意</div>
+        <div class="title">八方美人で<span class="danger">疲れる</span>なら<br><span class="marker">方向転換</span>の合図</div>
+      `},
+      { bg:"cream", html:`
+        <div class="ribbon r-yellow">戦略</div>
+        <div class="title" style="font-size:58px">「好かれる」より<br><span class="good">"信頼を積む"</span>方向へ<br>舵を切る</div>
+        <div class="sub">長期的に、愛される関係になる</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">性格バランス</span>、<br>見てみる?</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">次回</div>
+        <div class="title">「普通の人」は<br><span class="marker">存在しない</span><br>という研究</div>
+        <div class="sub" style="margin-top:40px">▶ フォローで続き<br>@paternia</div>
+      `},
+    ],
+  },
+
+  // ====== 30: 「普通」は存在しない ======
+  {
+    id:30, title:"普通の人は存在しない", file:"post30-no-normal",
+    caption:`「普通の人」は、統計的には存在しません。\n\nBig5の5軸はそれぞれ連続値。5軸すべてが"平均値"の人は、実は人口の1%未満。\n同じ性格プロファイルを持つ人と出会う確率は、実質ゼロに近い。\n\n「みんなと同じじゃないといけない」は、統計的な誤解。\nあなたの性格は、世界でただ一つの組み合わせ。それを知ることが、楽になる第一歩。\n\n自分の唯一性、診断で見てみる?🔮\npaternia.netlify.app\n\n#性格診断 #Big5 #自己理解 #個性 #paternia`,
+    slides:[
+      { bg:"lav", html:`
+        <div class="tape left"></div><div class="tape right"></div>
+        <span class="kira k1">★</span>
+        <div class="ribbon r-purple">最終回</div>
+        <div class="title" style="margin-top:80px">「普通の人」は、<br>統計的に<br><span class="marker">存在しない</span></div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">事実 01</div>
+        <div class="title">Big5 は<br>5つの<span class="marker">連続値</span><br>の組み合わせ</div>
+        <div class="sub">0〜100 × 5軸 = 10億通り以上</div>
+      `},
+      { bg:"pink", html:`
+        <div class="huge-num size-sm" style="color:#e85584">1%</div>
+        <div class="title" style="margin-top:50px">5軸すべてが<br><span class="marker">"平均値"</span>の人は<br>人口の<span class="accent">1%未満</span></div>
+      `},
+      { bg:"blue", html:`
+        <span class="kira k1">💭</span>
+        <div class="title" style="font-size:64px">同じ性格プロファイルの人に<br>出会う確率は<br><span class="marker-blue">実質ゼロ</span></div>
+      `},
+      { bg:"mint", html:`
+        <div class="ribbon r-green">意味</div>
+        <div class="title"><span class="danger">「普通じゃない」</span><br>という悩みは<br><span class="good">統計的な誤解</span></div>
+      `},
+      { bg:"cream", html:`
+        <span class="kira k1">✨</span>
+        <div class="title" style="font-size:62px">あなたの性格は、<br>世界で<span class="marker">ただ一つ</span>の<br>組み合わせ</div>
+        <div class="sub">知ることが、楽になる第一歩</div>
+      `},
+      { bg:"pink", html:`
+        <span class="kira k1">🔮</span>
+        <div class="ribbon">無料 / 3分</div>
+        <div class="cta-big">自分の<br><span class="accent">唯一性</span>を<br>診断で見る</div>
+        <div class="cta-url">paternia.netlify.app</div>
+        <div class="cta-sub">Big5の45問、メアド不要</div>
+      `},
+      { bg:"yellow", html:`
+        <div class="ribbon r-yellow">最終回まで<br>見てくれてありがとう</div>
+        <div class="title" style="margin-top:40px">次シリーズも<br><span class="marker">フォロー</span>で続き</div>
+        <div class="sub" style="margin-top:40px">▶ @paternia</div>
+      `},
+    ],
+  },
+];
+
+// ===================================================================
+// Rendering
+// ===================================================================
+function renderSlide(postId, slideIdx, slide){
+  const el = document.createElement("div");
+  el.className = "slide bg-" + slide.bg;
+  el.dataset.slideId = `post-${postId}-${slideIdx}`;
+  const totalSlides = POSTS.find(p=>p.id===postId).slides.length;
+  el.innerHTML = `
+    <div class="paper-texture"></div>
+    <div class="brand">BIG 5 RESEARCH</div>
+    <div class="page">${String(slideIdx+1).padStart(2,"0")} / ${String(totalSlides).padStart(2,"0")}</div>
+    ${slide.html}
+    <div class="handle">@paternia</div>
+    <div class="watermark">paternia.netlify.app</div>
+  `;
+  return el;
+}
+
+const renderRoot = document.getElementById("renderRoot");
+const postsContainer = document.getElementById("posts");
+const statusEl = document.getElementById("status");
+
+function buildAll(){
+  renderRoot.innerHTML = "";
+  postsContainer.innerHTML = "";
+  POSTS.forEach((post)=>{
+    // Render slides to renderRoot
+    post.slides.forEach((s, idx)=>{
+      const slideEl = renderSlide(post.id, idx, s);
+      renderRoot.appendChild(slideEl);
+    });
+
+    // Build post card UI
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+    postDiv.innerHTML = `
+      <div class="post-head">
+        <div>
+          <span class="post-id">POST ${post.id}</span>
+          <div class="post-title">${post.title}</div>
+        </div>
+        <button class="post-dl" data-post-id="${post.id}">8枚ZIP DL</button>
+      </div>
+      <div class="slides-grid" data-post-id="${post.id}"></div>
+      <div class="caption-box">${post.caption}</div>
+    `;
+    const grid = postDiv.querySelector(".slides-grid");
+    post.slides.forEach((s, idx)=>{
+      const thumb = document.createElement("div");
+      thumb.className = "slide-thumb";
+      thumb.innerHTML = `<div class="scaled"></div>`;
+      const clone = renderSlide(post.id, idx, s);
+      thumb.querySelector(".scaled").appendChild(clone);
+      thumb.addEventListener("click", ()=>downloadSlide(post.id, idx));
+      grid.appendChild(thumb);
+    });
+    postDiv.querySelector(".post-dl").addEventListener("click",()=>downloadPost(post.id));
+    postsContainer.appendChild(postDiv);
+  });
+  const totalSlides = POSTS.reduce((acc,p)=>acc+p.slides.length,0);
+  statusEl.textContent = `${POSTS.length}投稿 × 合計${totalSlides}スライド 描画完了。各投稿のZIP or 全体ZIPでダウンロード。`;
+}
+
+async function captureSlide(postId, slideIdx){
+  const el = renderRoot.querySelector(`.slide[data-slide-id="post-${postId}-${slideIdx}"]`);
+  if (!el) return null;
+  return await html2canvas(el,{width:1080,height:1920,scale:1,backgroundColor:null,useCORS:true,logging:false});
+}
+
+async function downloadSlide(postId, slideIdx){
+  statusEl.textContent = `Post ${postId} / ${slideIdx+1}枚目 生成中…`;
+  const c = await captureSlide(postId, slideIdx);
+  if (!c) { statusEl.textContent = "失敗"; return; }
+  c.toBlob((b)=>{
+    const post = POSTS.find(p=>p.id===postId);
+    saveAs(b, `paternia-${post.file}-${String(slideIdx+1).padStart(2,"0")}.png`);
+    statusEl.textContent = `Post ${postId} / ${slideIdx+1}枚目 DL完了`;
+  },"image/png");
+}
+
+async function downloadPost(postId){
+  const post = POSTS.find(p=>p.id===postId);
+  if (!post) return;
+  const zip = new JSZip();
+  for (let i=0; i<post.slides.length; i++){
+    statusEl.textContent = `Post ${postId} ZIP生成 ${i+1}/${post.slides.length}…`;
+    const c = await captureSlide(postId, i);
+    if (!c) continue;
+    const b64 = c.toDataURL("image/png").split(",")[1];
+    zip.file(`${post.file}-${String(i+1).padStart(2,"0")}.png`, b64, {base64:true});
+  }
+  // caption.txt
+  zip.file(`${post.file}-caption.txt`, post.caption);
+  const b = await zip.generateAsync({type:"blob"});
+  saveAs(b, `paternia-${post.file}.zip`);
+  statusEl.textContent = `Post ${postId} ZIP DL完了`;
+}
+
+async function downloadAll(){
+  const btn = document.getElementById("dlAllBtn");
+  btn.disabled = true;
+  const zip = new JSZip();
+  const totalSlides = POSTS.reduce((acc,p)=>acc+p.slides.length,0);
+  let idx = 0;
+  for (const post of POSTS){
+    for (let i=0; i<post.slides.length; i++){
+      idx++;
+      statusEl.textContent = `全体ZIP生成 ${idx}/${totalSlides} (Post ${post.id})…`;
+      const c = await captureSlide(post.id, i);
+      if (!c) continue;
+      const b64 = c.toDataURL("image/png").split(",")[1];
+      zip.file(`${post.file}/${post.file}-${String(i+1).padStart(2,"0")}.png`, b64, {base64:true});
+    }
+    zip.file(`${post.file}/${post.file}-caption.txt`, post.caption);
+  }
+  statusEl.textContent = "ZIP書き出し中…";
+  const b = await zip.generateAsync({type:"blob"});
+  saveAs(b, "paternia-simple-posts-all.zip");
+  btn.disabled = false;
+  statusEl.textContent = `全${totalSlides}スライド DL完了`;
+}
+
+document.getElementById("dlAllBtn").addEventListener("click", downloadAll);
+document.getElementById("reloadBtn").addEventListener("click", buildAll);
+window.addEventListener("load",()=>{
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(()=>setTimeout(buildAll,250));
+  }else{setTimeout(buildAll,500);}
+});
+</script>
+</body>
+</html>
