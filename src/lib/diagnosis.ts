@@ -23,12 +23,23 @@ export function calculateScores(answers: number[]): Scores {
   const avg = (arr: number[]) =>
     arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0.5;
 
+  // Deterministic small noise (±0.02) based on answer pattern.
+  // 全中立回答など、全軸が同値のときにタイブレークで OC に固定されるのを防ぐ。
+  // 同じ回答なら同じ結果になる再現性を保つため、乱数ではなく answers 由来の値を使う。
+  const seed = answers.reduce((acc, v, i) => acc + v * (i + 1) * 31, 0);
+  const noise = (i: number) => {
+    const x = Math.sin(seed * 0.001 + i * 12.9898) * 43758.5453;
+    return (x - Math.floor(x)) * 0.04 - 0.02; // ±0.02
+  };
+
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
   return {
-    O: avg(sums.O),
-    C: avg(sums.C),
-    E: avg(sums.E),
-    A: avg(sums.A),
-    N: avg(sums.N),
+    O: clamp(avg(sums.O) + noise(0)),
+    C: clamp(avg(sums.C) + noise(1)),
+    E: clamp(avg(sums.E) + noise(2)),
+    A: clamp(avg(sums.A) + noise(3)),
+    N: clamp(avg(sums.N) + noise(4)),
   };
 }
 
