@@ -1,4 +1,4 @@
-import type { Axis } from "@/data/questions";
+import type { Axis, Question } from "@/data/questions";
 import { QUESTIONS } from "@/data/questions";
 import { TYPE_PROFILES, type TypeProfile } from "@/data/type-profiles";
 
@@ -11,11 +11,16 @@ export interface Scores {
 }
 
 // answers: 0-4 for each question (5-point scale)
-export function calculateScores(answers: number[]): Scores {
+// questions: 使う問題配列 (45問 or 10問版)。省略すると45問版(QUESTIONS)
+export function calculateScores(
+  answers: number[],
+  questions: Question[] = QUESTIONS
+): Scores {
   const sums: Record<Axis, number[]> = { O: [], C: [], E: [], A: [], N: [] };
 
   answers.forEach((val, i) => {
-    const q = QUESTIONS[i];
+    const q = questions[i];
+    if (!q) return;
     const normalized = q.reverse ? 4 - val : val;
     sums[q.axis].push(normalized / 4); // normalize to 0-1
   });

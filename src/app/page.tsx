@@ -148,40 +148,62 @@ export default function Home() {
         <p className="animate-fade-up stagger-1 text-[13px] leading-relaxed max-w-[260px]" style={{ color: "#b4b4cc" }}>
           心理学のビッグファイブをもとに
           <br />
-          45問の回答からあなただけの模様が生まれる
+          あなただけの模様が生まれる
         </p>
 
         <div className="animate-fade-up stagger-2 flex gap-4 text-[12px]" style={{ color: "#a0a0c0" }}>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            45問
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            約5分
+            無料
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             登録不要
           </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            最短1分
+          </span>
         </div>
 
+        {/* Primary CTA: Quick (10問・約1分) — defaultで目立たせる */}
         <button
-          onClick={() => router.push("/quiz")}
+          onClick={() => router.push("/quick")}
           className="animate-fade-up stagger-3 mt-2 relative group"
         >
-          <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl group-hover:bg-accent/30 transition-all" />
+          <div className="absolute inset-0 bg-accent/25 rounded-2xl blur-xl group-hover:bg-accent/35 transition-all" />
           <div
-            className="relative px-12 py-3.5 bg-accent/10 border border-accent/30 rounded-2xl
-                        text-accent font-medium tracking-wider text-[15px]
-                        hover:bg-accent/20 hover:border-accent/50
+            className="relative px-10 py-3.5 bg-accent/15 border border-accent/50 rounded-2xl
+                        text-accent font-semibold tracking-wider text-[15px]
+                        hover:bg-accent/25 hover:border-accent/70
                         active:scale-[0.97]
                         transition-all duration-200"
             style={{ fontFamily: "var(--font-kiwi-maru)" }}
           >
-            診断をはじめる
+            サクッと診断する
+            <span className="ml-2 text-[11px] text-accent/70 font-normal tracking-wide">
+              約1分 / 10問
+            </span>
           </div>
         </button>
+        <p className="animate-fade-up stagger-3 text-[11px] text-text-muted/80 max-w-[280px] text-center leading-relaxed -mt-1">
+          短時間で気軽に。傾向が分かります
+        </p>
+
+        {/* Secondary CTA: Full (45問・約4分) */}
+        <button
+          onClick={() => router.push("/quiz")}
+          className="animate-fade-up stagger-4 text-[13px] text-text-muted hover:text-accent transition-colors mt-2"
+          style={{ fontFamily: "var(--font-kiwi-maru)" }}
+        >
+          <span className="underline underline-offset-4 decoration-text-muted/40">じっくり診断する</span>
+          <span className="ml-2 text-[11px] text-text-muted/60">
+            約4分 / 45問
+          </span>
+        </button>
+        <p className="animate-fade-up stagger-4 text-[10px] text-text-muted/50 max-w-[280px] text-center leading-relaxed -mt-1">
+          学術ベースの Big Five 45 項目 · より正確
+        </p>
 
         {lastResult && (
           <button

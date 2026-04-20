@@ -58,3 +58,33 @@ export const trackResultView = (typeCode: string) =>
 
 export const trackNoteClick = (typeCode: string, source: "result" | "gallery" | "gallery_own") =>
   event("note_click", { type_code: typeCode, source });
+
+// ============================================================
+// 診断モード別イベント (quick=10問 / full=45問)
+// 既存の quiz_start / quiz_complete は後方互換で残したまま、より細かく追跡する
+// ============================================================
+
+export type DiagnosisMode = "quick" | "full";
+
+export const trackDiagnosisStarted = (mode: DiagnosisMode) =>
+  event("diagnosis_started", { mode });
+
+export const trackDiagnosisCompleted = (mode: DiagnosisMode, typeCode: string) =>
+  event("diagnosis_completed", { mode, result_type: typeCode });
+
+/**
+ * 離脱ポイント特定用: 各質問への回答時点で発火
+ * @param mode  'quick' or 'full'
+ * @param questionNumber 1-indexed
+ * @param questionTotal  10 or 45
+ */
+export const trackQuestionAnswered = (
+  mode: DiagnosisMode,
+  questionNumber: number,
+  questionTotal: number
+) =>
+  event("question_answered", {
+    mode,
+    question_number: questionNumber,
+    question_total: questionTotal,
+  });

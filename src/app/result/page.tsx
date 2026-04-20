@@ -34,6 +34,7 @@ function ResultContent() {
 
   const code = searchParams.get("code") || getTypeCode(scores);
   const profile = getTypeProfile(scores);
+  const isQuick = searchParams.get("mode") === "quick";
 
   const axes: Axis[] = ["O", "C", "E", "A", "N"];
   const [copied, setCopied] = useState(false);
@@ -117,6 +118,19 @@ function ResultContent() {
           GALLERY →
         </Link>
       </div>
+
+      {/* Quick→Full 誘導 (QUICK版で診断した人にだけ表示) */}
+      {isQuick && (
+        <div className="flex justify-center mb-5 animate-fade-up">
+          <Link
+            href="/quiz"
+            className="text-[11px] text-text-muted hover:text-accent transition-colors px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:border-accent/40"
+            style={{ fontFamily: "var(--font-kiwi-maru)" }}
+          >
+            QUICK版の結果です ・ <span className="text-accent">45問で詳しく診断する →</span>
+          </Link>
+        </div>
+      )}
 
       {/* Section 1: Pattern Art + Type Name + Catch Copy */}
       <section className="flex flex-col items-center gap-5 mb-12 animate-fade-up">

@@ -64,6 +64,30 @@ export const QUESTIONS: Question[] = [
   { axis: "N", text: "気分の波が大きいほうだ", labels: ["そう思わない", "そう思う"] },
 ];
 
+/**
+ * QUICK診断用: 45問から各軸2問ずつ選抜した10問
+ * - 45問版と同じ Scores 計算ロジック (calculateScores) で動く
+ * - reverse フラグもそのまま、UI上のラベルは常に [そう思わない, そう思う]
+ * - 各軸 reverse を1つ混ぜて社会的望ましさバイアスを低減
+ */
+export const QUICK_QUESTIONS: Question[] = [
+  // O
+  { axis: "O", text: "新しいアイデアや発見に強く惹かれる", labels: ["そう思わない", "そう思う"] },
+  { axis: "O", text: "想像力が豊かで、空想することが好きだ", labels: ["そう思わない", "そう思う"] },
+  // C
+  { axis: "C", text: "計画を立て、きちんとやり遂げることが得意だ", labels: ["そう思わない", "そう思う"] },
+  { axis: "C", text: "物事を先延ばしにせず、すぐに取り掛かれる", labels: ["そう思わない", "そう思う"] },
+  // E
+  { axis: "E", text: "人と話していると自然とエネルギーが湧いてくる", labels: ["そう思わない", "そう思う"] },
+  { axis: "E", text: "休日は人と過ごすよりひとりでいることを好む", labels: ["そう思わない", "そう思う"], reverse: true },
+  // A
+  { axis: "A", text: "他の人の気持ちに寄り添うことを大切にしている", labels: ["そう思わない", "そう思う"] },
+  { axis: "A", text: "自分の意見や主張を強く押し通すほうだ", labels: ["そう思わない", "そう思う"], reverse: true },
+  // N
+  { axis: "N", text: "些細なことで不安になったり落ち込んだりする", labels: ["そう思わない", "そう思う"] },
+  { axis: "N", text: "何があっても落ち着いて過ごせるほうだ", labels: ["そう思わない", "そう思う"], reverse: true },
+];
+
 export const AXIS_LABELS: Record<Axis, string> = {
   O: "開放性",
   C: "誠実性",
