@@ -11,7 +11,7 @@
 ## 🎯 プロジェクト概要
 
 **paternia（パターニア）**: Big5 性格診断ウェブアプリ
-- URL: https://paternia.netlify.app
+- URL: https://paternia.vercel.app
 - TikTok で若年層に豆知識を発信 → サイトで診断 → 有料note でマネタイズ、の3段構成
 - 最終目標: 月5-30万円の副業収益
 
@@ -80,7 +80,7 @@
 
 ### インフラ
 - [x] Next.js 16 App Router + TypeScript + Tailwind CSS
-- [x] Netlify デプロイ（https://paternia.netlify.app）
+- [x] Netlify デプロイ（https://paternia.vercel.app）
 - [x] Google Analytics 4 統合（NEXT_PUBLIC_GA_ID=G-YZTC6F541R）
 - [x] Google Search Console 所有権確認済み（google-site-verification: gMw7tNXWLPn3BrDJ4hIm8qUzM-zMiu60nrfdcTD-sr4）
 - [x] sitemap.xml + robots.txt 自動生成
@@ -102,7 +102,7 @@
 - [x] 画像スライド一括生成ツール（10投稿 × 8枚 = 80枚PNGをZIPでダウンロード）
 - [x] 1枚目をパンチライン先出しに書き換え（3秒離脱対策）
 - [x] 「BIG 5 研究に基づく」バッジ
-- [x] 全CTA URL を `paternia.netlify.app` に統一
+- [x] 全CTA URL を `paternia.vercel.app` に統一
 - [x] キャプションを「要約 + 500人フォロワーCTA」に
 - [x] ロゴ・ヘッダー画像生成ツール（白+紫グロー、text-shadowベースで html2canvas 対応）
 
@@ -202,7 +202,7 @@ Phase 1 残り4本 → Phase 2 → Phase 3 の順で記事を量産する。
 
 ### 4. 500人フォロワー達成後
 
-- TikTok bio に URL 貼る (https://paternia.netlify.app)
+- TikTok bio に URL 貼る (https://paternia.vercel.app)
 - Google AdSense 申請
 - OGP動的画像生成（2-3タイプのシェア時に模様アート表示）
 
@@ -268,7 +268,7 @@ npx netlify-cli deploy --dir=out --prod
 - 価格 300円以下 / 1,480円ちょうど
 - note記事を無料部分で「満足」させる
 - タイプ名に「岩盤」「自由」などランダム組み合わせで不自然な日本語
-- patern-ia.netlify.app の旧URL混入（正: paternia.netlify.app）
+- patern-ia.netlify.app の旧URL混入（正: paternia.vercel.app）
 
 ---
 

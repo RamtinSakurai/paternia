@@ -4,7 +4,7 @@ import { TYPE_PROFILES, getAllProfiles } from "@/data/type-profiles";
 import { getCompatibility } from "@/lib/compatibility";
 import ClientView from "./ClientView";
 
-const SITE_URL = "https://paternia.netlify.app";
+const SITE_URL = "https://paternia.vercel.app";
 
 interface Props {
   params: Promise<{ code: string }>;

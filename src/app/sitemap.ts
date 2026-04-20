@@ -3,7 +3,7 @@ import { getAllProfiles } from "@/data/type-profiles";
 
 export const dynamic = "force-static";
 
-const SITE_URL = "https://paternia.netlify.app";
+const SITE_URL = "https://paternia.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

@@ -55,13 +55,13 @@ export default function ClientView({ profile, good, bad }: Props) {
     "@type": "Article",
     headline: `${profile.name}(${profile.code}) — ${profile.catchCopy}`,
     description: profile.summary,
-    url: `https://paternia.netlify.app/gallery/${profile.code}/`,
+    url: `https://paternia.vercel.app/gallery/${profile.code}/`,
     inLanguage: "ja-JP",
-    author: { "@type": "Organization", name: "paternia", url: "https://paternia.netlify.app" },
-    publisher: { "@type": "Organization", name: "paternia", url: "https://paternia.netlify.app" },
+    author: { "@type": "Organization", name: "paternia", url: "https://paternia.vercel.app" },
+    publisher: { "@type": "Organization", name: "paternia", url: "https://paternia.vercel.app" },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://paternia.netlify.app/gallery/${profile.code}/`,
+      "@id": `https://paternia.vercel.app/gallery/${profile.code}/`,
     },
     about: {
       "@type": "Thing",

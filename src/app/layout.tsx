@@ -3,7 +3,7 @@ import { Kiwi_Maru, Zen_Kaku_Gothic_New, Fredoka } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
-const SITE_URL = "https://paternia.netlify.app";
+const SITE_URL = "https://paternia.vercel.app";
 
 const kiwiMaru = Kiwi_Maru({
   weight: ["400", "500"],

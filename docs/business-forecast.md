@@ -37,7 +37,7 @@ paternia は、有料 note 記事 **21本**（20タイプ別 + U1相性マトリ
 
 ### 集客・技術資産
 
-- paternia サイト（https://paternia.netlify.app）
+- paternia サイト（https://paternia.vercel.app）
 - Big5 診断 **45問**（当初30問から精度UPのため拡張）
 - TikTok 画像スライド 10 投稿（PNG自動生成ツール完備）
 - Google Analytics 4 + Search Console 統合

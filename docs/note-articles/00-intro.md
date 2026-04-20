@@ -15,7 +15,7 @@
 ひとことで言うと、**「あなたの性格を、模様と文章で描いてみる試み」**。
 心理学のなかで一番しっかりした根拠があると言われている Big5(ビッグファイブ)の45問に答えると、あなただけの**抽象模様**が生まれて、20タイプのうち1つにあなたのタイプが決まります。
 
-診断はこちら → [paternia.netlify.app](https://paternia.netlify.app)
+診断はこちら → [paternia.vercel.app](https://paternia.vercel.app)
 
 無料、メアド登録なし、5〜8分で終わります。
 
@@ -186,7 +186,7 @@ paternia は個人開発のプロジェクトです。
 
 ## 次の一歩
 
-まずは、[paternia.netlify.app](https://paternia.netlify.app) で 5〜8分の診断を受けて、自分のタイプを知ってみてください。
+まずは、[paternia.vercel.app](https://paternia.vercel.app) で 5〜8分の診断を受けて、自分のタイプを知ってみてください。
 
 そのあと、このnoteに戻ってきて、あなたのタイプの記事(または気になるタイプの記事)を読んでみてください。
 
