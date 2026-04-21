@@ -73,13 +73,13 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
 .slide-header-line{position:absolute;top:148px;left:100px;right:100px;height:1px;background:var(--line);z-index:3}
 
 /* SAFE AREA = top 70% (y:0-1344). Bottom 30% cropped in TikTok feed preview. */
-/* content area — vertically & horizontally centered within safe area */
-.slide-body-area{position:absolute;top:200px;bottom:770px;left:100px;right:100px;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+/* content area — TOP anchored so main headline stays at same y across all slides */
+.slide-body-area{position:absolute;top:200px;bottom:770px;left:100px;right:100px;z-index:3;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;padding-top:60px}
 .slide-body-area > *{max-width:100%}
 
-/* cliffhanger — kept inside safe area (ends ~y:1300) */
-.slide-cliff{position:absolute;top:1200px;left:100px;right:100px;padding-top:30px;border-top:1px solid var(--line);font-family:"Shippori Mincho",serif;font-weight:400;font-style:italic;font-size:42px;color:var(--ivory-dim);letter-spacing:0.06em;display:flex;align-items:center;justify-content:center;gap:18px;z-index:3}
-.slide-cliff::before{content:"▸";color:var(--gold);font-style:normal;font-size:42px}
+/* cliffhanger — connected visually to main text, not separated */
+.slide-cliff{position:absolute;top:1150px;left:60px;right:60px;font-family:"Shippori Mincho",serif;font-weight:500;font-size:64px;color:var(--ivory);letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:20px;z-index:3;white-space:nowrap}
+.slide-cliff::before{content:"▸";color:var(--gold);font-size:64px;font-weight:500}
 
 /* footer credit — bottom 30% cropped zone (attribution for expanded view) */
 .slide-footer-credit{position:absolute;bottom:60px;left:100px;right:100px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:26px;color:var(--muted);letter-spacing:0.08em;text-align:center;z-index:3}
@@ -87,10 +87,10 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
 /* slide-type specific */
 .slide-lead{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;font-size:36px;color:var(--muted);letter-spacing:0.08em;margin-bottom:40px}
 
-.slide-main{font-family:"Shippori Mincho",serif;font-weight:500;font-size:76px;line-height:1.5;color:var(--ivory);letter-spacing:0.04em}
-.slide-main.big{font-size:96px;font-weight:600;line-height:1.4}
-.slide-main.xl{font-size:120px;font-weight:600;line-height:1.25}
-.slide-main.md{font-size:64px;font-weight:500;line-height:1.55}
+/* Unified main headline size — same across all slides so vertical position is stable */
+.slide-main{font-family:"Shippori Mincho",serif;font-weight:600;font-size:88px;line-height:1.45;color:var(--ivory);letter-spacing:0.04em;word-break:keep-all;overflow-wrap:break-word}
+.slide-main.big,.slide-main.xl{font-size:88px;font-weight:600;line-height:1.45}
+.slide-main.md{font-size:64px;font-weight:600;line-height:1.55}
 .slide-main .accent{color:var(--gold-bright);border-bottom:2px solid var(--gold);padding-bottom:2px}
 .slide-main .mauve{color:var(--mauve)}
 
@@ -154,11 +154,11 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
 // ===================================================
 const POSTS = [
   // ============ v2 STYLE · 10 POSTS ============
-  {id:1, roman:"I", title:"怒りっぽい人、実は繊細な人だった話",
+  {id:1, roman:"I", title:"怒りっぽい人、実は繊細な人。",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"怒りっぽい人、\n実は繊細な人だった話", size:"big", attribution:"脳画像研究より", cliff:"正体は —"},
+      {type:"hook", lead:"a quiet finding", main:"怒りっぽい人、\n実は繊細な人。", size:"big", attribution:"脳画像研究より", cliff:"正体は —"},
       {type:"tension", main:"気が強い?\n\n違った。", cliff:"本当は —"},
-      {type:"reveal", lead:"the answer", main:"扁桃体が、\nよく動く人", size:"xl", body:"不安を感じやすい人の脳。\n刺激への反応が、倍ちかい。", attribution:"UCLA 脳画像研究・2014", cliff:"サインは3つ —"},
+      {type:"reveal", lead:"the answer", main:"刺激への反応が、\n倍ちかい人", size:"xl", body:"同じ出来事で、脳が\n普通の人の 2 倍近く反応する。\nだから、強く感じる。", attribution:"UCLA 脳画像研究・2014", cliff:"サインは 3 つ —"},
       {type:"mechanism", lead:"three signs", main:"繊細さの現れ方", items:["音や光に敏感", "人の表情を読む", "アイデアが湧く"], cliff:"そして —"},
       {type:"twist", lead:"もうひとつの顔", main:"敏感さは、\n創造性と繋がる。", body:"不安が強い人ほど、\n新しい発想が出やすい。\nそういう研究もある。", cliff:"続きはキャプションへ —"},
       {type:"cta", lead:"three small actions", main:"自分の敏感さ、\n測ってみる?", actions:[
@@ -186,7 +186,7 @@ const POSTS = [
   },
   {id:3, roman:"III", title:"『一人が楽』と言う人の、本当の気持ち",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"『一人が楽』と言う人の、\n本当の気持ち", size:"big", attribution:"ケンブリッジ・内向性研究", cliff:"その理由は —"},
+      {type:"hook", lead:"a quiet finding", main:"『一人が楽』\nと言う人の、本当の気持ち", size:"md", attribution:"ケンブリッジ・内向性研究", cliff:"その理由は —"},
       {type:"tension", main:"冷たい?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"充電方法が、\n逆だった", size:"xl", body:"人と話すと疲れる脳と、\n元気になる脳。\n違う機械でした。", attribution:"脳活動・大規模調査", cliff:"サインは3つ —"},
       {type:"mechanism", lead:"three signs", main:"一人時間が要るサイン", items:["飲み会のあと無言", "休日は誰にも会わず", "電話よりメッセージ"], cliff:"そして —"},
@@ -201,7 +201,7 @@ const POSTS = [
   },
   {id:4, roman:"IV", title:"三日坊主の科学 — 脳が新しさを求める理由",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"三日坊主の科学 —\n脳が新しさを求める理由", size:"big", attribution:"ハーバード脳科学・2018", cliff:"正体は —"},
+      {type:"hook", lead:"a quiet finding", main:"三日坊主の科学 —\n脳が新しさを求める理由", size:"md", attribution:"ハーバード脳科学・2018", cliff:"正体は —"},
       {type:"tension", main:"意志が弱い?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"ドーパミンは、\n新しさで出る", size:"xl", body:"続けるほど分泌が減る。\n脳は、次を探し始める。", attribution:"ハーバード脳科学・2018", cliff:"対策は3つ —"},
       {type:"mechanism", lead:"three fixes", main:"続けるための小さな工夫", items:["ルールを毎週ずらす", "記録を変化で見せる", "仲間と共有する"], cliff:"そして —"},
@@ -216,7 +216,7 @@ const POSTS = [
   },
   {id:5, roman:"V", title:"長続きするカップル、共通点は 1 つだけ",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"長続きするカップル、\n共通点は 1 つだけ", size:"big", attribution:"18 年追跡研究(Luo 2009)", cliff:"その共通点は —"},
+      {type:"hook", lead:"a quiet finding", main:"長続きするカップル、\n共通点は 1 つだけ", size:"md", attribution:"18 年追跡研究(Luo 2009)", cliff:"その共通点は —"},
       {type:"tension", main:"似てる?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"両方が\n『きちんと系』", size:"xl", body:"二人とも高い組は、\n離別率がはっきり低い。", attribution:"18 年追跡・縦断研究", cliff:"理由は3つ —"},
       {type:"mechanism", lead:"three reasons", main:"続く理由", items:["約束を守る", "家事を分ける", "お金を決める"], cliff:"そして —"},
@@ -231,7 +231,7 @@ const POSTS = [
   },
   {id:6, roman:"VI", title:"『気にしすぎる自分』、実は特殊能力",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"『気にしすぎる自分』、\n実は特殊能力", size:"big", attribution:"脳画像研究+創造性研究", cliff:"正体は —"},
+      {type:"hook", lead:"a quiet finding", main:"『気にしすぎる自分』は、実は特殊能力", size:"md", attribution:"脳画像研究+創造性研究", cliff:"正体は —"},
       {type:"tension", main:"弱点?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"深い洞察力と、\n創造性", size:"xl", body:"不安が強いほど、\n新しい発想が出やすい。", attribution:"Perkins 2015 ほか", cliff:"向いている仕事3つ —"},
       {type:"mechanism", lead:"three careers", main:"向いている仕事", items:["編集・ライティング", "デザイン・企画", "研究・分析"], cliff:"そして —"},
@@ -246,7 +246,7 @@ const POSTS = [
   },
   {id:7, roman:"VII", title:"飽きっぽい人と続く人、脳が違った",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"飽きっぽい人と続く人、\n脳が違った", size:"big", attribution:"ドーパミン研究より", cliff:"違いは —"},
+      {type:"hook", lead:"a quiet finding", main:"飽きっぽい人と、\n続く人。脳が違った", size:"big", attribution:"ドーパミン研究より", cliff:"違いは —"},
       {type:"tension", main:"努力の差?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"報酬の出どころが、\n別だった", size:"xl", body:"新しさで出る脳と、\n習慣で出る脳。\n回路が違う。", attribution:"ドーパミン大規模研究", cliff:"タイプ別に対策 —"},
       {type:"mechanism", lead:"three by type", main:"タイプ別の続け方", items:["飽きっぽい: 変化を混ぜる", "続く人: 記録で安定", "どちらも: 仲間を作る"], cliff:"そして —"},
@@ -276,7 +276,7 @@ const POSTS = [
   },
   {id:9, roman:"IX", title:"ケンカが長引く人と、すぐ解決する人の差",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"ケンカが長引く人と、\nすぐ解決する人の差", size:"big", attribution:"対立解決研究(Bono 2019)", cliff:"差は —"},
+      {type:"hook", lead:"a quiet finding", main:"ケンカが長引く人と、\nすぐ解決する人の差", size:"md", attribution:"対立解決研究(Bono 2019)", cliff:"差は —"},
       {type:"tension", main:"相性?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"相手の視点を、\n想像する力", size:"xl", body:"新しいもの好き(開放性)が、\n対立の長さを決めていた。", attribution:"Bono 2019 対立解決研究", cliff:"低い時の癖3つ —"},
       {type:"mechanism", lead:"three habits", main:"長引く人の癖", items:["自分の正しさを繰り返す", "過去を持ち出す", "黙って距離を置く"], cliff:"そして —"},
@@ -291,7 +291,7 @@ const POSTS = [
   },
   {id:10, roman:"X", title:"幸せかどうか、半分は性格で決まってた",
     slides:[
-      {type:"hook", lead:"a quiet finding", main:"幸せかどうか、\n半分は性格で決まってた", size:"big", attribution:"世界中の研究をまとめた結果", cliff:"割合は —"},
+      {type:"hook", lead:"a quiet finding", main:"幸せかどうか、\n半分は性格で決まってた", size:"md", attribution:"世界中の研究をまとめた結果", cliff:"割合は —"},
       {type:"tension", main:"環境の差?\n\n違った。", cliff:"本当は —"},
       {type:"reveal", lead:"the answer", main:"45% は、\n性格で説明", size:"xl", body:"収入・学歴より、\n5 つの性質の合計が強い。", attribution:"Sun 2020 メタ分析", cliff:"レシピは4つ —"},
       {type:"mechanism", lead:"four ingredients", main:"幸福レシピ", items:["敏感さ低め", "きちんと系高め", "人と話す時間", "新しさへの開き"], cliff:"そして —"},
@@ -338,7 +338,8 @@ function renderSlide(post, slideIdx){
 function escapeLines(s){ return s.replace(/\n/g,"<br>"); }
 
 function renderSlideInner(slide){
-  const lead = slide.lead ? `<p class="slide-lead">${escapeLines(slide.lead)}</p>` : "";
+  // Always render lead slot (use nbsp if empty) so main headline y-position is stable across all slides
+  const lead = `<p class="slide-lead" style="${slide.lead ? '' : 'visibility:hidden'}">${slide.lead ? escapeLines(slide.lead) : "&nbsp;"}</p>`;
   const attribution = slide.attribution ? `<p class="slide-attribution">${escapeLines(slide.attribution)}</p>` : "";
   switch(slide.type){
     case "hook":
@@ -346,7 +347,7 @@ function renderSlideInner(slide){
     case "tension":
       return `${lead}<h2 class="slide-main ${slide.size || ""}">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body">${escapeLines(slide.body)}</p>` : ""}`;
     case "reveal":
-      return `${lead}<h2 class="slide-main ${slide.size || "xl"}" style="text-align:center;margin-top:80px">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body" style="text-align:center">${escapeLines(slide.body)}</p>` : ""}${attribution ? `<p class="slide-attribution" style="text-align:center">${slide.attribution}</p>` : ""}`;
+      return `${lead}<h2 class="slide-main ${slide.size || ""}" style="text-align:center">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body" style="text-align:center">${escapeLines(slide.body)}</p>` : ""}${attribution ? `<p class="slide-attribution" style="text-align:center">${slide.attribution}</p>` : ""}`;
     case "stat":
       return `${lead}<div style="text-align:center;margin-top:60px"><span class="slide-stat-num">${slide.num}${slide.unit ? `<span class="unit">${slide.unit}</span>` : ""}</span><div class="slide-stat-label">${escapeLines(slide.label || "")}</div></div>${slide.body ? `<p class="slide-body" style="text-align:center;margin-top:40px">${escapeLines(slide.body)}</p>` : ""}`;
     case "mechanism":
