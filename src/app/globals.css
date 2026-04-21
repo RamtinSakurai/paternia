@@ -5,8 +5,8 @@
   --color-bg: #0f0a18;              /* night deep (aubergine-tinted) */
   --color-bg-card: #14101f;         /* night */
   --color-bg-elevated: #1a1428;     /* night lift */
-  --color-text: #ebe3e8;            /* warm ivory */
-  --color-text-muted: #8a7d99;      /* muted mauve */
+  --color-text: #d4c8d0;            /* softer ivory — eye comfort */
+  --color-text-muted: #7a6d88;      /* muted mauve */
   --color-border: rgba(216, 187, 137, 0.2);
   --color-accent: #d8bb89;          /* warm gold (primary) */
   --color-accent-glow: rgba(216, 187, 137, 0.3);

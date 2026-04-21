@@ -13,7 +13,7 @@ const kiwiMaru = Kiwi_Maru({
 });
 
 const zenKaku = Zen_Kaku_Gothic_New({
-  weight: ["400", "500", "700"],
+  weight: ["400", "500"],
   subsets: ["latin"],
   variable: "--font-zen-kaku",
   display: "swap",
@@ -27,7 +27,7 @@ const fredoka = Fredoka({
 });
 
 const cormorant = Cormorant_Garamond({
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
   style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-cormorant",
@@ -35,7 +35,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const shippori = Shippori_Mincho({
-  weight: ["400", "500", "600"],
+  weight: ["500"],
   subsets: ["latin"],
   variable: "--font-shippori",
   display: "swap",

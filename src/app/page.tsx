@@ -71,35 +71,79 @@ export default function Home() {
       return x - Math.floor(x);
     };
 
-    // Pre-compute 140 stars (fixed positions, varying size/color/twinkle phase)
-    const STAR_COUNT = 140;
-    const stars = Array.from({ length: STAR_COUNT }, (_, i) => {
-      const tone = sr(i * 2.17);
-      // 60% ivory, 20% gold, 15% silver, 5% mystic
-      let rgb: [number, number, number];
-      if (tone < 0.6) rgb = [235, 229, 245];
-      else if (tone < 0.8) rgb = [232, 203, 149];
-      else if (tone < 0.95) rgb = [181, 184, 200];
-      else rgb = [155, 143, 212];
-      return {
-        x: sr(i * 7.13),
-        y: sr(i * 13.79),
-        size: 0.4 + sr(i * 21.37) * 1.6,
-        baseOpacity: 0.3 + sr(i * 29.11) * 0.55,
-        phase: sr(i * 37.53) * Math.PI * 2,
-        twinkleSpeed: 0.8 + sr(i * 43.7) * 1.8,
-        rgb,
-      };
-    });
+    // Position helper — push stars away from a central "safe zone" so
+    // they don't crowd the text content in the middle of the screen.
+    const pushFromCenter = (x0: number, y0: number, safeRadius = 0.26) => {
+      const dx = x0 - 0.5;
+      const dy = y0 - 0.5;
+      const d = Math.hypot(dx, dy);
+      if (d < safeRadius && d > 0.001) {
+        const scale = safeRadius / d;
+        return {
+          x: Math.max(0.02, Math.min(0.98, 0.5 + dx * scale)),
+          y: Math.max(0.02, Math.min(0.98, 0.5 + dy * scale)),
+        };
+      }
+      return { x: x0, y: y0 };
+    };
 
-    // Constellation pairs — connect stars that happen to land near each other
-    type Pair = { a: number; b: number };
-    const pairs: Pair[] = [];
-    for (let i = 0; i < 14; i++) {
-      const a = Math.floor(sr(i * 53.1) * STAR_COUNT);
-      const b = (a + 1 + Math.floor(sr(i * 71.3) * 3)) % STAR_COUNT;
-      pairs.push({ a, b });
+    // 3-layer starfield — 80 stars total (far 45 / mid 25 / near 10)
+    type Star = {
+      x: number; y: number;
+      size: number; baseOpacity: number;
+      phase: number; twinkleSpeed: number;
+      rgb: [number, number, number];
+      glow: boolean;
+    };
+    const pickRgb = (tone: number): [number, number, number] => {
+      if (tone < 0.6) return [235, 229, 245];   // ivory
+      if (tone < 0.8) return [232, 203, 149];   // gold
+      if (tone < 0.95) return [181, 184, 200];  // silver
+      return [155, 143, 212];                    // mystic
+    };
+    const stars: Star[] = [];
+    // Far layer — small, dim, numerous
+    for (let i = 0; i < 45; i++) {
+      const p = pushFromCenter(sr(i * 7.13 + 1), sr(i * 13.79 + 1));
+      stars.push({
+        x: p.x, y: p.y,
+        size: 0.35 + sr(i * 21.37 + 1) * 0.55,
+        baseOpacity: 0.10 + sr(i * 29.11 + 1) * 0.18,
+        phase: sr(i * 37.53 + 1) * Math.PI * 2,
+        twinkleSpeed: 0.4 + sr(i * 43.7 + 1) * 0.6,
+        rgb: pickRgb(sr(i * 2.17 + 1)),
+        glow: false,
+      });
     }
+    // Mid layer — medium size, medium opacity
+    for (let i = 0; i < 25; i++) {
+      const p = pushFromCenter(sr(i * 7.13 + 2), sr(i * 13.79 + 2), 0.28);
+      stars.push({
+        x: p.x, y: p.y,
+        size: 0.9 + sr(i * 21.37 + 2) * 0.6,
+        baseOpacity: 0.22 + sr(i * 29.11 + 2) * 0.22,
+        phase: sr(i * 37.53 + 2) * Math.PI * 2,
+        twinkleSpeed: 0.7 + sr(i * 43.7 + 2) * 1.1,
+        rgb: pickRgb(sr(i * 2.17 + 2)),
+        glow: false,
+      });
+    }
+    // Near layer — bright, fewer, with glow
+    for (let i = 0; i < 10; i++) {
+      const p = pushFromCenter(sr(i * 7.13 + 3), sr(i * 13.79 + 3), 0.32);
+      stars.push({
+        x: p.x, y: p.y,
+        size: 1.6 + sr(i * 21.37 + 3) * 0.9,
+        baseOpacity: 0.35 + sr(i * 29.11 + 3) * 0.25,
+        phase: sr(i * 37.53 + 3) * Math.PI * 2,
+        twinkleSpeed: 0.9 + sr(i * 43.7 + 3) * 1.6,
+        rgb: pickRgb(sr(i * 2.17 + 3)),
+        glow: true,
+      });
+    }
+
+    // Big5 pentagon backdrop — paternia-specific motif behind everything
+    const pentagonAngles = [0, 72, 144, 216, 288]; // 5 points, O at top
 
     // Shooting star state
     type Shooter = { x: number; y: number; vx: number; vy: number; life: number };
@@ -138,32 +182,47 @@ export default function Home() {
       ctx.fillStyle = g2;
       ctx.fillRect(0, 0, w, h);
 
-      // constellation lines (faint gold)
-      ctx.strokeStyle = "rgba(212,181,128,0.08)";
-      ctx.lineWidth = 0.5;
-      pairs.forEach((p) => {
-        const sa = stars[p.a];
-        const sb = stars[p.b];
+      // Big5 pentagon backdrop — faint, centered, paternia-specific
+      const cx = w / 2;
+      const cy = h / 2;
+      const pR = Math.min(w, h) * 0.36;
+      const pts: [number, number][] = pentagonAngles.map((deg) => {
+        const rad = ((deg - 90) * Math.PI) / 180;
+        return [cx + Math.cos(rad) * pR, cy + Math.sin(rad) * pR];
+      });
+      // pentagon outline (faint gold, structure visible)
+      ctx.strokeStyle = "rgba(216,187,137,0.10)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1])));
+      ctx.closePath();
+      ctx.stroke();
+      // 5 anchor dots at pentagon corners (slow breathing glow)
+      const pulse = 0.55 + 0.45 * Math.sin(t * 0.4);
+      pts.forEach((p) => {
+        ctx.fillStyle = `rgba(216,187,137,${(0.40 * pulse).toFixed(3)})`;
         ctx.beginPath();
-        ctx.moveTo(sa.x * w, sa.y * h);
-        ctx.lineTo(sb.x * w, sb.y * h);
-        ctx.stroke();
+        ctx.arc(p[0], p[1], 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        // soft glow
+        ctx.fillStyle = `rgba(216,187,137,${(0.10 * pulse).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 10, 0, Math.PI * 2);
+        ctx.fill();
       });
 
-      // stars
+      // stars — drawn AFTER pentagon so they sit on top
       stars.forEach((s) => {
-        const twinkle =
-          0.55 + 0.45 * Math.sin(t * s.twinkleSpeed + s.phase);
+        const twinkle = 0.55 + 0.45 * Math.sin(t * s.twinkleSpeed + s.phase);
         const opacity = s.baseOpacity * twinkle;
         ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${opacity.toFixed(3)})`;
         ctx.beginPath();
         ctx.arc(s.x * w, s.y * h, s.size, 0, Math.PI * 2);
         ctx.fill();
-        // subtle glow for larger stars
-        if (s.size > 1.3) {
-          ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${(opacity * 0.25).toFixed(3)})`;
+        if (s.glow) {
+          ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${(opacity * 0.22).toFixed(3)})`;
           ctx.beginPath();
-          ctx.arc(s.x * w, s.y * h, s.size * 2.5, 0, Math.PI * 2);
+          ctx.arc(s.x * w, s.y * h, s.size * 3, 0, Math.PI * 2);
           ctx.fill();
         }
       });
@@ -248,41 +307,28 @@ export default function Home() {
           </HoroscopeFrame>
         </div>
 
-        {/* brand + tagline */}
-        <div className="animate-fade-up stagger-1 flex flex-col items-center gap-1">
-          <p
-            className="text-[26px] tracking-[0.22em] text-text leading-none"
-            style={{ fontFamily: "var(--font-cormorant)", fontWeight: 400 }}
-          >
-            paternia
-          </p>
-          <p
-            className="text-[13px] italic text-accent tracking-[0.05em]"
-            style={{ fontFamily: "var(--font-cormorant)" }}
-          >
-            ~ an atlas of personal constellations ~
-          </p>
-        </div>
+        {/* brand wordmark */}
+        <p
+          className="animate-fade-up stagger-1 text-[38px] tracking-[0.22em] leading-none"
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontWeight: 500,
+            color: "var(--color-accent-bright)",
+            textShadow: "0 0 24px rgba(232, 203, 149, 0.25)",
+          }}
+        >
+          paternia
+        </p>
 
-        {/* Japanese title + subtitle */}
-        <div className="animate-fade-up stagger-2 flex flex-col items-center gap-3">
-          <h1
-            className="text-[1.625rem] leading-snug font-medium tracking-[0.04em]"
-            style={{ fontFamily: "var(--font-shippori)" }}
-          >
-            あなたの性格が
-            <br />
-            <span className="text-accent-bright">模様</span>になる
-          </h1>
-          <p
-            className="text-[12px] leading-relaxed max-w-[260px] text-text-muted"
-            style={{ fontFamily: "var(--font-shippori)" }}
-          >
-            ビッグファイブ性格理論をもとに、
-            <br />
-            あなただけの模様が生まれる
-          </p>
-        </div>
+        {/* Japanese title */}
+        <h1
+          className="animate-fade-up stagger-2 text-[1.625rem] leading-snug font-medium tracking-[0.04em]"
+          style={{ fontFamily: "var(--font-shippori)" }}
+        >
+          あなたの性格が
+          <br />
+          <span className="text-accent-bright">模様</span>になる
+        </h1>
 
         {/* divider */}
         <div className="animate-fade-up stagger-2 flex items-center gap-3">
@@ -291,7 +337,7 @@ export default function Home() {
           <span className="w-10 h-px bg-accent/40" />
         </div>
 
-        <div className="animate-fade-up stagger-2 flex gap-4 text-[11px] tracking-wider" style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-cormorant)" }}>
+        <div className="animate-fade-up stagger-2 flex gap-4 text-[13px] tracking-wider" style={{ color: "var(--color-text)", fontFamily: "var(--font-kiwi-maru)" }}>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             無料
@@ -326,24 +372,26 @@ export default function Home() {
             </span>
           </div>
         </button>
-        <p className="animate-fade-up stagger-3 text-[11px] text-text-muted/80 max-w-[280px] text-center leading-relaxed -mt-1">
-          短時間で気軽に。傾向が分かります
-        </p>
 
-        {/* Secondary CTA: Full (45問・約4分) */}
+        {/* Secondary CTA: Full (45問・約4分) — same size as Primary, outline style */}
         <button
           onClick={() => router.push("/quiz")}
-          className="animate-fade-up stagger-4 text-[13px] text-text-muted hover:text-accent transition-colors mt-2"
-          style={{ fontFamily: "var(--font-kiwi-maru)" }}
+          className="animate-fade-up stagger-4 mt-2 relative group"
         >
-          <span className="underline underline-offset-4 decoration-text-muted/40">じっくり診断する</span>
-          <span className="ml-2 text-[11px] text-text-muted/60">
-            約4分 / 45問
-          </span>
+          <div
+            className="relative px-10 py-3.5 border border-accent/40 rounded-2xl
+                        text-accent/85 font-medium tracking-wider text-[15px]
+                        hover:bg-accent/10 hover:border-accent/70 hover:text-accent
+                        active:scale-[0.97]
+                        transition-all duration-200"
+            style={{ fontFamily: "var(--font-kiwi-maru)" }}
+          >
+            じっくり診断する
+            <span className="ml-2 text-[11px] text-accent/60 font-normal tracking-wide">
+              約4分 / 45問
+            </span>
+          </div>
         </button>
-        <p className="animate-fade-up stagger-4 text-[10px] text-text-muted/50 max-w-[280px] text-center leading-relaxed -mt-1">
-          学術ベースの Big Five 45 項目 · より正確
-        </p>
 
         {lastResult && (
           <button
@@ -357,7 +405,7 @@ export default function Home() {
 
         <button
           onClick={() => router.push("/gallery")}
-          className="animate-fade-up stagger-4 text-[12px] text-text-muted hover:text-accent transition-colors underline underline-offset-4 decoration-text-muted/30 mt-1"
+          className="animate-fade-up stagger-4 text-[14px] text-text hover:text-accent transition-colors underline underline-offset-4 decoration-text-muted/60 mt-3"
           style={{ fontFamily: "var(--font-kiwi-maru)" }}
         >
           20の模様を見る
