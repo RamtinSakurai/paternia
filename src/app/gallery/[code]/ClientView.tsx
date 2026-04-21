@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import MiniPatternCanvas from "@/components/MiniPatternCanvas";
+import HoroscopeFrame from "@/components/HoroscopeFrame";
 import { getTypeKey, type Scores } from "@/lib/diagnosis";
 import { AXIS_LABELS } from "@/data/questions";
 import { UNIVERSAL_ARTICLES, type TypeProfile } from "@/data/type-profiles";
@@ -124,11 +125,13 @@ export default function ClientView({ profile, good, bad }: Props) {
           TYPE {profile.code}
         </p>
 
-        <MiniPatternCanvas
-          primary={profile.primaryAxis}
-          secondary={profile.secondaryAxis}
-          size={240}
-        />
+        <HoroscopeFrame size={280} variant="detail">
+          <MiniPatternCanvas
+            primary={profile.primaryAxis}
+            secondary={profile.secondaryAxis}
+            size={236}
+          />
+        </HoroscopeFrame>
 
         <div className="text-center">
           <p className="text-[10px] text-text-muted/60 tracking-wider mb-2">

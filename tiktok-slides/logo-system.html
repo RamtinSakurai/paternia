@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>paternia — logo system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night-deep:#0f0a18;--night:#14101f;--night-lift:#1a1428;
+  --ivory:#ebe3e8;--ivory-dim:#c4b8c8;--muted:#8a7d99;
+  --gold:#d8bb89;--gold-bright:#ead1a0;--gold-deep:#a88b55;
+  --line:rgba(216,187,137,0.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--night-deep);color:var(--ivory);font-family:"Cormorant Garamond",serif;padding:60px 40px;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+h1.page-title{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:32px;letter-spacing:0.2em;color:var(--ivory);text-align:center;margin:0 0 4px}
+.page-sub{text-align:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold);margin:0 0 60px}
+.section-title{text-align:center;font-family:"Inter",sans-serif;font-weight:400;font-size:10px;letter-spacing:0.55em;color:var(--muted);margin:72px 0 36px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:20px}
+.section-title::before,.section-title::after{content:"";width:60px;height:0.5px;background:var(--line)}
+
+.showcase{display:flex;flex-wrap:wrap;justify-content:center;gap:30px;max-width:1200px;margin:0 auto}
+.card{background:var(--night-lift);border:0.5px solid var(--line);padding:40px;position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;min-width:260px}
+.card::before{content:"";position:absolute;inset:6px;border:0.5px solid rgba(216,187,137,0.12);pointer-events:none}
+.card-label{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--muted);margin-top:auto}
+.card.on-light{background:var(--ivory)}
+.card.on-light .card-label{color:#5a4e68}
+
+/* ========== LOGOMARK ========== */
+.mark{position:relative;color:var(--gold)}
+.mark.ivory{color:var(--ivory)}
+.mark.ink{color:#2f2418}
+
+/* ========== WORDMARK ========== */
+.wordmark{
+  font-family:"Cormorant Garamond",serif;font-weight:400;letter-spacing:0.22em;
+  color:var(--ivory);line-height:1;
+}
+.wordmark.gold{color:var(--gold-bright)}
+.wordmark.ink{color:#2f2418}
+.wordmark-sub{
+  font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;
+  letter-spacing:0.04em;color:var(--gold);text-align:center;line-height:1.2;
+}
+.wordmark-sub.muted{color:var(--muted)}
+.wordmark-sub.ink-muted{color:#6e5d80}
+
+/* ========== LOCKUP ========== */
+.lockup-v{display:flex;flex-direction:column;align-items:center;gap:20px}
+.lockup-h{display:flex;flex-direction:row;align-items:center;gap:20px}
+
+/* ========== FAVICON preview ========== */
+.favicon-strip{display:flex;align-items:flex-end;gap:20px;padding:16px 0}
+.favicon-slot{display:flex;flex-direction:column;align-items:center;gap:6px}
+.favicon-slot .label{font-family:"Inter",sans-serif;font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase}
+
+/* ========== CONSTRUCTION GRID ========== */
+.construction{background:var(--night);padding:60px;position:relative}
+.construction::before{content:"";position:absolute;inset:8px;border:0.5px solid var(--line)}
+.construction svg{display:block;margin:0 auto}
+.construction .notes{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px;color:var(--muted);line-height:1.8;margin-top:20px;text-align:center}
+
+/* ========== USAGE EXAMPLES ========== */
+.usage{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.usage-box{background:var(--night-lift);padding:24px;border:0.5px solid var(--line);position:relative;min-height:200px}
+.usage-box::before{content:"";position:absolute;inset:6px;border:0.5px solid rgba(216,187,137,0.12);pointer-events:none}
+.usage-title{font-family:"Inter",sans-serif;font-size:10px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;margin-bottom:20px}
+.usage-content{display:flex;align-items:center;justify-content:center;padding:20px}
+
+/* ========== PALETTE SWATCH ========== */
+.palette-note{max-width:720px;margin:0 auto;padding:30px;background:var(--night-lift);border:0.5px solid var(--line);position:relative;font-family:"Shippori Mincho",serif;font-size:13px;line-height:1.95;color:var(--ivory-dim)}
+.palette-note::before{content:"";position:absolute;inset:6px;border:0.5px solid rgba(216,187,137,0.12);pointer-events:none}
+.palette-note h3{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--gold);margin:16px 0 8px}
+.palette-note h3:first-child{margin-top:0}
+.palette-note strong{color:var(--ivory)}
+
+/* shared logomark svg */
+</style>
+</head>
+<body>
+
+<h1 class="page-title">P A T E R N I A</h1>
+<p class="page-sub">~ logo system ~</p>
+
+<!-- ============================ PRIMARY LOGOMARK ============================ -->
+<div class="section-title">primary logomark</div>
+<div class="showcase">
+
+  <!-- LARGE -->
+  <div class="card">
+    <svg class="mark" width="160" height="160" viewBox="0 0 72 72">
+      <defs>
+        <linearGradient id="g-lg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ead1a0"/>
+          <stop offset="50%" stop-color="#d8bb89"/>
+          <stop offset="100%" stop-color="#a88b55"/>
+        </linearGradient>
+      </defs>
+      <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-lg)" stroke-width="1"/>
+      <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.5" opacity="0.5"/>
+      <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+      <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/>
+      <circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+      <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+    </svg>
+    <div class="card-label">mark · 160</div>
+  </div>
+
+  <!-- MEDIUM -->
+  <div class="card">
+    <svg class="mark" width="96" height="96" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1"/>
+      <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+      <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/>
+      <circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+      <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+    </svg>
+    <div class="card-label">mark · 96</div>
+  </div>
+
+  <!-- ON LIGHT BG -->
+  <div class="card on-light">
+    <svg class="mark ink" width="120" height="120" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="32" fill="none" stroke="#2f2418" stroke-width="1"/>
+      <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(47,36,24,0.07)" stroke="#2f2418" stroke-width="0.5"/>
+      <circle cx="36" cy="8" r="2.5" fill="#2f2418"/>
+      <circle cx="63" cy="28" r="2.5" fill="#2f2418"/>
+      <circle cx="52" cy="62" r="2.5" fill="#2f2418"/>
+      <circle cx="20" cy="62" r="2.5" fill="#2f2418"/>
+      <circle cx="9" cy="28" r="2.5" fill="#2f2418"/>
+      <circle cx="36" cy="36" r="6" fill="none" stroke="#2f2418" stroke-width="0.8"/>
+      <circle cx="36" cy="36" r="2.5" fill="#2f2418"/>
+    </svg>
+    <div class="card-label">mark · ink on ivory</div>
+  </div>
+
+  <!-- MONOCHROME IVORY -->
+  <div class="card">
+    <svg class="mark" width="120" height="120" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="32" fill="none" stroke="#ebe3e8" stroke-width="1"/>
+      <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(235,227,232,0.08)" stroke="#ebe3e8" stroke-width="0.5"/>
+      <circle cx="36" cy="8" r="2.5" fill="#ebe3e8"/>
+      <circle cx="63" cy="28" r="2.5" fill="#ebe3e8"/>
+      <circle cx="52" cy="62" r="2.5" fill="#ebe3e8"/>
+      <circle cx="20" cy="62" r="2.5" fill="#ebe3e8"/>
+      <circle cx="9" cy="28" r="2.5" fill="#ebe3e8"/>
+      <circle cx="36" cy="36" r="6" fill="none" stroke="#ebe3e8" stroke-width="0.8"/>
+      <circle cx="36" cy="36" r="2.5" fill="#ebe3e8"/>
+    </svg>
+    <div class="card-label">mark · ivory</div>
+  </div>
+</div>
+
+<!-- ============================ WORDMARK ============================ -->
+<div class="section-title">wordmark</div>
+<div class="showcase">
+  <div class="card">
+    <div class="wordmark gold" style="font-size:56px">paternia</div>
+    <div class="card-label">wordmark · 56 · gold</div>
+  </div>
+  <div class="card">
+    <div class="wordmark" style="font-size:48px">paternia</div>
+    <div class="card-label">wordmark · 48 · ivory</div>
+  </div>
+  <div class="card on-light">
+    <div class="wordmark ink" style="font-size:48px">paternia</div>
+    <div class="card-label">wordmark · ink</div>
+  </div>
+  <div class="card">
+    <div class="wordmark gold" style="font-size:36px;font-weight:300;letter-spacing:0.3em">PATERNIA</div>
+    <div class="card-label">wordmark · caps</div>
+  </div>
+</div>
+
+<!-- ============================ LOCKUP ============================ -->
+<div class="section-title">lockup · icon + text</div>
+<div class="showcase">
+
+  <!-- VERTICAL LOCKUP with tagline -->
+  <div class="card">
+    <div class="lockup-v">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <defs>
+          <linearGradient id="g-lockup1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+          </linearGradient>
+        </defs>
+        <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-lockup1)" stroke-width="1"/>
+        <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+        <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+        <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+        <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+        <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+        <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+      </svg>
+      <div>
+        <div class="wordmark" style="font-size:32px;text-align:center">paternia</div>
+        <div class="wordmark-sub" style="font-size:13px;margin-top:4px">~ an atlas of personal constellations ~</div>
+      </div>
+    </div>
+    <div class="card-label">lockup · vertical · with tagline</div>
+  </div>
+
+  <!-- VERTICAL LOCKUP short -->
+  <div class="card">
+    <div class="lockup-v">
+      <svg width="56" height="56" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1"/>
+        <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+        <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+        <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+        <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+        <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+        <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+      </svg>
+      <div class="wordmark" style="font-size:26px">paternia</div>
+    </div>
+    <div class="card-label">lockup · vertical · compact</div>
+  </div>
+
+  <!-- HORIZONTAL LOCKUP -->
+  <div class="card">
+    <div class="lockup-h">
+      <svg width="44" height="44" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1.5"/>
+        <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.6"/>
+        <circle cx="36" cy="8" r="3" fill="#d8bb89"/><circle cx="63" cy="28" r="3" fill="#d8bb89"/>
+        <circle cx="52" cy="62" r="3" fill="#d8bb89"/><circle cx="20" cy="62" r="3" fill="#d8bb89"/>
+        <circle cx="9" cy="28" r="3" fill="#d8bb89"/>
+        <circle cx="36" cy="36" r="3" fill="#ead1a0"/>
+      </svg>
+      <div class="wordmark" style="font-size:28px;padding-left:4px">paternia</div>
+    </div>
+    <div class="card-label">lockup · horizontal</div>
+  </div>
+</div>
+
+<!-- ============================ FAVICON STRIP ============================ -->
+<div class="section-title">favicon · app icon</div>
+<div class="showcase">
+  <div class="card">
+    <div class="favicon-strip">
+      <div class="favicon-slot">
+        <svg width="16" height="16" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="4"/>
+          <circle cx="36" cy="8" r="6" fill="#d8bb89"/><circle cx="63" cy="28" r="6" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="6" fill="#d8bb89"/><circle cx="20" cy="62" r="6" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="6" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="6" fill="#ead1a0"/>
+        </svg>
+        <span class="label">16</span>
+      </div>
+      <div class="favicon-slot">
+        <svg width="32" height="32" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="2"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.15)"/>
+          <circle cx="36" cy="8" r="4" fill="#d8bb89"/><circle cx="63" cy="28" r="4" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="4" fill="#d8bb89"/><circle cx="20" cy="62" r="4" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="4" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="4" fill="#ead1a0"/>
+        </svg>
+        <span class="label">32</span>
+      </div>
+      <div class="favicon-slot">
+        <svg width="48" height="48" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1.5"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.15)" stroke="#d8bb89" stroke-width="0.8"/>
+          <circle cx="36" cy="8" r="3" fill="#d8bb89"/><circle cx="63" cy="28" r="3" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="3" fill="#d8bb89"/><circle cx="20" cy="62" r="3" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="3" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="3" fill="#ead1a0"/>
+        </svg>
+        <span class="label">48</span>
+      </div>
+      <div class="favicon-slot">
+        <svg width="64" height="64" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+          <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+          <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+        </svg>
+        <span class="label">64</span>
+      </div>
+    </div>
+    <div class="card-label">favicon · multi-size(16 / 32 / 48 / 64)</div>
+  </div>
+</div>
+
+<!-- ============================ APP ICON (rounded tile) ============================ -->
+<div class="section-title">app tile · ios / android</div>
+<div class="showcase">
+  <div class="card">
+    <div style="width:120px;height:120px;background:var(--night);border-radius:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,0.5)">
+      <svg width="80" height="80" viewBox="0 0 72 72">
+        <defs>
+          <linearGradient id="g-app" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+          </linearGradient>
+        </defs>
+        <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-app)" stroke-width="1.5"/>
+        <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.2)" stroke="#d8bb89" stroke-width="0.8"/>
+        <circle cx="36" cy="8" r="3" fill="#d8bb89"/><circle cx="63" cy="28" r="3" fill="#d8bb89"/>
+        <circle cx="52" cy="62" r="3" fill="#d8bb89"/><circle cx="20" cy="62" r="3" fill="#d8bb89"/>
+        <circle cx="9" cy="28" r="3" fill="#d8bb89"/>
+        <circle cx="36" cy="36" r="5" fill="#ead1a0"/>
+      </svg>
+    </div>
+    <div class="card-label">app tile · night bg</div>
+  </div>
+  <div class="card">
+    <div style="width:120px;height:120px;background:linear-gradient(135deg,#ead1a0,#a88b55);border-radius:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,0.5)">
+      <svg width="80" height="80" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="#14101f" stroke-width="1.5"/>
+        <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(20,16,31,0.15)" stroke="#14101f" stroke-width="0.8"/>
+        <circle cx="36" cy="8" r="3" fill="#14101f"/><circle cx="63" cy="28" r="3" fill="#14101f"/>
+        <circle cx="52" cy="62" r="3" fill="#14101f"/><circle cx="20" cy="62" r="3" fill="#14101f"/>
+        <circle cx="9" cy="28" r="3" fill="#14101f"/>
+        <circle cx="36" cy="36" r="5" fill="#14101f"/>
+      </svg>
+    </div>
+    <div class="card-label">app tile · gold bg</div>
+  </div>
+</div>
+
+<!-- ============================ CONSTRUCTION ============================ -->
+<div class="section-title">construction grid</div>
+<div class="showcase">
+  <div class="card" style="padding:40px 60px">
+    <svg width="240" height="240" viewBox="0 0 72 72">
+      <!-- guide circles -->
+      <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="0.3" stroke-dasharray="1 1" opacity="0.35"/>
+      <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.2" opacity="0.3"/>
+      <!-- 5-point guide lines from center -->
+      <g stroke="#d8bb89" stroke-width="0.2" opacity="0.35" stroke-dasharray="0.5 1">
+        <line x1="36" y1="36" x2="36" y2="8"/>
+        <line x1="36" y1="36" x2="63" y2="28"/>
+        <line x1="36" y1="36" x2="52" y2="62"/>
+        <line x1="36" y1="36" x2="20" y2="62"/>
+        <line x1="36" y1="36" x2="9" y2="28"/>
+      </g>
+      <!-- pentagon + dots -->
+      <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+      <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/>
+      <circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+      <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+      <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+      <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+      <!-- axis labels -->
+      <g font-family="Cormorant Garamond" font-style="italic" font-size="4" fill="#8a7d99">
+        <text x="36" y="4" text-anchor="middle">O</text>
+        <text x="69" y="27" text-anchor="start">C</text>
+        <text x="57" y="68" text-anchor="start">E</text>
+        <text x="15" y="68" text-anchor="end">A</text>
+        <text x="3" y="27" text-anchor="end">N</text>
+      </g>
+    </svg>
+    <div class="card-label">construction · 5 Big5 axes</div>
+  </div>
+</div>
+
+<!-- ============================ USAGE EXAMPLES ============================ -->
+<div class="section-title">usage · examples</div>
+<div class="usage">
+  <!-- Header bar -->
+  <div class="usage-box">
+    <div class="usage-title">web · nav header</div>
+    <div class="usage-content" style="justify-content:space-between;padding:12px 16px;width:100%;background:var(--night-deep)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="20" height="20" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="2.5"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.2)"/>
+          <circle cx="36" cy="8" r="5" fill="#d8bb89"/><circle cx="63" cy="28" r="5" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="5" fill="#d8bb89"/><circle cx="20" cy="62" r="5" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="5" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="5" fill="#ead1a0"/>
+        </svg>
+        <span class="wordmark gold" style="font-size:18px">paternia</span>
+      </div>
+      <span style="font-family:Inter;font-size:9px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase">GALLERY →</span>
+    </div>
+  </div>
+
+  <!-- TikTok profile icon -->
+  <div class="usage-box">
+    <div class="usage-title">tiktok · profile circle</div>
+    <div class="usage-content" style="flex-direction:column;gap:10px">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--night);display:flex;align-items:center;justify-content:center;border:2px solid var(--gold)">
+        <svg width="54" height="54" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="2"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.18)" stroke="#d8bb89" stroke-width="0.5"/>
+          <circle cx="36" cy="8" r="3" fill="#d8bb89"/><circle cx="63" cy="28" r="3" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="3" fill="#d8bb89"/><circle cx="20" cy="62" r="3" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="3" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="4" fill="#ead1a0"/>
+        </svg>
+      </div>
+      <span class="wordmark" style="font-size:14px">@paternia</span>
+    </div>
+  </div>
+
+  <!-- note profile -->
+  <div class="usage-box">
+    <div class="usage-title">note · cover</div>
+    <div class="usage-content" style="flex-direction:column;gap:10px">
+      <div style="width:100%;padding:16px 20px;background:var(--ivory);display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:10px;align-items:center">
+          <svg width="28" height="28" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="32" fill="none" stroke="#2f2418" stroke-width="2"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(47,36,24,0.08)"/>
+            <circle cx="36" cy="8" r="3" fill="#2f2418"/><circle cx="63" cy="28" r="3" fill="#2f2418"/>
+            <circle cx="52" cy="62" r="3" fill="#2f2418"/><circle cx="20" cy="62" r="3" fill="#2f2418"/>
+            <circle cx="9" cy="28" r="3" fill="#2f2418"/>
+            <circle cx="36" cy="36" r="4" fill="#2f2418"/>
+          </svg>
+          <span class="wordmark ink" style="font-size:18px">paternia</span>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:#6e5d80">No. VII · 星の設計者</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide corner -->
+  <div class="usage-box">
+    <div class="usage-title">tiktok · slide corner</div>
+    <div class="usage-content" style="flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <svg width="14" height="14" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="3"/>
+          <circle cx="36" cy="8" r="7" fill="#d8bb89"/><circle cx="63" cy="28" r="7" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="7" fill="#d8bb89"/><circle cx="20" cy="62" r="7" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="7" fill="#d8bb89"/>
+        </svg>
+        <span style="font-family:Inter;font-size:9px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase">paternia · observer I</span>
+      </div>
+      <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:10px;color:var(--muted)">bottom-right footer credit</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ DESIGN NOTES ============================ -->
+<div class="section-title">design notes</div>
+<div class="palette-note">
+  <h3>symbol meaning</h3>
+  <strong>5 つの金の点</strong>はビッグファイブ(O · C · E · A · N)の 5 軸。これを結ぶ<strong>薄い五角形</strong>は、あなたの性格が描く「模様」のシルエット。中心の<strong>1 つのドット</strong>は、観測の中心 = 今のあなた自身。
+  <br><br>
+  外側の<strong>円</strong>は天体観測の枠。全体で「性格の星図(atlas)」を象徴する。
+
+  <h3>color rule</h3>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li>Primary: <strong>Gold (#D8BB89)</strong> + <strong>Gold Bright (#EAD1A0)</strong> 中心</li>
+    <li>Monochrome: <strong>Ivory</strong>(ダーク背景) / <strong>Ink Walnut(#2F2418)</strong>(ライト背景)</li>
+    <li>外側 stroke にグラデーション(#EAD1A0 → #A88B55)を使えるのは<strong>高解像度</strong>時のみ(48px 未満はフラット色)</li>
+  </ul>
+
+  <h3>spacing</h3>
+  ロゴ周囲には最低でも、<strong>マーク幅の 25%</strong> の余白を確保する(clear space)。
+
+  <h3>minimum sizes</h3>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li>Icon: <strong>16×16 px</strong> まで(16px 以下は非推奨、star radial details が潰れる)</li>
+    <li>Wordmark: <strong>高さ 14px</strong> まで</li>
+    <li>Lockup 縦: <strong>56px</strong> 以上推奨</li>
+  </ul>
+
+  <h3>file output plan</h3>
+  <ul style="padding-left:20px;margin:8px 0">
+    <li><code>public/favicon.svg</code> — 64px base(既存 favicon.ico を置換)</li>
+    <li><code>public/og/paternia-logo-gold.svg</code> — OGP / sharing</li>
+    <li><code>src/components/PaterniaLogo.tsx</code> — React component(variant prop で切替)</li>
+    <li>TikTok 用: <strong>1080×1080</strong> サイズで PNG エクスポート(プロフィール画像)</li>
+    <li>note 用: <strong>ヘッダー画像</strong>(1280×670)+ アイコン(200×200)</li>
+  </ul>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>paternia — Atlas System (full touchpoints)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night-deep:#0f0a18;
+  --night:#14101f;
+  --night-lift:#1a1428;
+  --night-elev:#241d38;
+  --night-hi:#2d2546;
+  --ivory:#ebe3e8;
+  --ivory-dim:#c4b8c8;
+  --muted:#8a7d99;
+  --muted-dim:#5a4e68;
+  --gold:#d8bb89;
+  --gold-bright:#ead1a0;
+  --gold-deep:#a88b55;
+  --mauve:#b8a5c4;
+  --plum:#6e5d80;
+  --line:rgba(216,187,137,0.2);
+  --line-strong:rgba(216,187,137,0.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--night-deep);
+  background-image:
+    radial-gradient(ellipse at 15% 10%,rgba(110,93,128,0.2) 0%,transparent 60%),
+    radial-gradient(ellipse at 85% 85%,rgba(216,187,137,0.08) 0%,transparent 60%);
+  color:var(--ivory);
+  font-family:"Cormorant Garamond",serif;
+  padding:60px 40px;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ GLOBAL ============ */
+h1.page-title{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:34px;letter-spacing:0.2em;color:var(--ivory);text-align:center;margin:0 0 4px}
+.page-sub{text-align:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:20px;color:var(--gold);margin:0 0 70px;letter-spacing:0.06em}
+.section-title{text-align:center;font-family:"Inter",sans-serif;font-weight:400;font-size:10px;letter-spacing:0.55em;color:var(--muted);margin:80px 0 36px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:20px}
+.section-title::before,.section-title::after{content:"";width:60px;height:0.5px;background:var(--line)}
+.section-hint{text-align:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;color:var(--ivory-dim);margin:-14px 0 30px}
+.gallery{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;align-items:flex-start;max-width:1600px;margin:0 auto}
+
+/* ============ LOGO / IDENTITY ============ */
+.identity-block{max-width:720px;margin:0 auto;padding:48px;background:var(--night-lift);border:0.5px solid var(--line-strong);position:relative;text-align:center}
+.identity-block::before{content:"";position:absolute;inset:6px;border:0.5px solid var(--line);pointer-events:none}
+.logomark{width:72px;height:72px;margin:0 auto 20px}
+.logotype{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:38px;letter-spacing:0.25em;color:var(--ivory);margin:0 0 4px}
+.logotype-sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--gold);letter-spacing:0.05em}
+
+/* ============ ICON GRID ============ */
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;max-width:720px;margin:0 auto;background:var(--line)}
+.icon-cell{background:var(--night);padding:28px 16px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;min-height:140px}
+.icon-cell svg{color:var(--gold);opacity:0.85}
+.icon-label{font-family:"Inter",sans-serif;font-weight:300;font-size:9px;letter-spacing:0.25em;color:var(--muted);text-transform:uppercase;text-align:center;line-height:1.5}
+.icon-jp{font-family:"Shippori Mincho",serif;font-weight:400;font-size:11px;color:var(--ivory-dim);text-align:center;margin-top:-8px}
+
+/* ============ SLIDE CARDS ============ */
+.card{width:300px;height:533px;background:var(--night);background-image:radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.15) 0%,transparent 60%),linear-gradient(180deg,#15101f 0%,#0d0916 100%);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.65);flex-shrink:0}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(1px 1px at 14% 20%,rgba(234,209,160,0.4) 50%,transparent),radial-gradient(1.2px 1.2px at 82% 12%,rgba(235,227,232,0.35) 50%,transparent),radial-gradient(1px 1px at 72% 84%,rgba(234,209,160,0.35) 50%,transparent),radial-gradient(1px 1px at 18% 88%,rgba(235,227,232,0.3) 50%,transparent)}
+.card-header{position:absolute;top:26px;left:26px;right:26px;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
+.card-mark{font-family:"Inter",sans-serif;font-weight:400;font-size:8px;letter-spacing:0.4em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+.card-mark::before{content:"✦";color:var(--gold);font-size:7px;opacity:0.9}
+.card-index{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;font-size:12px;color:var(--gold);letter-spacing:0.08em}
+.header-line{position:absolute;top:50px;left:26px;right:26px;height:0.5px;background:var(--line);z-index:3}
+
+.card-content{position:absolute;top:80px;bottom:96px;left:26px;right:26px;z-index:3;display:flex;flex-direction:column}
+
+/* pattern art */
+.pattern-art{width:210px;height:210px;border-radius:50%;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%);position:relative;margin:6px auto 12px}
+.pattern-art::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.7) 0%,transparent 32%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.5) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.28) 0 1px,transparent 1px 10px),repeating-radial-gradient(circle at 50% 50%,rgba(234,209,160,0.2) 0 0.8px,transparent 0.8px 7px);mix-blend-mode:screen}
+.pattern-art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,transparent 55%,rgba(8,6,26,0.65) 90%)}
+.pattern-ring{width:216px;height:216px;border-radius:50%;border:0.5px solid var(--line-strong);position:absolute;top:-3px;left:50%;transform:translateX(-50%);pointer-events:none}
+
+/* cliffhanger */
+.cliff{position:absolute;bottom:22px;left:26px;right:26px;padding-top:14px;border-top:0.5px solid var(--line);font-family:"Shippori Mincho",serif;font-weight:400;font-style:italic;font-size:13px;color:var(--ivory-dim);letter-spacing:0.05em;display:flex;align-items:center;gap:8px;z-index:3}
+.cliff::before{content:"▸";color:var(--gold);font-style:normal}
+
+/* slide-specific text styles */
+.slide-num{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:80px;line-height:0.95;color:var(--gold-bright);letter-spacing:-0.02em}
+.slide-num .unit{font-family:"Shippori Mincho",serif;font-weight:500;font-size:22px;color:var(--ivory-dim);margin-left:8px}
+.slide-label{font-family:"Inter",sans-serif;font-weight:400;font-size:9px;letter-spacing:0.35em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.slide-lead{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;font-size:14px;color:var(--muted);margin-bottom:14px}
+.slide-main{font-family:"Shippori Mincho",serif;font-weight:500;font-size:22px;line-height:1.55;color:var(--ivory);letter-spacing:0.03em}
+.slide-main.big{font-size:32px;font-weight:600}
+.slide-main .accent{color:var(--gold-bright);border-bottom:1px solid var(--gold);padding-bottom:1px}
+.slide-main .mauve{color:var(--mauve)}
+.slide-body{font-family:"Shippori Mincho",serif;font-weight:400;font-size:12px;color:var(--ivory-dim);line-height:1.9;margin-top:14px}
+.slide-list{list-style:none;margin:12px 0 0;padding:0;font-family:"Shippori Mincho",serif;font-size:14px;color:var(--ivory);line-height:2}
+.slide-list li{padding-left:22px;position:relative}
+.slide-list li::before{content:attr(data-n);position:absolute;left:0;color:var(--gold);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px}
+
+.cta-list{list-style:none;margin-top:20px;padding:0;font-family:"Shippori Mincho",serif;font-size:13px;line-height:2.2;color:var(--ivory)}
+.cta-list li{padding-left:26px;position:relative}
+.cta-list li span.icon{position:absolute;left:0;color:var(--gold);font-family:"Inter",sans-serif}
+
+.slide-caption-label{position:absolute;bottom:22px;left:26px;right:26px;padding-top:12px;border-top:0.5px solid var(--line);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:12px;color:var(--muted);text-align:center;z-index:3}
+
+.card-label{color:var(--gold);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px;letter-spacing:0.15em;opacity:0.85;text-align:center;margin-top:14px}
+
+/* ============ TIKTOK APP MOCK (caption) ============ */
+.tiktok-mock{width:320px;background:#000;border-radius:32px;padding:10px;box-shadow:0 30px 80px rgba(0,0,0,0.65)}
+.tiktok-inner{background:var(--night-deep);border-radius:24px;overflow:hidden;position:relative;min-height:600px;padding:20px 22px 80px;color:var(--ivory);font-family:"Shippori Mincho",serif}
+.tiktok-video{width:100%;aspect-ratio:9/16;background:var(--night);border-radius:12px;margin-bottom:20px;position:relative;overflow:hidden;background-image:linear-gradient(180deg,#15101f 0%,#0d0916 100%)}
+.tiktok-video .preview-slide{position:absolute;inset:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--ivory-dim);font-family:"Shippori Mincho",serif;font-size:14px}
+.tiktok-handle{font-family:"Inter",sans-serif;font-size:13px;font-weight:500;color:var(--ivory);margin-bottom:6px}
+.tiktok-handle::before{content:"@";color:var(--muted)}
+.tiktok-title{font-family:"Shippori Mincho",serif;font-weight:600;font-size:14px;line-height:1.5;color:var(--ivory);margin-bottom:12px}
+.tiktok-caption{font-family:"Shippori Mincho",serif;font-size:12px;line-height:1.85;color:var(--ivory-dim)}
+.tiktok-caption strong{color:var(--ivory);font-weight:500}
+.tiktok-caption hr{border:none;border-top:0.5px solid var(--line);margin:10px 0}
+.tiktok-caption .tags{color:var(--gold);font-size:11px;margin-top:10px}
+
+/* ============ SITE MOCKUP (mobile) ============ */
+.phone{width:340px;aspect-ratio:9/19.5;background:#000;border-radius:36px;padding:8px;box-shadow:0 30px 80px rgba(0,0,0,0.7);position:relative}
+.phone::before{content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);width:100px;height:24px;background:#000;border-radius:999px;z-index:10}
+.phone-screen{background:var(--night-deep);border-radius:28px;overflow:hidden;width:100%;height:100%;position:relative;padding:60px 22px 28px}
+.phone-screen::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 14% 18%,rgba(234,209,160,0.4) 50%,transparent),radial-gradient(1.2px 1.2px at 82% 12%,rgba(235,227,232,0.35) 50%,transparent),radial-gradient(1px 1px at 70% 84%,rgba(234,209,160,0.3) 50%,transparent),radial-gradient(1px 1px at 18% 88%,rgba(235,227,232,0.3) 50%,transparent)}
+
+/* home page */
+.home-brand{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:26px;letter-spacing:0.22em;color:var(--ivory);text-align:center;margin-bottom:4px}
+.home-sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px;color:var(--gold);text-align:center;margin-bottom:36px;letter-spacing:0.05em}
+.home-pattern{width:160px;height:160px;border-radius:50%;margin:0 auto 8px;position:relative;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%)}
+.home-pattern::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.7) 0%,transparent 32%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.5) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.28) 0 1px,transparent 1px 10px);mix-blend-mode:screen}
+.home-pattern-ring{width:168px;height:168px;border-radius:50%;border:0.5px solid var(--line-strong);position:absolute;top:-4px;left:50%;transform:translateX(-50%);pointer-events:none}
+.home-title{font-family:"Shippori Mincho",serif;font-weight:500;font-size:22px;text-align:center;line-height:1.4;margin:28px 0 6px;color:var(--ivory)}
+.home-title .accent{color:var(--gold-bright)}
+.home-desc{font-family:"Shippori Mincho",serif;font-size:11px;color:var(--ivory-dim);text-align:center;line-height:1.8;margin-bottom:22px}
+.home-cta{display:block;width:100%;padding:14px;background:rgba(216,187,137,0.12);border:0.5px solid var(--gold);text-align:center;font-family:"Shippori Mincho",serif;font-weight:500;font-size:14px;color:var(--gold);letter-spacing:0.12em;margin-bottom:10px;cursor:pointer}
+.home-cta-sub{display:block;width:100%;padding:11px;border-top:0.5px solid var(--line);text-align:center;font-family:"Shippori Mincho",serif;font-size:12px;color:var(--ivory-dim);margin-bottom:14px}
+.home-footer-line{text-align:center;font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.35em;color:var(--muted);text-transform:uppercase;margin-top:24px}
+
+/* gallery page */
+.gallery-head{text-align:center;margin-bottom:20px}
+.gallery-eyebrow{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.45em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.gallery-title{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:24px;letter-spacing:0.15em;color:var(--ivory)}
+.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gallery-card{background:var(--night);border:0.5px solid var(--line);padding:14px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.gallery-card-roman{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:11px;color:var(--gold);letter-spacing:0.15em;align-self:flex-start;padding-left:4px}
+.gallery-pattern-wrap{width:92px;height:92px;margin:2px 0 4px;position:relative}
+.gallery-pattern{width:100%;height:100%;border-radius:50%;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%);position:relative}
+.gallery-pattern::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.7) 0%,transparent 32%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.5) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.28) 0 1px,transparent 1px 8px);mix-blend-mode:screen}
+.gallery-pattern-ring{width:100%;height:100%;border-radius:50%;border:0.5px solid var(--line-strong);position:absolute;top:0;left:0;pointer-events:none}
+.gallery-code{font-family:"Inter",sans-serif;font-weight:400;font-size:9px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.gallery-name{font-family:"Shippori Mincho",serif;font-weight:500;font-size:13px;color:var(--ivory);text-align:center}
+
+/* result page */
+.result-brand{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.45em;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:20px}
+.result-pattern-wrap{width:190px;height:190px;margin:8px auto 10px;position:relative}
+.result-pattern{width:100%;height:100%;border-radius:50%;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%);position:relative}
+.result-pattern::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.7) 0%,transparent 32%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.5) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.28) 0 1px,transparent 1px 10px);mix-blend-mode:screen}
+.result-ring{width:100%;height:100%;border-radius:50%;border:0.5px solid var(--line-strong);position:absolute;top:0;left:0;pointer-events:none}
+.result-code{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;text-align:center;color:var(--gold);letter-spacing:0.35em;margin-top:6px}
+.result-archetype{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;text-align:center;margin-top:4px}
+.result-name{font-family:"Shippori Mincho",serif;font-weight:500;font-size:26px;color:var(--ivory);text-align:center;margin-top:12px;letter-spacing:0.05em}
+.result-desc{font-family:"Shippori Mincho",serif;font-size:11px;line-height:1.9;color:var(--ivory-dim);text-align:center;margin-top:14px;padding:0 6px}
+.result-divider{display:flex;align-items:center;gap:8px;margin:22px 0}
+.result-divider .line{flex:1;height:0.5px;background:var(--line)}
+.result-divider .mark{color:var(--gold);font-size:8px}
+.result-section-title{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.45em;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:10px}
+.result-score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-family:"Inter",sans-serif;font-size:10px}
+.result-score-row .axis{width:16px;color:var(--gold);font-style:italic;font-family:"Cormorant Garamond",serif;font-size:13px}
+.result-score-row .bar{flex:1;height:2px;background:var(--night-elev);position:relative}
+.result-score-row .bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);opacity:0.85}
+.result-score-row .val{color:var(--ivory-dim);font-family:"Inter",sans-serif;font-size:10px;min-width:32px;text-align:right}
+
+/* note article */
+.note-card{width:360px;background:var(--night-lift);position:relative;box-shadow:0 30px 80px rgba(0,0,0,0.6);padding:36px 32px}
+.note-card::before{content:"";position:absolute;inset:6px;border:0.5px solid var(--line);pointer-events:none}
+.note-cover{height:180px;background:var(--night);background-image:radial-gradient(ellipse at 50% 50%,rgba(110,93,128,0.35) 0%,transparent 60%),linear-gradient(180deg,#241d38,#14101f);position:relative;margin:0 -32px 24px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.note-cover::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 20% 30%,rgba(234,209,160,0.5) 50%,transparent),radial-gradient(1px 1px at 80% 70%,rgba(235,227,232,0.35) 50%,transparent),radial-gradient(1.2px 1.2px at 50% 80%,rgba(234,209,160,0.4) 50%,transparent)}
+.note-cover-pattern{width:110px;height:110px;border-radius:50%;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%);position:relative;box-shadow:0 0 0 3px var(--night),0 0 0 3.5px var(--gold)}
+.note-cover-pattern::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.8) 0%,transparent 32%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.55) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.3) 0 1px,transparent 1px 8px);mix-blend-mode:screen}
+.note-mark{font-family:"Inter",sans-serif;font-size:9px;letter-spacing:0.5em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.note-title{font-family:"Shippori Mincho",serif;font-weight:600;font-size:20px;line-height:1.55;color:var(--ivory);margin-bottom:10px;letter-spacing:0.04em}
+.note-meta{display:flex;gap:14px;font-family:"Inter",sans-serif;font-size:10px;color:var(--muted);margin-bottom:18px;padding-bottom:14px;border-bottom:0.5px solid var(--line)}
+.note-meta span.price{color:var(--gold);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px}
+.note-lead{font-family:"Shippori Mincho",serif;font-size:12.5px;line-height:1.95;color:var(--ivory-dim)}
+.note-lead strong{color:var(--ivory);font-weight:500}
+.note-pullquote{border-left:0.5px solid var(--gold);padding:2px 0 2px 14px;margin:16px 0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px;color:var(--gold-bright);letter-spacing:0.03em}
+.note-cta{margin-top:20px;padding:14px;background:rgba(216,187,137,0.08);border:0.5px solid var(--line-strong);font-family:"Shippori Mincho",serif;font-size:12px;text-align:center;color:var(--gold)}
+
+/* ============ PALETTE / VOICE ============ */
+.palette-block,.note-block{max-width:720px;margin:0 auto;padding:40px;background:var(--night-lift);border:0.5px solid var(--line-strong);position:relative}
+.palette-block::before,.note-block::before{content:"";position:absolute;inset:6px;border:0.5px solid var(--line);pointer-events:none}
+.palette-title{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:20px;letter-spacing:0.18em;color:var(--ivory);text-align:center;margin:0 0 4px}
+.palette-sub{text-align:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--gold);margin:0 0 24px}
+.palette-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:14px}
+.sw{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.sw-box{width:100%;aspect-ratio:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06)}
+.sw-name{font-family:"Cormorant Garamond",serif;font-weight:500;font-size:11px;color:var(--ivory);font-style:italic}
+.sw-hex{font-family:"Inter",sans-serif;font-weight:400;font-size:9px;letter-spacing:0.08em;color:var(--muted)}
+
+.note-block{font-family:"Shippori Mincho",serif;font-size:13px;line-height:1.95;color:var(--ivory-dim)}
+.note-block h3{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:16px;font-style:italic;letter-spacing:0.1em;color:var(--gold);margin:22px 0 8px}
+.note-block h3:first-child{margin-top:0}
+.note-block strong{color:var(--ivory);font-weight:500}
+.note-block ul{padding-left:20px;margin:6px 0}
+.note-block li{margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">P A T E R N I A</h1>
+<p class="page-sub">~ atlas of personal constellations · full touchpoint system ~</p>
+
+<!-- ================================================ LOGO / IDENTITY ================================================ -->
+<div class="section-title">identity</div>
+<div class="identity-block">
+  <svg class="logomark" viewBox="0 0 72 72">
+    <!-- Outer circle -->
+    <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="0.8"/>
+    <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.3" opacity="0.5"/>
+    <!-- 5 Big5 axis dots -->
+    <g fill="#d8bb89">
+      <circle cx="36" cy="8" r="1.8"/>
+      <circle cx="63" cy="28" r="1.8"/>
+      <circle cx="52" cy="62" r="1.8"/>
+      <circle cx="20" cy="62" r="1.8"/>
+      <circle cx="9" cy="28" r="1.8"/>
+    </g>
+    <!-- Connecting pentagon -->
+    <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.4"/>
+    <!-- inner mark -->
+    <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+    <circle cx="36" cy="36" r="2" fill="#ead1a0"/>
+  </svg>
+  <div class="logotype">paternia</div>
+  <div class="logotype-sub">~ an atlas of personal constellations ~</div>
+</div>
+
+<!-- ================================================ ICON SYSTEM ================================================ -->
+<div class="section-title">iconography · common marks</div>
+<p class="section-hint">minimal geometric language, drawn only with hairlines and dots</p>
+<div class="icon-grid">
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M14 2 L16 12 L26 14 L16 16 L14 26 L12 16 L2 14 L12 12 Z" fill="currentColor" opacity="0.9"/></svg>
+    <div class="icon-label">specimen</div><div class="icon-jp">タイプの印</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="10" fill="none" stroke="currentColor" stroke-width="0.8"/><circle cx="14" cy="14" r="2" fill="currentColor"/><line x1="14" y1="2" x2="14" y2="5" stroke="currentColor" stroke-width="0.8"/><line x1="14" y1="23" x2="14" y2="26" stroke="currentColor" stroke-width="0.8"/><line x1="2" y1="14" x2="5" y2="14" stroke="currentColor" stroke-width="0.8"/><line x1="23" y1="14" x2="26" y2="14" stroke="currentColor" stroke-width="0.8"/></svg>
+    <div class="icon-label">observation</div><div class="icon-jp">観測</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M8 4 L20 14 L8 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="icon-label">forward</div><div class="icon-jp">次へ</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M6 4 L6 24 L14 18 L22 24 L22 4 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <div class="icon-label">save</div><div class="icon-jp">保存</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M4 7 L24 7 L24 19 L12 19 L6 24 L6 19 L4 19 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <div class="icon-label">comment</div><div class="icon-jp">コメント</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="7" cy="14" r="3" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="21" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="21" cy="21" r="3" fill="none" stroke="currentColor" stroke-width="1.1"/><line x1="9.5" y1="12.5" x2="18.5" y2="8.5" stroke="currentColor" stroke-width="0.8"/><line x1="9.5" y1="15.5" x2="18.5" y2="19.5" stroke="currentColor" stroke-width="0.8"/></svg>
+    <div class="icon-label">share</div><div class="icon-jp">共有</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="10" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.5"/><path d="M18 6 A 10 10 0 0 0 18 22 A 7 7 0 0 1 18 6" fill="currentColor" opacity="0.85"/></svg>
+    <div class="icon-label">phase</div><div class="icon-jp">章・位相</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><line x1="6" y1="14" x2="22" y2="14" stroke="currentColor" stroke-width="0.8"/><path d="M14 10 L16 14 L14 18 L12 14 Z" fill="currentColor"/></svg>
+    <div class="icon-label">divider</div><div class="icon-jp">区切り</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><g fill="none" stroke="currentColor" stroke-width="0.8"><circle cx="14" cy="14" r="11"/><circle cx="14" cy="14" r="7"/><circle cx="14" cy="14" r="3"/></g><circle cx="14" cy="14" r="1" fill="currentColor"/></svg>
+    <div class="icon-label">atlas</div><div class="icon-jp">全体地図</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><g font-family="Cormorant Garamond" font-style="italic" font-size="11" fill="currentColor"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="0.6"/><text x="6" y="9" text-anchor="middle">O</text><circle cx="22" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="0.6"/><text x="22" y="9" text-anchor="middle">C</text><circle cx="14" cy="22" r="4" fill="none" stroke="currentColor" stroke-width="0.6"/><text x="14" y="25" text-anchor="middle">E</text></g></svg>
+    <div class="icon-label">big 5</div><div class="icon-jp">5 軸</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M3 10 Q 7 4 14 10 Q 21 16 25 10 M3 18 Q 7 12 14 18 Q 21 24 25 18" fill="none" stroke="currentColor" stroke-width="0.8"/></svg>
+    <div class="icon-label">pattern</div><div class="icon-jp">模様</div>
+  </div>
+  <div class="icon-cell">
+    <svg width="28" height="28" viewBox="0 0 28 28"><g stroke="currentColor" stroke-width="0.7" fill="none"><line x1="4" y1="14" x2="8" y2="14"/><line x1="20" y1="14" x2="24" y2="14"/><line x1="14" y1="4" x2="14" y2="8"/><line x1="14" y1="20" x2="14" y2="24"/></g><circle cx="14" cy="14" r="3" fill="none" stroke="currentColor" stroke-width="0.9"/></svg>
+    <div class="icon-label">crosshair</div><div class="icon-jp">フォーカス</div>
+  </div>
+</div>
+
+<!-- ================================================ TIKTOK SLIDES ================================================ -->
+<div class="section-title">tiktok · 6-slide carousel</div>
+<p class="section-hint">Post 02 / 誠実性 · 「続かない自分」を卒業し、生涯年収+8,000万円にする性格の1軸</p>
+<div class="gallery" style="gap:24px">
+  <!-- S1 HOOK -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">01 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:40px">
+        <p class="slide-lead">a quiet finding</p>
+        <h2 class="slide-main big">「続かない自分」を卒業し、<br><span class="accent">生涯年収 +8,000 万円</span><br>にする性格の 1 軸</h2>
+        <p class="slide-body" style="margin-top:auto;margin-bottom:28px;font-size:10.5px;color:var(--muted);border-top:0.5px solid var(--line);padding-top:10px">アメリカの大学が 40 年追跡した研究より</p>
+      </div>
+      <div class="cliff">その正体は —</div>
+    </div>
+    <div class="card-label">s1 · hook</div>
+  </div>
+
+  <!-- S2 TENSION -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">02 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:70px">
+        <h2 class="slide-main">才能じゃない。<br>運でもない。<br>学歴でもない。</h2>
+        <p class="slide-body" style="margin-top:32px;font-size:13px;color:var(--ivory-dim)">全部を抜いたら、<br>たった 1 つの性格だけが<br>収入を決めていた。</p>
+      </div>
+      <div class="cliff">その性格とは —</div>
+    </div>
+    <div class="card-label">s2 · tension</div>
+  </div>
+
+  <!-- S3 REVEAL -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">03 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:40px">
+        <p class="slide-lead">the name</p>
+        <h2 class="slide-main big" style="color:var(--gold-bright);text-align:center;margin:auto 0">「きちんと系」</h2>
+        <p class="slide-body" style="text-align:center;font-size:13px">この性格が 1 段階高いだけで<br>生涯年収 <span style="color:var(--gold-bright)">+17%</span>・約 <span style="color:var(--gold-bright)">8,000 万円</span> の差</p>
+        <p class="slide-body" style="margin-top:auto;margin-bottom:28px;font-size:10px;color:var(--muted);text-align:center;border-top:0.5px solid var(--line);padding-top:10px">ミシガン大学・15 万人追跡調査</p>
+      </div>
+      <div class="cliff">4 つの習慣で伸ばせる —</div>
+    </div>
+    <div class="card-label">s3 · reveal</div>
+  </div>
+
+  <!-- S4 MECHANISM -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">04 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:40px">
+        <p class="slide-lead">the four habits</p>
+        <h2 class="slide-main" style="font-size:17px;margin-bottom:8px">「きちんと系」を構成する、<br>4 つの習慣</h2>
+        <ol class="slide-list" style="margin-top:18px">
+          <li data-n="I">先にやる</li>
+          <li data-n="II">約束を守る</li>
+          <li data-n="III">続ける</li>
+          <li data-n="IV">計画してから動く</li>
+        </ol>
+      </div>
+      <div class="cliff">でも、最も驚くのは —</div>
+    </div>
+    <div class="card-label">s4 · mechanism</div>
+  </div>
+
+  <!-- S5 TWIST -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">05 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:60px">
+        <p class="slide-lead">one unusual fact</p>
+        <h2 class="slide-main" style="font-size:21px">仕事の種類に関係なく、<br><span class="accent">どの職業でも</span><br>成績が上がる</h2>
+        <p class="slide-body" style="margin-top:20px;font-size:12.5px">営業も、エンジニアも、看護師も。<br>他のどの特性にも無い、<br>この 1 軸だけの特権。</p>
+      </div>
+      <div class="cliff">続きはキャプションへ —</div>
+    </div>
+    <div class="card-label">s5 · twist</div>
+  </div>
+
+  <!-- S6 CTA -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="card">
+      <div class="card-header"><span class="card-mark">observation · i</span><span class="card-index">06 / 06</span></div>
+      <div class="header-line"></div>
+      <div class="card-content" style="padding-top:40px">
+        <p class="slide-lead">three small actions</p>
+        <h2 class="slide-main" style="font-size:18px;margin-bottom:6px">あなたの<br>「きちんと度」は?</h2>
+        <ul class="cta-list" style="margin-top:14px">
+          <li><span class="icon">▢</span>保存して、自分の診断へ</li>
+          <li><span class="icon">◖</span>コメントで、弱点習慣を</li>
+          <li><span class="icon">▸</span>フォローで、シリーズ続く</li>
+        </ul>
+        <p class="slide-body" style="margin-top:auto;margin-bottom:22px;font-size:10.5px;text-align:center;color:var(--gold)">paternia.vercel.app</p>
+      </div>
+      <div class="slide-caption-label">observer · paternia</div>
+    </div>
+    <div class="card-label">s6 · cta</div>
+  </div>
+</div>
+
+<!-- ================================================ TIKTOK CAPTION ================================================ -->
+<div class="section-title">tiktok · caption</div>
+<p class="section-hint">slide が 6 枚で薄いぶん、caption は丁寧なミニ記事として deep 層を取りこぼさない</p>
+<div class="gallery">
+  <div class="tiktok-mock">
+    <div class="tiktok-inner">
+      <div class="tiktok-video">
+        <div class="preview-slide">
+          <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--gold);letter-spacing:0.35em">— OBSERVATION I —</p>
+          <p style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:17px;color:var(--ivory);line-height:1.45;margin-top:14px;padding:0 10px">「続かない自分」を卒業し、<span style="color:var(--gold-bright)">生涯年収 +8,000 万円</span>にする性格の 1 軸</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--muted);margin-top:18px">▸ 40 年の研究データ</p>
+        </div>
+      </div>
+      <div class="tiktok-handle">paternia_official</div>
+      <div class="tiktok-title">「続かない自分」を卒業し、生涯年収 +8,000 万円にする性格の 1 軸</div>
+      <div class="tiktok-caption">
+        才能でも、運でも、学歴でもない。<br>
+        たった 1 つの性格習慣が、生涯年収を決めていた。
+        <hr>
+        <strong>40 年の追跡データで判明</strong><br>
+        アメリカの大学が 15 万人を 40 年追跡した研究で、ある性格が 1 段階高い人は生涯年収が +17%、約 8,000 万円の差がついていた。
+        <br><br>
+        しかも、営業でもエンジニアでも看護師でも、職種に関係なく効く。他のどの性格特性にも無い、唯一の結果。
+        <hr>
+        その性格とは <strong>「誠実性」</strong>—<br>
+        paternia では「きちんと系」と呼んでいる。
+        <br><br>
+        構成する 4 つの習慣:<br>
+        I · 先にやる &nbsp; II · 約束を守る<br>
+        III · 続ける &nbsp; IV · 計画してから動く
+        <br><br>
+        重要なのは、これは <strong>訓練で伸ばせる</strong> こと。16 週間意識するだけで有意にスコアが上がると、別の研究が示している(ミシガン大学 2015)。
+        <br><br>
+        「自分は続かないタイプ」と諦める必要はない。
+        <hr>
+        🔗 プロフィールのリンクから無料診断(45 問・4 分)<br>
+        📝 詳しい記事は note.com/paternia
+        <br><br>
+        保存して、自分の模様と照らしてみて。
+        <div class="tags">#性格診断 #ビッグファイブ #年収 #自己分析 #性格</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ SITE MOCKUPS ================================================ -->
+<div class="section-title">site · home · gallery · result</div>
+<p class="section-hint">3 枚とも同じ warm night + gold hairline + serif pairing で統一</p>
+<div class="gallery" style="gap:28px">
+
+  <!-- HOME -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="home-brand">paternia</div>
+        <div class="home-sub">~ your personal constellation ~</div>
+        <div class="home-pattern-ring"></div>
+        <div class="home-pattern"></div>
+        <h1 class="home-title">あなたの性格が<br><span class="accent">模様</span>になる</h1>
+        <p class="home-desc">ビッグファイブをもとに<br>あなただけの模様が生まれる</p>
+        <button class="home-cta">サクッと診断する &nbsp;· 約 1 分</button>
+        <button class="home-cta-sub">じっくり診断する · 約 4 分</button>
+        <button class="home-cta-sub" style="border:none">20 の模様を見る</button>
+        <div class="home-footer-line">based on big five</div>
+      </div>
+    </div>
+    <div class="card-label">home</div>
+  </div>
+
+  <!-- GALLERY -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="gallery-head">
+          <div class="gallery-eyebrow">atlas · gallery</div>
+          <div class="gallery-title">20 の模様</div>
+        </div>
+        <div class="gallery-grid">
+          <div class="gallery-card"><div class="gallery-card-roman">No. VII</div><div class="gallery-pattern-wrap"><div class="gallery-pattern"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">O · C</div><div class="gallery-name">星の設計者</div></div>
+          <div class="gallery-card"><div class="gallery-card-roman">No. XIII</div><div class="gallery-pattern-wrap"><div class="gallery-pattern" style="background:radial-gradient(circle,#2a1540 0%,#08061a 100%)"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">O · E</div><div class="gallery-name">虹色の旅人</div></div>
+          <div class="gallery-card"><div class="gallery-card-roman">No. IX</div><div class="gallery-pattern-wrap"><div class="gallery-pattern" style="background:radial-gradient(circle,#15242a 0%,#08061a 100%)"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">O · A</div><div class="gallery-name">墨の語り部</div></div>
+          <div class="gallery-card"><div class="gallery-card-roman">No. XVIII</div><div class="gallery-pattern-wrap"><div class="gallery-pattern" style="background:radial-gradient(circle,#2a1a40 0%,#080615 100%)"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">O · N</div><div class="gallery-name">夢の建築家</div></div>
+          <div class="gallery-card"><div class="gallery-card-roman">No. IV</div><div class="gallery-pattern-wrap"><div class="gallery-pattern" style="background:radial-gradient(circle,#15202a 0%,#080d18 100%)"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">C · O</div><div class="gallery-name">氷の観測者</div></div>
+          <div class="gallery-card"><div class="gallery-card-roman">No. XI</div><div class="gallery-pattern-wrap"><div class="gallery-pattern" style="background:radial-gradient(circle,#1a1228 0%,#080615 100%)"></div><div class="gallery-pattern-ring"></div></div><div class="gallery-code">C · E</div><div class="gallery-name">道筋の司令</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-label">gallery</div>
+  </div>
+
+  <!-- RESULT -->
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="result-brand">your specimen</div>
+        <div class="result-pattern-wrap">
+          <div class="result-pattern"></div>
+          <div class="result-ring"></div>
+        </div>
+        <div class="result-code">O · C</div>
+        <div class="result-archetype">the architect</div>
+        <div class="result-name">星の設計者</div>
+        <div class="result-desc">秩序と混沌のあいだに<br>設計図を描く、知の建築家</div>
+        <div class="result-divider"><div class="line"></div><div class="mark">✦</div><div class="line"></div></div>
+        <div class="result-section-title">big five scores</div>
+        <div class="result-score-row"><span class="axis">O</span><div class="bar"><div class="fill" style="width:82%"></div></div><span class="val">0.82</span></div>
+        <div class="result-score-row"><span class="axis">C</span><div class="bar"><div class="fill" style="width:85%"></div></div><span class="val">0.85</span></div>
+        <div class="result-score-row"><span class="axis">E</span><div class="bar"><div class="fill" style="width:30%"></div></div><span class="val">0.30</span></div>
+        <div class="result-score-row"><span class="axis">A</span><div class="bar"><div class="fill" style="width:50%"></div></div><span class="val">0.50</span></div>
+        <div class="result-score-row"><span class="axis">N</span><div class="bar"><div class="fill" style="width:40%"></div></div><span class="val">0.40</span></div>
+      </div>
+    </div>
+    <div class="card-label">result</div>
+  </div>
+</div>
+
+<!-- ================================================ NOTE ARTICLE ================================================ -->
+<div class="section-title">note · article layout</div>
+<p class="section-hint">TikTok caption と同レベルの中高生向け文体。モノクロ+ゴールドの表紙、本文は明朝系</p>
+<div class="gallery">
+  <div class="note-card">
+    <div class="note-cover">
+      <div class="note-cover-pattern"></div>
+    </div>
+    <div class="note-mark">No. VII · OC</div>
+    <h2 class="note-title">「続かない自分」を卒業する、<br>知の建築家・OC 型のサバイバル指南</h2>
+    <div class="note-meta">
+      <span class="price">¥580</span>
+      <span>· 約 7,000 字</span>
+      <span>· 10 分</span>
+    </div>
+    <p class="note-lead">
+      「計画しても、三日坊主で終わる」<br>
+      そう言いながら、本当は<strong>設計図を描くのが好きなタイプ</strong>のあなたへ。
+      <br><br>
+      知の建築家こと <strong>OC 型</strong> は、実は世の中の成功者に最も多いタイプの一つ。ただし、このタイプ特有の<strong>4 つの落とし穴</strong> にハマりやすい。
+    </p>
+    <div class="note-pullquote">
+      考えすぎて動けない日は、<br>
+      設計図を 1 行だけ描いて、閉じればいい。
+    </div>
+    <p class="note-lead">
+      この記事では、40 年の研究データと OC 型の特性を踏まえ、<strong>「続かない」の正体と、それを越える 7 つの小さな設計術</strong> を紹介する。
+      <br><br>
+      ——
+      <br><br>
+      <strong>目次</strong><br>
+      I. 続かないのは、能力ではなく設計の問題<br>
+      II. OC 型が陥る 4 つの完璧主義<br>
+      III. 設計術 01 — 1 日 1 行の習慣ログ<br>
+      IV. 設計術 02 — 予定を「下書き」扱いにする<br>
+      V. 設計術 03 — 比較対象を過去の自分だけにする<br>
+      VI. 設計術 04 — 失敗日の扱い方<br>
+      VII. 設計術 05 — 疲れた日の切替スイッチ<br>
+      VIII. 設計術 06 — 月次のふりかえり 10 分<br>
+      IX. 設計術 07 — 3 年後の模様を描く
+    </p>
+    <div class="note-cta">— 続きは本文で —</div>
+  </div>
+</div>
+
+<!-- ================================================ PALETTE ================================================ -->
+<div class="section-title">palette</div>
+<div class="palette-block">
+  <h3 class="palette-title">W A R M · N I G H T</h3>
+  <p class="palette-sub">~ midnight with ember ~</p>
+  <div class="palette-row">
+    <div class="sw"><div class="sw-box" style="background:#0f0a18"></div><div class="sw-name">Night Deep</div><div class="sw-hex">#0F0A18</div></div>
+    <div class="sw"><div class="sw-box" style="background:#14101f"></div><div class="sw-name">Night</div><div class="sw-hex">#14101F</div></div>
+    <div class="sw"><div class="sw-box" style="background:#1a1428"></div><div class="sw-name">Night Lift</div><div class="sw-hex">#1A1428</div></div>
+    <div class="sw"><div class="sw-box" style="background:#241d38"></div><div class="sw-name">Night Elev</div><div class="sw-hex">#241D38</div></div>
+    <div class="sw"><div class="sw-box" style="background:#ebe3e8"></div><div class="sw-name">Ivory</div><div class="sw-hex">#EBE3E8</div></div>
+    <div class="sw"><div class="sw-box" style="background:#8a7d99"></div><div class="sw-name">Muted</div><div class="sw-hex">#8A7D99</div></div>
+  </div>
+  <div class="palette-row">
+    <div class="sw"><div class="sw-box" style="background:#d8bb89"></div><div class="sw-name">Gold Warm</div><div class="sw-hex">#D8BB89</div></div>
+    <div class="sw"><div class="sw-box" style="background:#ead1a0"></div><div class="sw-name">Ember</div><div class="sw-hex">#EAD1A0</div></div>
+    <div class="sw"><div class="sw-box" style="background:#a88b55"></div><div class="sw-name">Gold Deep</div><div class="sw-hex">#A88B55</div></div>
+    <div class="sw"><div class="sw-box" style="background:#b8a5c4"></div><div class="sw-name">Mauve</div><div class="sw-hex">#B8A5C4</div></div>
+    <div class="sw"><div class="sw-box" style="background:#6e5d80"></div><div class="sw-name">Plum</div><div class="sw-hex">#6E5D80</div></div>
+    <div class="sw"><div class="sw-box" style="background:#c4b8c8"></div><div class="sw-name">Ivory Dim</div><div class="sw-hex">#C4B8C8</div></div>
+  </div>
+</div>
+
+<!-- ================================================ SYSTEM NOTES ================================================ -->
+<div class="section-title">system notes</div>
+<div class="note-block">
+  <h3>01 · voice: observer, not dominator</h3>
+  友達の黒幕口調は<strong>真似しない</strong>。paternia は「<strong>静かに並べる観測者</strong>」。cliffhanger も「その正体は —」「続きはキャプションへ —」のように、<strong>招き入れる</strong>形で終わる。
+
+  <h3>02 · typography, 3 voices only</h3>
+  <ul>
+    <li><strong>Cormorant Garamond</strong> · 英字セリフ。キャプション・ローマ数字・インデックス</li>
+    <li><strong>Shippori Mincho</strong> · 日本語見出し・本文。静かな明朝</li>
+    <li><strong>Inter</strong> · メタだけ(ラベル・番号・ハッシュ)。全体の 10% 未満</li>
+  </ul>
+
+  <h3>03 · structure of a post</h3>
+  6 枚 = hook → tension → reveal → mechanism → twist → cta。
+  すべてのスライド(cta を除く)の末尾に cliffhanger <code>▸ ... —</code>。
+  <br>caption は slide で薄くなった「数字・出典・詳細」を<strong>必ず回収</strong>。読む人だけに届く報酬。
+
+  <h3>04 · iconography</h3>
+  ハートや花は使わない。<strong>specimen(4角星)・observation(小さい観測円)・forward(▸)・save(▢)・comment(◖)・atlas(3重円)</strong> の 6 種が基軸。どこに置いても全体の語彙が崩れない。
+
+  <h3>05 · palette rule</h3>
+  背景は <strong>Night Deep / Night</strong> のみ。ハイライトは <strong>Ember</strong> を一語だけに。<strong>決して 2 色以上の gold を同一画面に並べない</strong>。Plum と Mauve は控えめなアクセントで 1 画面に 1 か所まで。
+
+  <h3>06 · applying across touchpoints</h3>
+  TikTok スライド = 6 枚構成 · Caption = ミニ記事 · Site = 同じ palette+type · note = 同表紙デザインの連作 · all share 同じ 6 種アイコン。
+  <br>つまり <strong>1 つのブランドブック</strong> として完結する。
+
+  <h3>07 · next</h3>
+  これで良ければ:
+  <ul>
+    <li><code>layout.tsx</code> に Cormorant + Shippori Mincho 追加</li>
+    <li><code>globals.css</code> を warm night に刷新</li>
+    <li><code>PatternCanvas</code> の背景を現行 midnight → night deep に微調整</li>
+    <li>6 種共通アイコンを React コンポーネント化</li>
+    <li>50 投稿を observer voice + 6 枚 cliffhanger で再構築</li>
+    <li>note 記事は現行 23 本の題名だけ observer voice に改題(本文は中高生レベルで既に合致)</li>
+  </ul>
+</div>
+
+</body>
+</html>

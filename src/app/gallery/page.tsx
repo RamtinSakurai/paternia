@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAllProfiles } from "@/data/type-profiles";
 import MiniPatternCanvas from "@/components/MiniPatternCanvas";
+import HoroscopeFrame from "@/components/HoroscopeFrame";
 import { getTypeKey, type Scores } from "@/lib/diagnosis";
 
 export default function GalleryPage() {
@@ -104,13 +105,13 @@ export default function GalleryPage() {
                   YOU
                 </div>
               )}
-              <div className="w-[140px] h-[140px] mb-3">
+              <HoroscopeFrame size={150} variant="mini" className="mb-3">
                 <MiniPatternCanvas
                   primary={profile.primaryAxis}
                   secondary={profile.secondaryAxis}
-                  size={140}
+                  size={130}
                 />
-              </div>
+              </HoroscopeFrame>
               <p
                 className={`text-[10px] tracking-[0.2em] mb-1 ${
                   isMine ? "text-accent" : "text-accent/70"

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>paternia — logo export</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Shippori+Mincho:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+:root{
+  --night-deep:#0f0a18;--night:#14101f;--night-lift:#1a1428;
+  --ivory:#ebe3e8;--ivory-dim:#c4b8c8;--muted:#8a7d99;
+  --gold:#d8bb89;--gold-bright:#ead1a0;--gold-deep:#a88b55;
+  --line:rgba(216,187,137,0.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--night-deep);color:var(--ivory);font-family:"Cormorant Garamond",serif;padding:60px 40px;min-height:100vh;-webkit-font-smoothing:antialiased}
+h1{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:32px;letter-spacing:0.2em;text-align:center;margin:0 0 4px}
+.sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold);text-align:center;margin:0 0 40px}
+.hint{max-width:720px;margin:0 auto 40px;padding:24px 28px;background:var(--night-lift);border-left:3px solid var(--gold);font-family:"Shippori Mincho",serif;font-size:13px;line-height:1.95;color:var(--ivory-dim)}
+.hint strong{color:var(--ivory)}
+.hint code{font-family:"Inter",monospace;font-size:12px;color:var(--gold);background:rgba(216,187,137,0.08);padding:2px 6px}
+
+.section{margin:60px auto;max-width:1200px}
+.section-title{text-align:center;font-family:"Inter",sans-serif;font-weight:400;font-size:10px;letter-spacing:0.55em;color:var(--muted);margin:0 0 30px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:20px}
+.section-title::before,.section-title::after{content:"";width:60px;height:0.5px;background:var(--line)}
+
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:30px}
+.export-card{background:var(--night-lift);padding:28px;border:0.5px solid var(--line);position:relative;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:420px}
+.export-card::before{content:"";position:absolute;inset:6px;border:0.5px solid rgba(216,187,137,0.12);pointer-events:none}
+.preview-frame{position:relative;z-index:1;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.preview-label{font-family:"Inter",sans-serif;font-size:10px;letter-spacing:0.35em;text-transform:uppercase;color:var(--muted);text-align:center}
+.preview-spec{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:13px;color:var(--ivory-dim);text-align:center;line-height:1.55}
+.btn{background:var(--gold);color:var(--night-deep);border:none;padding:12px 28px;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:14px;letter-spacing:0.12em;cursor:pointer;transition:transform 0.1s;min-width:200px}
+.btn:hover{transform:translateY(-1px);opacity:0.92}
+.btn:disabled{opacity:0.5;cursor:wait}
+
+.stage{position:fixed;top:0;left:-99999px;pointer-events:none;z-index:-1}
+.status{text-align:center;max-width:720px;margin:0 auto 20px;padding:14px 22px;background:rgba(216,187,137,0.08);border:0.5px solid var(--line);color:var(--ivory-dim);font-size:13px;min-height:44px;display:flex;align-items:center;justify-content:center;font-family:"Shippori Mincho",serif}
+</style>
+</head>
+<body>
+
+<h1>P A T E R N I A</h1>
+<p class="sub">~ logo export ~</p>
+
+<div class="hint">
+  <strong>使い方</strong><br>
+  ① 下のカードの「<strong>PNG をダウンロード</strong>」ボタンを押すと、<strong>実寸サイズの PNG</strong>(1080×1080 など)が保存されます。<br>
+  ② TikTok プロフィール画像: <code>paternia-tiktok-profile.png</code> をアプリでアップロード<br>
+  ③ note アイコン: <code>paternia-note-avatar.png</code> を note のプロフィール写真に<br>
+  ④ note ヘッダー画像: <code>paternia-note-header.png</code> を note クリエイターページのヘッダー背景に
+</div>
+
+<div class="status" id="status">準備完了。</div>
+
+<!-- ================ TIKTOK PROFILE ================ -->
+<div class="section">
+  <div class="section-title">tiktok profile · 1080 × 1080</div>
+  <div class="grid">
+
+    <!-- NIGHT BG -->
+    <div class="export-card">
+      <div class="preview-frame" style="width:300px;height:300px">
+        <div id="prev-tt-night" style="width:300px;height:300px;background:var(--night-deep);display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.18) 0%,transparent 60%)">
+          <!-- logomark scaled preview -->
+          <svg width="190" height="190" viewBox="0 0 72 72">
+            <defs>
+              <linearGradient id="g-tt1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+              </linearGradient>
+            </defs>
+            <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-tt1)" stroke-width="1"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.5" opacity="0.5"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.15)" stroke="#d8bb89" stroke-width="0.5"/>
+            <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+            <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+            <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="preview-label">night bg · gold mark</div>
+        <div class="preview-spec" style="margin-top:4px">TikTok / Instagram / X 共通</div>
+      </div>
+      <button class="btn" data-export="tt-night">PNG をダウンロード</button>
+    </div>
+
+    <!-- GOLD BG -->
+    <div class="export-card">
+      <div class="preview-frame" style="width:300px;height:300px">
+        <div id="prev-tt-gold" style="width:300px;height:300px;background:linear-gradient(135deg,#ead1a0,#a88b55);display:flex;align-items:center;justify-content:center">
+          <svg width="190" height="190" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="32" fill="none" stroke="#14101f" stroke-width="1.2"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(20,16,31,0.15)" stroke="#14101f" stroke-width="0.6"/>
+            <circle cx="36" cy="8" r="2.8" fill="#14101f"/><circle cx="63" cy="28" r="2.8" fill="#14101f"/>
+            <circle cx="52" cy="62" r="2.8" fill="#14101f"/><circle cx="20" cy="62" r="2.8" fill="#14101f"/>
+            <circle cx="9" cy="28" r="2.8" fill="#14101f"/>
+            <circle cx="36" cy="36" r="6" fill="none" stroke="#14101f" stroke-width="1"/>
+            <circle cx="36" cy="36" r="2.8" fill="#14101f"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="preview-label">gold bg · ink mark</div>
+        <div class="preview-spec" style="margin-top:4px">高コントラスト・可視性重視</div>
+      </div>
+      <button class="btn" data-export="tt-gold">PNG をダウンロード</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================ NOTE AVATAR (200) ================ -->
+<div class="section">
+  <div class="section-title">note avatar · 200 × 200</div>
+  <div class="grid">
+    <div class="export-card">
+      <div class="preview-frame" style="width:160px;height:160px;border-radius:50%">
+        <div id="prev-note-avatar" style="width:160px;height:160px;background:var(--night-deep);border-radius:50%;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.2) 0%,transparent 65%)">
+          <svg width="110" height="110" viewBox="0 0 72 72">
+            <defs>
+              <linearGradient id="g-navat" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+              </linearGradient>
+            </defs>
+            <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-navat)" stroke-width="1.5"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.18)" stroke="#d8bb89" stroke-width="0.6"/>
+            <circle cx="36" cy="8" r="3" fill="#d8bb89"/><circle cx="63" cy="28" r="3" fill="#d8bb89"/>
+            <circle cx="52" cy="62" r="3" fill="#d8bb89"/><circle cx="20" cy="62" r="3" fill="#d8bb89"/>
+            <circle cx="9" cy="28" r="3" fill="#d8bb89"/>
+            <circle cx="36" cy="36" r="4" fill="#ead1a0"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="preview-label">note · avatar · 200 square</div>
+        <div class="preview-spec" style="margin-top:4px">プロフィール写真(note 側で円形にクロップ)</div>
+      </div>
+      <button class="btn" data-export="note-avatar">PNG をダウンロード</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================ NOTE HEADER (1280x670) ================ -->
+<div class="section">
+  <div class="section-title">note header · 1280 × 670</div>
+  <div class="grid">
+
+    <!-- HEADER A: centered lockup -->
+    <div class="export-card" style="max-width:660px">
+      <div class="preview-frame" style="width:600px;height:314px">
+        <div id="prev-note-header-a" style="width:600px;height:314px;background:var(--night-deep);background-image:radial-gradient(ellipse at 20% 25%,rgba(110,93,128,0.28) 0%,transparent 55%),radial-gradient(ellipse at 85% 75%,rgba(216,187,137,0.12) 0%,transparent 55%),linear-gradient(180deg,#140e22 0%,#0a0613 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+          <!-- starfield -->
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 10% 20%,rgba(234,209,160,0.6) 50%,transparent),radial-gradient(1.5px 1.5px at 80% 15%,rgba(235,227,232,0.45) 50%,transparent),radial-gradient(1px 1px at 60% 80%,rgba(234,209,160,0.5) 50%,transparent),radial-gradient(1px 1px at 20% 75%,rgba(235,227,232,0.4) 50%,transparent),radial-gradient(1px 1px at 90% 85%,rgba(234,209,160,0.4) 50%,transparent),radial-gradient(1px 1px at 35% 35%,rgba(235,227,232,0.4) 50%,transparent),radial-gradient(1px 1px at 55% 15%,rgba(234,209,160,0.5) 50%,transparent)"></div>
+          <svg width="90" height="90" viewBox="0 0 72 72" style="position:relative;z-index:1">
+            <defs>
+              <linearGradient id="g-nh-a" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+              </linearGradient>
+            </defs>
+            <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-nh-a)" stroke-width="1"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.5" opacity="0.5"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+            <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+            <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+            <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+          </svg>
+          <div style="position:relative;z-index:1;text-align:center">
+            <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:36px;letter-spacing:0.22em;color:#ebe3e8;line-height:1">paternia</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:#d8bb89;letter-spacing:0.05em;margin-top:6px">~ an atlas of personal constellations ~</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="preview-label">header · centered lockup</div>
+        <div class="preview-spec" style="margin-top:4px">ロゴ + 英字タグライン</div>
+      </div>
+      <button class="btn" data-export="note-header-a">PNG をダウンロード</button>
+    </div>
+
+    <!-- HEADER B: left aligned -->
+    <div class="export-card" style="max-width:660px">
+      <div class="preview-frame" style="width:600px;height:314px">
+        <div id="prev-note-header-b" style="width:600px;height:314px;background:var(--night-deep);background-image:radial-gradient(ellipse at 25% 50%,rgba(110,93,128,0.28) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(216,187,137,0.1) 0%,transparent 55%),linear-gradient(180deg,#140e22 0%,#0a0613 100%);position:relative;overflow:hidden;display:flex;align-items:center;padding:0 60px;gap:28px">
+          <div style="position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 15% 25%,rgba(234,209,160,0.5) 50%,transparent),radial-gradient(1.2px 1.2px at 82% 18%,rgba(235,227,232,0.45) 50%,transparent),radial-gradient(1px 1px at 70% 82%,rgba(234,209,160,0.4) 50%,transparent),radial-gradient(1px 1px at 45% 68%,rgba(235,227,232,0.35) 50%,transparent),radial-gradient(1px 1px at 92% 45%,rgba(234,209,160,0.4) 50%,transparent)"></div>
+          <svg width="120" height="120" viewBox="0 0 72 72" style="position:relative;z-index:1;flex-shrink:0">
+            <defs>
+              <linearGradient id="g-nh-b" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+              </linearGradient>
+            </defs>
+            <circle cx="36" cy="36" r="32" fill="none" stroke="url(#g-nh-b)" stroke-width="1"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="0.5" opacity="0.5"/>
+            <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+            <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+            <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+            <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="0.8"/>
+            <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+          </svg>
+          <div style="position:relative;z-index:1">
+            <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:44px;letter-spacing:0.22em;color:#ebe3e8;line-height:1">paternia</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:#d8bb89;letter-spacing:0.04em;margin-top:8px">~ an atlas of personal constellations ~</div>
+            <div style="width:40px;height:0.5px;background:#d8bb89;opacity:0.4;margin:12px 0 8px"></div>
+            <div style="font-family:'Shippori Mincho',serif;font-weight:400;font-size:13px;color:#c4b8c8;letter-spacing:0.05em;line-height:1.5">性格が模様になる、ビッグファイブ性格診断</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="preview-label">header · left lockup + 日本語説明</div>
+        <div class="preview-spec" style="margin-top:4px">note ページ冒頭の印象を強く</div>
+      </div>
+      <button class="btn" data-export="note-header-b">PNG をダウンロード</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================ FAVICON SVG ================ -->
+<div class="section">
+  <div class="section-title">favicon · svg</div>
+  <div class="grid">
+    <div class="export-card">
+      <div class="preview-frame" style="width:120px;height:120px;background:var(--night-deep);display:flex;align-items:center;justify-content:center">
+        <svg width="64" height="64" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1"/>
+          <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+          <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+          <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+          <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+          <circle cx="36" cy="36" r="2.8" fill="#ead1a0"/>
+        </svg>
+      </div>
+      <div>
+        <div class="preview-label">favicon · svg · 64 base</div>
+        <div class="preview-spec" style="margin-top:4px">Web サイト用・ブラウザタブ</div>
+      </div>
+      <button class="btn" data-export="favicon-svg">SVG をダウンロード</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden stage for html2canvas -->
+<div class="stage" id="stage"></div>
+
+<script>
+const status = document.getElementById("status");
+const stage = document.getElementById("stage");
+
+// Build full-size elements for each export
+function buildFullSize(id){
+  const wrap = document.createElement("div");
+  if(id === "tt-night"){
+    wrap.style.cssText = "width:1080px;height:1080px;background:#0f0a18;background-image:radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.18) 0%,transparent 60%);display:flex;align-items:center;justify-content:center";
+    wrap.innerHTML = svgMarkGold(720);
+  }
+  else if(id === "tt-gold"){
+    wrap.style.cssText = "width:1080px;height:1080px;background:linear-gradient(135deg,#ead1a0,#a88b55);display:flex;align-items:center;justify-content:center";
+    wrap.innerHTML = svgMarkInk(720, 1.2);
+  }
+  else if(id === "note-avatar"){
+    wrap.style.cssText = "width:200px;height:200px;background:#0f0a18;background-image:radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.2) 0%,transparent 65%);display:flex;align-items:center;justify-content:center";
+    wrap.innerHTML = svgMarkGold(138);
+  }
+  else if(id === "note-header-a"){
+    wrap.style.cssText = "width:1280px;height:670px;background:#0f0a18;background-image:radial-gradient(ellipse at 20% 25%,rgba(110,93,128,0.28) 0%,transparent 55%),radial-gradient(ellipse at 85% 75%,rgba(216,187,137,0.12) 0%,transparent 55%),linear-gradient(180deg,#140e22 0%,#0a0613 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px";
+    wrap.innerHTML = starsDiv()
+      + svgMarkGold(190, 1, 'position:relative;z-index:1;display:block')
+      + '<div style="position:relative;z-index:1;text-align:center"><div style="font-family:\'Cormorant Garamond\',serif;font-weight:400;font-size:76px;letter-spacing:0.22em;color:#ebe3e8;line-height:1">paternia</div><div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:30px;color:#d8bb89;letter-spacing:0.05em;margin-top:14px">~ an atlas of personal constellations ~</div></div>';
+  }
+  else if(id === "note-header-b"){
+    wrap.style.cssText = "width:1280px;height:670px;background:#0f0a18;background-image:radial-gradient(ellipse at 25% 50%,rgba(110,93,128,0.28) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(216,187,137,0.1) 0%,transparent 55%),linear-gradient(180deg,#140e22 0%,#0a0613 100%);position:relative;overflow:hidden;display:flex;align-items:center;padding:0 128px;gap:60px";
+    wrap.innerHTML = starsDiv()
+      + svgMarkGold(256, 1, 'position:relative;z-index:1;flex-shrink:0;display:block')
+      + '<div style="position:relative;z-index:1"><div style="font-family:\'Cormorant Garamond\',serif;font-weight:400;font-size:94px;letter-spacing:0.22em;color:#ebe3e8;line-height:1">paternia</div><div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:32px;color:#d8bb89;letter-spacing:0.04em;margin-top:18px">~ an atlas of personal constellations ~</div><div style="width:86px;height:1px;background:#d8bb89;opacity:0.4;margin:26px 0 18px"></div><div style="font-family:\'Shippori Mincho\',serif;font-weight:400;font-size:28px;color:#c4b8c8;letter-spacing:0.05em;line-height:1.5">性格が模様になる、ビッグファイブ性格診断</div></div>';
+  }
+  return wrap;
+}
+
+function svgMarkGold(size, strokeMul, extraStyle){
+  const sw = 1 * (strokeMul || 1);
+  const s = extraStyle || '';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 72 72" style="${s}">
+    <defs>
+      <linearGradient id="eg${size}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ead1a0"/><stop offset="100%" stop-color="#a88b55"/>
+      </linearGradient>
+    </defs>
+    <circle cx="36" cy="36" r="32" fill="none" stroke="url(#eg${size})" stroke-width="${sw}"/>
+    <circle cx="36" cy="36" r="28" fill="none" stroke="#d8bb89" stroke-width="${sw*0.5}" opacity="0.5"/>
+    <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.15)" stroke="#d8bb89" stroke-width="${sw*0.5}"/>
+    <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/><circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+    <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/><circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+    <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+    <circle cx="36" cy="36" r="6" fill="none" stroke="#ead1a0" stroke-width="${sw*0.8}"/>
+    <circle cx="36" cy="36" r="2.5" fill="#ead1a0"/>
+  </svg>`;
+}
+
+function svgMarkInk(size, strokeMul){
+  const sw = 1 * (strokeMul || 1);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 72 72">
+    <circle cx="36" cy="36" r="32" fill="none" stroke="#14101f" stroke-width="${sw*1.2}"/>
+    <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(20,16,31,0.15)" stroke="#14101f" stroke-width="${sw*0.6}"/>
+    <circle cx="36" cy="8" r="2.8" fill="#14101f"/><circle cx="63" cy="28" r="2.8" fill="#14101f"/>
+    <circle cx="52" cy="62" r="2.8" fill="#14101f"/><circle cx="20" cy="62" r="2.8" fill="#14101f"/>
+    <circle cx="9" cy="28" r="2.8" fill="#14101f"/>
+    <circle cx="36" cy="36" r="6" fill="none" stroke="#14101f" stroke-width="${sw}"/>
+    <circle cx="36" cy="36" r="2.8" fill="#14101f"/>
+  </svg>`;
+}
+
+function starsDiv(){
+  return `<div style="position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 10% 20%,rgba(234,209,160,0.6) 50%,transparent),radial-gradient(3px 3px at 80% 15%,rgba(235,227,232,0.5) 50%,transparent),radial-gradient(2px 2px at 60% 80%,rgba(234,209,160,0.5) 50%,transparent),radial-gradient(2px 2px at 20% 75%,rgba(235,227,232,0.45) 50%,transparent),radial-gradient(2px 2px at 90% 85%,rgba(234,209,160,0.4) 50%,transparent),radial-gradient(2px 2px at 35% 35%,rgba(235,227,232,0.4) 50%,transparent),radial-gradient(2px 2px at 55% 15%,rgba(234,209,160,0.5) 50%,transparent)"></div>`;
+}
+
+async function exportPng(id){
+  status.textContent = `生成中…`;
+  const btn = document.querySelector(`[data-export="${id}"]`);
+  btn.disabled = true;
+  try {
+    const el = buildFullSize(id);
+    stage.innerHTML = "";
+    stage.appendChild(el);
+    await new Promise(r => setTimeout(r, 100));
+    const canvas = await html2canvas(el, {
+      backgroundColor: null,
+      scale: 1,
+      logging: false,
+      useCORS: true,
+    });
+    canvas.toBlob(blob => {
+      const names = {
+        "tt-night": "paternia-tiktok-profile-night.png",
+        "tt-gold": "paternia-tiktok-profile-gold.png",
+        "note-avatar": "paternia-note-avatar.png",
+        "note-header-a": "paternia-note-header-centered.png",
+        "note-header-b": "paternia-note-header-left.png",
+      };
+      saveAs(blob, names[id]);
+      status.textContent = `✓ ${names[id]} を保存しました`;
+      btn.disabled = false;
+    }, "image/png");
+  } catch(e){
+    console.error(e);
+    status.textContent = `エラー: ${e.message}`;
+    btn.disabled = false;
+  }
+}
+
+function exportSvg(){
+  const svgStr = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="36" cy="36" r="32" fill="none" stroke="#d8bb89" stroke-width="1"/>
+  <polygon points="36,8 63,28 52,62 20,62 9,28" fill="rgba(216,187,137,0.12)" stroke="#d8bb89" stroke-width="0.5"/>
+  <circle cx="36" cy="8" r="2.5" fill="#d8bb89"/>
+  <circle cx="63" cy="28" r="2.5" fill="#d8bb89"/>
+  <circle cx="52" cy="62" r="2.5" fill="#d8bb89"/>
+  <circle cx="20" cy="62" r="2.5" fill="#d8bb89"/>
+  <circle cx="9" cy="28" r="2.5" fill="#d8bb89"/>
+  <circle cx="36" cy="36" r="2.8" fill="#ead1a0"/>
+</svg>`;
+  const blob = new Blob([svgStr], {type: "image/svg+xml"});
+  saveAs(blob, "paternia-favicon.svg");
+  status.textContent = `✓ paternia-favicon.svg を保存しました`;
+}
+
+// wire up buttons
+document.querySelectorAll("[data-export]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const id = btn.dataset.export;
+    if(id === "favicon-svg") exportSvg();
+    else exportPng(id);
+  });
+});
+</script>
+</body>
+</html>

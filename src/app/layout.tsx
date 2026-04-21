@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Kiwi_Maru, Zen_Kaku_Gothic_New, Fredoka } from "next/font/google";
+import { Kiwi_Maru, Zen_Kaku_Gothic_New, Fredoka, Cormorant_Garamond, Shippori_Mincho } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
@@ -23,6 +23,21 @@ const fredoka = Fredoka({
   weight: ["400", "600"],
   subsets: ["latin"],
   variable: "--font-fredoka",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+
+const shippori = Shippori_Mincho({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-shippori",
   display: "swap",
 });
 
@@ -133,7 +148,7 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${kiwiMaru.variable} ${zenKaku.variable} ${fredoka.variable}`}
+      className={`${kiwiMaru.variable} ${zenKaku.variable} ${fredoka.variable} ${cormorant.variable} ${shippori.variable}`}
     >
       <body className="min-h-dvh flex flex-col items-center">
         <script

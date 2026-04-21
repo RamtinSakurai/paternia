@@ -1,25 +1,37 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #0a0a1a;
-  --color-bg-card: #12122a;
-  --color-bg-elevated: #1a1a3a;
-  --color-text: #e8e8f0;
-  --color-text-muted: #6a6a8a;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-accent: #9d8fff;
-  --color-accent-glow: rgba(157, 143, 255, 0.3);
+  /* === Warm Night (Atlas) palette (2026-04-21) === */
+  --color-bg: #0f0a18;              /* night deep (aubergine-tinted) */
+  --color-bg-card: #14101f;         /* night */
+  --color-bg-elevated: #1a1428;     /* night lift */
+  --color-text: #ebe3e8;            /* warm ivory */
+  --color-text-muted: #8a7d99;      /* muted mauve */
+  --color-border: rgba(216, 187, 137, 0.2);
+  --color-accent: #d8bb89;          /* warm gold (primary) */
+  --color-accent-glow: rgba(216, 187, 137, 0.3);
+  --color-accent-bright: #ead1a0;   /* ember */
+  --color-accent-deep: #a88b55;     /* dusk gold */
+  --color-purple: #b8a5c4;          /* mauve */
+  --color-purple-soft: #c4b8c8;     /* ivory dim */
+  --color-purple-deep: #6e5d80;     /* plum */
+  --color-silver: #c4b8c8;
+  --color-ivory: #ebe3e8;
 
-  /* Axis colors */
-  --color-axis-o: #00d4ff;
-  --color-axis-c: #ffb020;
-  --color-axis-e: #ff6b6b;
-  --color-axis-a: #7ee8c7;
-  --color-axis-n: #a78bfa;
+  /* Axis colors — warm observer palette */
+  --color-axis-o: #b8a5c4;          /* O: mauve */
+  --color-axis-c: #d8bb89;          /* C: warm gold */
+  --color-axis-e: #ead1a0;          /* E: ember */
+  --color-axis-a: #a8c4b8;          /* A: sage (warm) */
+  --color-axis-n: #c4b8c8;          /* N: ivory dim */
 
-  --font-display: var(--font-kiwi-maru);
+  --font-display: var(--font-shippori);
   --font-body: var(--font-zen-kaku);
-  --font-accent: var(--font-fredoka);
+  --font-accent: var(--font-cormorant);
+  --font-serif-jp: var(--font-shippori);
+  --font-serif-en: var(--font-cormorant);
+  --font-mono-en: var(--font-fredoka);
+  --font-kiwi-maru: var(--font-kiwi-maru);
 }
 
 * {
@@ -65,8 +77,8 @@ body::before {
 
 /* Selection color */
 ::selection {
-  background: rgba(157, 143, 255, 0.3);
-  color: #fff;
+  background: rgba(212, 181, 128, 0.35);
+  color: var(--color-cream);
 }
 
 /* Custom scrollbar */
@@ -77,7 +89,7 @@ body::before {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(157, 143, 255, 0.3);
+  background: rgba(212, 181, 128, 0.3);
   border-radius: 4px;
 }
 

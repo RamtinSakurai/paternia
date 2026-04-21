@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import MiniPatternCanvas from "@/components/MiniPatternCanvas";
+import HoroscopeFrame from "@/components/HoroscopeFrame";
 import type { Axis } from "@/data/questions";
 
 interface LastResult {
@@ -64,37 +65,146 @@ export default function Home() {
     resize();
     window.addEventListener("resize", resize);
 
+    // Seeded pseudo-random for stable star positions
+    const sr = (n: number) => {
+      const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+      return x - Math.floor(x);
+    };
+
+    // Pre-compute 140 stars (fixed positions, varying size/color/twinkle phase)
+    const STAR_COUNT = 140;
+    const stars = Array.from({ length: STAR_COUNT }, (_, i) => {
+      const tone = sr(i * 2.17);
+      // 60% ivory, 20% gold, 15% silver, 5% mystic
+      let rgb: [number, number, number];
+      if (tone < 0.6) rgb = [235, 229, 245];
+      else if (tone < 0.8) rgb = [232, 203, 149];
+      else if (tone < 0.95) rgb = [181, 184, 200];
+      else rgb = [155, 143, 212];
+      return {
+        x: sr(i * 7.13),
+        y: sr(i * 13.79),
+        size: 0.4 + sr(i * 21.37) * 1.6,
+        baseOpacity: 0.3 + sr(i * 29.11) * 0.55,
+        phase: sr(i * 37.53) * Math.PI * 2,
+        twinkleSpeed: 0.8 + sr(i * 43.7) * 1.8,
+        rgb,
+      };
+    });
+
+    // Constellation pairs — connect stars that happen to land near each other
+    type Pair = { a: number; b: number };
+    const pairs: Pair[] = [];
+    for (let i = 0; i < 14; i++) {
+      const a = Math.floor(sr(i * 53.1) * STAR_COUNT);
+      const b = (a + 1 + Math.floor(sr(i * 71.3) * 3)) % STAR_COUNT;
+      pairs.push({ a, b });
+    }
+
+    // Shooting star state
+    type Shooter = { x: number; y: number; vx: number; vy: number; life: number };
+    let shooters: Shooter[] = [];
+    let nextShooterAt = 2 + Math.random() * 5;
+
     const draw = () => {
-      t += 0.003;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 0.006;
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
 
-      const orbs = [
-        { x: 0.3, y: 0.3, r: 180, color: "rgba(157,143,255,0.08)" },
-        { x: 0.7, y: 0.6, r: 200, color: "rgba(0,212,255,0.06)" },
-        { x: 0.5, y: 0.8, r: 160, color: "rgba(255,107,107,0.05)" },
-      ];
+      // ambient nebula glow — top-left mystic, bottom-right gold
+      const g1 = ctx.createRadialGradient(
+        w * 0.2,
+        h * 0.2,
+        0,
+        w * 0.2,
+        h * 0.2,
+        Math.max(w, h) * 0.55
+      );
+      g1.addColorStop(0, "rgba(155,143,212,0.08)");
+      g1.addColorStop(1, "transparent");
+      ctx.fillStyle = g1;
+      ctx.fillRect(0, 0, w, h);
+      const g2 = ctx.createRadialGradient(
+        w * 0.85,
+        h * 0.9,
+        0,
+        w * 0.85,
+        h * 0.9,
+        Math.max(w, h) * 0.5
+      );
+      g2.addColorStop(0, "rgba(212,181,128,0.05)");
+      g2.addColorStop(1, "transparent");
+      ctx.fillStyle = g2;
+      ctx.fillRect(0, 0, w, h);
 
-      orbs.forEach((orb, i) => {
-        const ox = orb.x * canvas.width + Math.sin(t + i * 2) * 40;
-        const oy = orb.y * canvas.height + Math.cos(t * 0.7 + i) * 30;
-        const gradient = ctx.createRadialGradient(ox, oy, 0, ox, oy, orb.r);
-        gradient.addColorStop(0, orb.color);
-        gradient.addColorStop(1, "transparent");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // constellation lines (faint gold)
+      ctx.strokeStyle = "rgba(212,181,128,0.08)";
+      ctx.lineWidth = 0.5;
+      pairs.forEach((p) => {
+        const sa = stars[p.a];
+        const sb = stars[p.b];
+        ctx.beginPath();
+        ctx.moveTo(sa.x * w, sa.y * h);
+        ctx.lineTo(sb.x * w, sb.y * h);
+        ctx.stroke();
       });
 
-      for (let i = 0; i < 30; i++) {
-        const px =
-          ((Math.sin(t * 0.5 + i * 0.7) + 1) / 2) * canvas.width;
-        const py =
-          ((Math.cos(t * 0.3 + i * 1.1) + 1) / 2) * canvas.height;
-        const size = 1.5 + Math.sin(t + i) * 0.5;
+      // stars
+      stars.forEach((s) => {
+        const twinkle =
+          0.55 + 0.45 * Math.sin(t * s.twinkleSpeed + s.phase);
+        const opacity = s.baseOpacity * twinkle;
+        ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${opacity.toFixed(3)})`;
         ctx.beginPath();
-        ctx.arc(px, py, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(157,143,255,${0.15 + Math.sin(t + i) * 0.1})`;
+        ctx.arc(s.x * w, s.y * h, s.size, 0, Math.PI * 2);
         ctx.fill();
+        // subtle glow for larger stars
+        if (s.size > 1.3) {
+          ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${(opacity * 0.25).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(s.x * w, s.y * h, s.size * 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // shooting stars
+      if (t > nextShooterAt) {
+        shooters.push({
+          x: Math.random() * w * 0.4,
+          y: Math.random() * h * 0.3,
+          vx: 4 + Math.random() * 2,
+          vy: 2 + Math.random() * 1.5,
+          life: 1,
+        });
+        nextShooterAt = t + 4 + Math.random() * 8;
       }
+      shooters = shooters.filter((sh) => {
+        sh.x += sh.vx;
+        sh.y += sh.vy;
+        sh.life -= 0.012;
+        if (sh.life <= 0) return false;
+        const gradient = ctx.createLinearGradient(
+          sh.x - sh.vx * 12,
+          sh.y - sh.vy * 12,
+          sh.x,
+          sh.y
+        );
+        gradient.addColorStop(0, "rgba(232,203,149,0)");
+        gradient.addColorStop(1, `rgba(232,203,149,${(sh.life * 0.8).toFixed(3)})`);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(sh.x - sh.vx * 12, sh.y - sh.vy * 12);
+        ctx.lineTo(sh.x, sh.y);
+        ctx.stroke();
+        ctx.fillStyle = `rgba(235,229,245,${(sh.life * 0.9).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(sh.x, sh.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        return true;
+      });
 
       animId = requestAnimationFrame(draw);
     };
@@ -113,45 +223,75 @@ export default function Home() {
         className="fixed inset-0 z-0 pointer-events-none"
       />
 
-      <div className="relative z-10 flex flex-col items-center gap-5 text-center">
-        {/* Hero pattern preview (auto-rotating with crossfade) */}
-        <div className="relative" style={{ width: 130, height: 130 }}>
-          <div
-            key={sampleIdx}
-            className="animate-fade-in absolute inset-0 opacity-90"
-          >
-            <MiniPatternCanvas
-              primary={HERO_SAMPLES[sampleIdx].primary}
-              secondary={HERO_SAMPLES[sampleIdx].secondary}
-              size={130}
-            />
-          </div>
+      <div className="relative z-10 flex flex-col items-center gap-6 text-center">
+        {/* ================== HERO (atlas observer style) ================== */}
+        <p
+          className="animate-fade-up text-[11px] tracking-[0.55em] text-accent/90 uppercase"
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          atlas · specimen
+        </p>
+
+        {/* pattern medallion — the art is the hero */}
+        <div className="animate-fade-up relative" style={{ width: 180, height: 180 }}>
+          <HoroscopeFrame size={180} variant="mini">
+            <div
+              key={sampleIdx}
+              className="animate-fade-in w-full h-full"
+            >
+              <MiniPatternCanvas
+                primary={HERO_SAMPLES[sampleIdx].primary}
+                secondary={HERO_SAMPLES[sampleIdx].secondary}
+                size={160}
+              />
+            </div>
+          </HoroscopeFrame>
         </div>
 
-        <div className="animate-fade-up">
+        {/* brand + tagline */}
+        <div className="animate-fade-up stagger-1 flex flex-col items-center gap-1">
           <p
-            className="text-[20px] tracking-[0.15em] text-accent font-normal mb-3 lowercase"
-            style={{ fontFamily: "var(--font-fredoka)", letterSpacing: "0.08em" }}
+            className="text-[26px] tracking-[0.22em] text-text leading-none"
+            style={{ fontFamily: "var(--font-cormorant)", fontWeight: 400 }}
           >
             paternia
           </p>
+          <p
+            className="text-[13px] italic text-accent tracking-[0.05em]"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            ~ an atlas of personal constellations ~
+          </p>
+        </div>
+
+        {/* Japanese title + subtitle */}
+        <div className="animate-fade-up stagger-2 flex flex-col items-center gap-3">
           <h1
-            className="text-[1.75rem] leading-snug font-medium"
-            style={{ fontFamily: "var(--font-kiwi-maru)" }}
+            className="text-[1.625rem] leading-snug font-medium tracking-[0.04em]"
+            style={{ fontFamily: "var(--font-shippori)" }}
           >
             あなたの性格が
             <br />
-            <span className="text-accent">模様</span>になる
+            <span className="text-accent-bright">模様</span>になる
           </h1>
+          <p
+            className="text-[12px] leading-relaxed max-w-[260px] text-text-muted"
+            style={{ fontFamily: "var(--font-shippori)" }}
+          >
+            ビッグファイブ性格理論をもとに、
+            <br />
+            あなただけの模様が生まれる
+          </p>
         </div>
 
-        <p className="animate-fade-up stagger-1 text-[13px] leading-relaxed max-w-[260px]" style={{ color: "#b4b4cc" }}>
-          心理学のビッグファイブをもとに
-          <br />
-          あなただけの模様が生まれる
-        </p>
+        {/* divider */}
+        <div className="animate-fade-up stagger-2 flex items-center gap-3">
+          <span className="w-10 h-px bg-accent/40" />
+          <span className="text-accent/80 text-[10px]">✦</span>
+          <span className="w-10 h-px bg-accent/40" />
+        </div>
 
-        <div className="animate-fade-up stagger-2 flex gap-4 text-[12px]" style={{ color: "#a0a0c0" }}>
+        <div className="animate-fade-up stagger-2 flex gap-4 text-[11px] tracking-wider" style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-cormorant)" }}>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             無料

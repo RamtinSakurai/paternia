@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paternia · Atlas TikTok Generator (50 posts × 6 slides)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<style>
+:root{
+  --night-deep:#0f0a18;--night:#14101f;--night-lift:#1a1428;--night-elev:#241d38;
+  --ivory:#ebe3e8;--ivory-dim:#c4b8c8;--muted:#8a7d99;--muted-dim:#5a4e68;
+  --gold:#d8bb89;--gold-bright:#ead1a0;--gold-deep:#a88b55;
+  --mauve:#b8a5c4;--plum:#6e5d80;
+  --line:rgba(216,187,137,0.2);--line-strong:rgba(216,187,137,0.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--night-deep);color:var(--ivory);font-family:"Shippori Mincho",serif;padding:24px;min-height:100vh;-webkit-font-smoothing:antialiased}
+header{max-width:1300px;margin:0 auto 24px;padding:28px;border:1px solid var(--gold);background:rgba(26,20,40,0.6);position:relative}
+header::before{content:"";position:absolute;inset:6px;border:0.5px solid var(--line);pointer-events:none}
+header h1{font-family:"Cormorant Garamond",serif;font-weight:400;font-size:26px;letter-spacing:0.2em;color:var(--ivory);margin-bottom:4px}
+header .sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:17px;color:var(--gold);margin-bottom:14px}
+header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Shippori Mincho",serif}
+.controls{max-width:1300px;margin:0 auto 20px;display:flex;flex-wrap:wrap;gap:10px}
+.controls button{background:var(--gold);color:var(--night-deep);border:none;padding:12px 22px;font-weight:500;cursor:pointer;font-family:"Cormorant Garamond",serif;font-size:14px;letter-spacing:0.12em;transition:transform 0.1s}
+.controls button:hover{transform:translateY(-1px);opacity:0.92}
+.controls button:disabled{opacity:0.5;cursor:wait}
+.controls .secondary{background:transparent;border:1px solid var(--gold);color:var(--gold-bright)}
+.status{max-width:1300px;margin:0 auto 20px;padding:14px 22px;background:rgba(216,187,137,0.08);border:0.5px solid var(--line-strong);color:var(--ivory-dim);font-size:13px;min-height:44px;display:flex;align-items:center;font-family:"Shippori Mincho",serif}
+.posts{max-width:1300px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.post{border:0.5px solid var(--line);padding:20px;background:var(--night-lift);position:relative}
+.post::before{content:"";position:absolute;inset:6px;border:0.5px solid var(--line);pointer-events:none}
+.post-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:relative;z-index:1}
+.post-title{font-family:"Shippori Mincho",serif;font-size:17px;font-weight:500;color:var(--ivory);letter-spacing:0.04em}
+.post-id{font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold);font-size:13px;letter-spacing:0.15em}
+.slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;position:relative;z-index:1}
+.slide-thumb{aspect-ratio:9/16;background:var(--night-deep);border:0.5px solid var(--line);overflow:hidden;position:relative;cursor:pointer;transition:transform 0.1s}
+.slide-thumb:hover{transform:scale(1.03);border-color:var(--gold)}
+.slide-thumb .scaled{width:1080px;height:1920px;transform:scale(calc(160/1080));transform-origin:top left;position:absolute;top:0;left:0}
+.post-caption{margin-top:14px;padding:14px;background:rgba(15,10,24,0.6);font-size:12px;color:var(--ivory-dim);line-height:1.9;white-space:pre-wrap;font-family:"Shippori Mincho",serif;position:relative;z-index:1;border-left:0.5px solid var(--gold)}
+
+/* ====== ACTUAL SLIDE (1080x1920) ====== */
+.slide{
+  width:1080px;height:1920px;
+  background:var(--night);
+  background-image:
+    radial-gradient(ellipse at 50% 40%,rgba(110,93,128,0.18) 0%,transparent 60%),
+    linear-gradient(180deg,#15101f 0%,#0d0916 100%);
+  position:relative;overflow:hidden;
+  font-family:"Shippori Mincho",serif;color:var(--ivory);
+}
+/* star dust */
+.slide::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:
+    radial-gradient(3px 3px at 14% 20%,rgba(234,209,160,0.5) 50%,transparent),
+    radial-gradient(4px 4px at 82% 12%,rgba(235,227,232,0.4) 50%,transparent),
+    radial-gradient(3px 3px at 72% 84%,rgba(234,209,160,0.4) 50%,transparent),
+    radial-gradient(3px 3px at 18% 88%,rgba(235,227,232,0.35) 50%,transparent),
+    radial-gradient(4px 4px at 55% 18%,rgba(234,209,160,0.35) 50%,transparent),
+    radial-gradient(3px 3px at 42% 70%,rgba(235,227,232,0.3) 50%,transparent);
+}
+
+/* header */
+.slide-header{position:absolute;top:90px;left:100px;right:100px;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
+.slide-mark{font-family:"Inter",sans-serif;font-weight:400;font-size:26px;letter-spacing:0.4em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:18px}
+.slide-mark::before{content:"✦";color:var(--gold);font-size:22px;opacity:0.9}
+.slide-index{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:38px;color:var(--gold);letter-spacing:0.08em}
+.slide-header-line{position:absolute;top:148px;left:100px;right:100px;height:1px;background:var(--line);z-index:3}
+
+/* SAFE AREA = top 70% (y:0-1344). Bottom 30% cropped in TikTok feed preview. */
+/* content area — vertically & horizontally centered within safe area */
+.slide-body-area{position:absolute;top:200px;bottom:770px;left:100px;right:100px;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.slide-body-area > *{max-width:100%}
+
+/* cliffhanger — kept inside safe area (ends ~y:1300) */
+.slide-cliff{position:absolute;top:1200px;left:100px;right:100px;padding-top:30px;border-top:1px solid var(--line);font-family:"Shippori Mincho",serif;font-weight:400;font-style:italic;font-size:42px;color:var(--ivory-dim);letter-spacing:0.06em;display:flex;align-items:center;justify-content:center;gap:18px;z-index:3}
+.slide-cliff::before{content:"▸";color:var(--gold);font-style:normal;font-size:42px}
+
+/* footer credit — bottom 30% cropped zone (attribution for expanded view) */
+.slide-footer-credit{position:absolute;bottom:60px;left:100px;right:100px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:26px;color:var(--muted);letter-spacing:0.08em;text-align:center;z-index:3}
+
+/* slide-type specific */
+.slide-lead{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;font-size:36px;color:var(--muted);letter-spacing:0.08em;margin-bottom:40px}
+
+.slide-main{font-family:"Shippori Mincho",serif;font-weight:500;font-size:76px;line-height:1.5;color:var(--ivory);letter-spacing:0.04em}
+.slide-main.big{font-size:96px;font-weight:600;line-height:1.4}
+.slide-main.xl{font-size:120px;font-weight:600;line-height:1.25}
+.slide-main.md{font-size:64px;font-weight:500;line-height:1.55}
+.slide-main .accent{color:var(--gold-bright);border-bottom:2px solid var(--gold);padding-bottom:2px}
+.slide-main .mauve{color:var(--mauve)}
+
+.slide-stat-num{font-family:"Cormorant Garamond",serif;font-weight:500;font-size:240px;line-height:0.95;color:var(--gold-bright);letter-spacing:-0.02em;font-feature-settings:"lnum"}
+.slide-stat-num .unit{font-family:"Shippori Mincho",serif;font-weight:500;font-size:64px;color:var(--ivory-dim);margin-left:22px;letter-spacing:0}
+.slide-stat-label{font-family:"Inter",sans-serif;font-weight:400;font-size:28px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);margin-top:24px}
+
+.slide-body{font-family:"Shippori Mincho",serif;font-weight:400;font-size:42px;color:var(--ivory-dim);line-height:1.85;margin-top:40px;letter-spacing:0.03em}
+.slide-body.small{font-size:36px}
+
+.slide-list{list-style:none;margin:44px 0 0;padding:0;font-family:"Shippori Mincho",serif;font-size:56px;color:var(--ivory);line-height:1.9;font-weight:500;display:inline-block;text-align:left}
+.slide-list li{padding-left:74px;position:relative}
+.slide-list li::before{content:attr(data-n);position:absolute;left:0;color:var(--gold);font-family:"Cormorant Garamond",serif;font-style:italic;font-size:52px}
+
+.slide-cta-list{list-style:none;margin-top:54px;padding:0;font-family:"Shippori Mincho",serif;font-size:46px;line-height:1.85;color:var(--ivory);font-weight:500;display:inline-block;text-align:left}
+.slide-cta-list li{padding-left:72px;position:relative;margin-bottom:14px}
+.slide-cta-list li .icon{position:absolute;left:0;top:2px;color:var(--gold);font-family:"Inter",sans-serif;font-size:42px;line-height:1;display:inline-block;width:52px;text-align:left}
+.slide-cta-url{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:40px;color:var(--gold);text-align:center;margin-top:52px;letter-spacing:0.1em}
+
+.slide-attribution{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:28px;color:var(--muted);margin-top:28px;letter-spacing:0.05em}
+
+/* pattern art (type reveal) */
+.slide-pattern{width:480px;height:480px;margin:40px auto;border-radius:50%;overflow:hidden;background:radial-gradient(circle,#1a1040 0%,#08061a 100%);position:relative}
+.slide-pattern::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 40% 35%,rgba(196,180,200,0.75) 0%,transparent 30%),radial-gradient(circle at 65% 68%,rgba(234,209,160,0.55) 0%,transparent 38%),repeating-radial-gradient(circle at 50% 50%,rgba(196,180,200,0.3) 0 2px,transparent 2px 16px),repeating-radial-gradient(circle at 50% 50%,rgba(234,209,160,0.22) 0 1.5px,transparent 1.5px 11px);mix-blend-mode:screen}
+.slide-pattern::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,transparent 55%,rgba(8,6,26,0.6) 90%)}
+.slide-pattern-ring{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:500px;height:500px;border-radius:50%;border:1px solid var(--line-strong);pointer-events:none}
+
+.slide-type-roman{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:44px;color:var(--gold);letter-spacing:0.3em;text-align:center;margin-bottom:12px}
+.slide-type-name{font-family:"Shippori Mincho",serif;font-weight:600;font-size:108px;color:var(--ivory);text-align:center;letter-spacing:0.06em;margin-top:16px}
+.slide-type-code{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:500;font-size:54px;color:var(--gold);letter-spacing:0.4em;text-align:center;margin-top:20px}
+
+.render-stage{position:fixed;top:0;left:-99999px;pointer-events:none;z-index:-1}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>P A T E R N I A · ATLAS TIKTOK GENERATOR</h1>
+  <div class="sub">~ 50 observations × 6 slides · observer voice ~</div>
+  <p>
+    warm night palette · Cormorant + Shippori Mincho · cliffhanger every slide<br>
+    save / comment / follow CTA on slide 6 · full mini-article in each caption
+  </p>
+</header>
+
+<div class="controls">
+  <button id="btn-all">全て生成してZIPダウンロード</button>
+  <button class="secondary" id="btn-preview-toggle">プレビュー拡大</button>
+  <button class="secondary" id="btn-check">全スライドの崩れチェック</button>
+</div>
+
+<div class="status" id="status">準備完了。</div>
+
+<div class="posts" id="posts"></div>
+
+<div class="render-stage" id="render-stage"></div>
+
+<script>
+// ===================================================
+// POSTS DATA — 10 observations × 6 slides (v2)
+// ===================================================
+const POSTS = [
+  // ============ v2 STYLE · 10 POSTS ============
+  {id:1, roman:"I", title:"怒りっぽい人、実は繊細な人だった話",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"怒りっぽい人、\n実は繊細な人だった話", size:"big", attribution:"脳画像研究より", cliff:"正体は —"},
+      {type:"tension", main:"気が強い?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"扁桃体が、\nよく動く人", size:"xl", body:"不安を感じやすい人の脳。\n刺激への反応が、倍ちかい。", attribution:"UCLA 脳画像研究・2014", cliff:"サインは3つ —"},
+      {type:"mechanism", lead:"three signs", main:"繊細さの現れ方", items:["音や光に敏感", "人の表情を読む", "アイデアが湧く"], cliff:"そして —"},
+      {type:"twist", lead:"もうひとつの顔", main:"敏感さは、\n創造性と繋がる。", body:"不安が強い人ほど、\n新しい発想が出やすい。\nそういう研究もある。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の敏感さ、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで思い当たる点"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「怒りっぽい」と言われて、本当はしんどいのは自分だった — という人に向けて、静かな報告を並べます。外側に出ている感情と、内側で起きていることは、別物かもしれないという話です。\n\n── UCLA 脳画像研究・2014 ──\n怒りやイラつきが強い人の脳を撮ると、扁桃体(不安や警戒を司る部位)が、そうでない人より大きく反応することが報告されています。つまり外側の「怒り」は、内側の「敏感さ」の裏返し。怒っている人は、本当は一番最初に傷ついている人、という見立てです。脳の仕様として、刺激に対する反応が倍ちかい、というデータもあります。\n\n── 繊細さの 3 つのサイン ──\n・音や光、匂いの変化にすぐ気づく\n・相手のちょっとした表情で疲れる\n・頭の中でアイデアや考えごとが止まらない\n\nどれも一見ばらばらですが、扁桃体の反応性が高い人に共通して出る特徴として報告されています。\n\n── もうひとつの顔 ──\nPerkins 2015 ほか、不安を感じやすい人ほど、創造的な職業で成果を出しやすいと報告されています。小さな違和感を拾えるから、他の人が見落とすものに気づける。欠点じゃなくて、チューニングの問題です。同じ機能が、使う場所を選ぶと、強みに変わります。\n\n── 小さな提案 ──\n→ 怒りが出たら、まず「いま、何に傷ついた?」と自分に聞く\n→ 人混みのあとは、一人の時間を 30 分だけ確保する\n→ 頭の中の言葉を、紙かメモに逃がす(外に出すと楽になる)\n→ 合う仕事を選ぶ(企画・編集・ものづくり・研究)\n→ カフェインを減らす(交感神経が静かになる)\n\n敏感さは削れないし、削らなくていい。扱い方を変えるだけで、疲れ方がだいぶ変わります。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、敏感さを整える参考に。コメントで、最近ムッとした瞬間を書いてくれると、一緒に考えます。\n\n#性格診断 #ビッグファイブ #HSP #繊細さん #paternia`
+  },
+  {id:2, roman:"II", title:"年収が高い人、同じ性格だった話",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"年収が高い人、\n同じ性格だった話", size:"big", attribution:"40 年追跡研究", cliff:"その性格は —"},
+      {type:"tension", main:"才能じゃない。\n\n学歴でもない。", cliff:"残ったのは —"},
+      {type:"reveal", lead:"the answer", main:"「きちんと系」", size:"xl", body:"1 段階高いだけで、\n生涯年収が +17%。\n約 8,000 万円の差。", attribution:"ミシガン大学・15 万人調査", cliff:"特徴は3つ —"},
+      {type:"mechanism", lead:"three habits", main:"きちんと系の行動", items:["先にやる", "約束を守る", "コツコツ続ける"], cliff:"面白いのは —"},
+      {type:"twist", lead:"どこでも効く", main:"職種を問わず、\n成績が上がる。", body:"営業も、看護師も、\nエンジニアも同じ。\n他の性格にはない力。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分のきちんと度、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで弱い行動"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`才能でも運でもなく、生涯年収をはっきり予測する性格がひとつだけある — という話を、静かに並べます。頑張り方を変えるより、頑張る方向を決めるほうが効くかもしれない、という見立てです。\n\n── ミシガン大学・40 年追跡(Judge 2013) ──\n15 万人以上を追いかけた研究で、「きちんと系(誠実性)」が 1 段階上がると、生涯年収が約 16.7% 上がる、と報告されました。日本円にすると、生涯でおよそ 8,000 万円の差。世界中の研究をまとめた結果(Barrick & Mount 1991)でも、職種を問わず仕事の成績に強く関係していたのは、この性格だけでした。つまり、業界を選ぶ前に、自分の土台を整えた人ほど、どこへ行っても成果が積み上がる、という構造です。\n\n── なぜ、これだけが残るのか ──\n他の性格(外向性や開放性)は、職種によって有利・不利がある。でも「きちんと系」だけは、営業でも、看護師でも、エンジニアでも、研究者でも、同じように成績を押し上げる。つまり、どの道を選んでも効く、数少ない基礎能力なんです。\n\n── きちんと系の 3 つの行動 ──\n→ 先にやる(先延ばししない)\n→ 約束を守る(小さな約束ほど)\n→ コツコツ続ける(期間を区切って)\n\n── 誤解されやすい点 ──\n「きちんと系」は堅苦しいとか、面白みがない、と誤解されがちですが、実際のデータでは、この性質が高い人ほど、自分の時間を確保できていて、休みも取れていると報告されています。計画ができるから、余白を作れる。逆説的ですが、自由になるための基礎能力でもあります。\n\n── 小さな提案 ──\n全部を一気に変える必要はない。いちばん弱い 1 つだけ選んで、2 週間意識してみる。性格は 16 週間の介入で動くと報告されているので、持って生まれたものではない、というのが最新の見解です。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、自分の「きちんと度」を確かめてみて。コメントで、続かない習慣を教えてくれると嬉しいです。\n\n#性格診断 #ビッグファイブ #年収 #キャリア #paternia`
+  },
+  {id:3, roman:"III", title:"『一人が楽』と言う人の、本当の気持ち",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"『一人が楽』と言う人の、\n本当の気持ち", size:"big", attribution:"ケンブリッジ・内向性研究", cliff:"その理由は —"},
+      {type:"tension", main:"冷たい?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"充電方法が、\n逆だった", size:"xl", body:"人と話すと疲れる脳と、\n元気になる脳。\n違う機械でした。", attribution:"脳活動・大規模調査", cliff:"サインは3つ —"},
+      {type:"mechanism", lead:"three signs", main:"一人時間が要るサイン", items:["飲み会のあと無言", "休日は誰にも会わず", "電話よりメッセージ"], cliff:"そして —"},
+      {type:"twist", lead:"仲が悪いわけじゃない", main:"人は好き。\nでも、量が要らない。", body:"深い会話を少しだけ。\nそれで満たされる、\nという設計の脳。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の充電方式、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで充電の仕方"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「一人が楽」と言うと、なぜか冷たい人扱いされる — その違和感は、ちゃんと理由がある、という話を静かに並べます。冷たいのでも、性格が悪いのでもなく、脳の充電方式が違うだけ、という見方です。\n\n── ケンブリッジ・内向性研究 ──\n人と話すと元気になる人(外向性が高い人)と、一人でいると回復する人(内向性が高い人)では、脳の反応がまったく違う、と報告されています。外向性が高い人は、会話や刺激でドーパミンが出やすい。低い人は、同じ刺激で逆に疲れが溜まる。つまり「同じ充電器を違う端子に挿している」状態に近いんです。世界の人口のうち、この内向性寄りの人は 3-4 割いると報告されていて、決して少数派ではありません。\n\n── 一人時間が必要なサイン ──\n・飲み会のあと、家で一言も話したくない\n・休日は、誰とも予定を入れずに過ごす\n・電話より、メッセージのほうが落ち着く\n・楽しかったのに、帰り道でぐったりする\n\n── 誤解されやすい点 ──\n「一人が楽」は「人が嫌い」とは違います。深い会話を少しの人と、ならむしろ得意。浅い会話を多くの人と、が苦手なだけ。この区別がつくと、人間関係の疲れ方がずいぶん楽になります。自分を責める前に、まず「今日はどれくらい、浅い会話を浴びたか」を振り返ると、疲れの原因がはっきり見えてきます。\n\n── 小さな提案 ──\n→ 予定と予定の間に、30 分の回復時間を入れる\n→ 断るときは「今日は電池が切れてる」と素直に言う\n→ 深い話ができる 2-3 人を大事にする\n→ 自分を責めない(脳の仕様です)\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、自分の充電方法を確かめて。コメントで、回復する一人時間の過ごし方を教えてください。\n\n#性格診断 #ビッグファイブ #内向型 #HSP #paternia`
+  },
+  {id:4, roman:"IV", title:"三日坊主の科学 — 脳が新しさを求める理由",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"三日坊主の科学 —\n脳が新しさを求める理由", size:"big", attribution:"ハーバード脳科学・2018", cliff:"正体は —"},
+      {type:"tension", main:"意志が弱い?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"ドーパミンは、\n新しさで出る", size:"xl", body:"続けるほど分泌が減る。\n脳は、次を探し始める。", attribution:"ハーバード脳科学・2018", cliff:"対策は3つ —"},
+      {type:"mechanism", lead:"three fixes", main:"続けるための小さな工夫", items:["ルールを毎週ずらす", "記録を変化で見せる", "仲間と共有する"], cliff:"そして —"},
+      {type:"twist", lead:"悪い性質じゃない", main:"新しさを求める脳は、\n学習が速い。", body:"飽きっぽさは、\n好奇心の別名でもある。\n使い方を変えるだけ。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の新しさ欲求、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで続かなかった習慣"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「また続かなかった」と自分を責めてしまう人に、まず仕組みから話します。意志の問題ではなく、脳の仕様の話です。根性を出すより、設計を変えるほうが効く、という方向です。\n\n── ハーバード脳科学・2018 ──\nドーパミンは、やる気を出す物質としてよく知られていますが、実は「新しさ」に強く反応して分泌されます。始めた最初の数日が楽しいのは、脳が新しい刺激にご褒美を出しているから。続けるほど分泌量が減り、同じ行動では脳が満足しなくなる。これが、三日坊主の本当の正体です。やる気がなくなったのではなく、同じ行動に対する報酬の分泌が、時間とともに減っていく、という自然な反応です。\n\n── 特に強い人 ──\n「新しいもの好き(開放性)」の数値が高い人、あるいは「飽きやすい人」では、この傾向がさらに強く出ます。悪いことではなく、学習が速くて、環境適応が高い脳の特徴でもあります。\n\n── 続けるための 3 つの工夫 ──\n→ ルールを毎週少しずらす(同じ運動でも、道や順番を変える)\n→ 記録を「変化」で見せる(累計ではなく、前週との差分を見る)\n→ 仲間と共有する(他人の目という新しい刺激を足す)\n→ 場所を変える(同じ運動でも、カフェと公園では脳の反応が違う)\n\n── もうひとつの発想 ──\n「続ける」を目的にするから苦しくなる。「3 週間で 1 セット」「1 か月で区切る」と、最初から短くデザインすると、飽きる前にやりきれる。長期計画より、小さな完了を重ねる作戦のほうが、新しさを求める脳には合っています。\n\n── 責めなくていい ──\n三日坊主は、性格の弱さではなく、好奇心の強さ。自分を責めるエネルギーを、次の挑戦に回すほうが、結局は遠くまで行けます。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、続けたい習慣を仕込む前に読み返してみて。コメントで、続かなかった習慣を教えてください。\n\n#性格診断 #ビッグファイブ #習慣化 #三日坊主 #paternia`
+  },
+  {id:5, roman:"V", title:"長続きするカップル、共通点は 1 つだけ",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"長続きするカップル、\n共通点は 1 つだけ", size:"big", attribution:"18 年追跡研究(Luo 2009)", cliff:"その共通点は —"},
+      {type:"tension", main:"似てる?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"両方が\n『きちんと系』", size:"xl", body:"二人とも高い組は、\n離別率がはっきり低い。", attribution:"18 年追跡・縦断研究", cliff:"理由は3つ —"},
+      {type:"mechanism", lead:"three reasons", main:"続く理由", items:["約束を守る", "家事を分ける", "お金を決める"], cliff:"そして —"},
+      {type:"twist", lead:"片方だけだと", main:"片方だけ高いと、\n負担が偏る。", body:"「できる方がやる」\nが続いて、\n不満が溜まる。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"二人のきちんと度、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで不満の原因"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`長く続くカップルの共通点を調べた研究で、性格の「似ている度」より、ある 1 つの性質が両方とも高いことが大事だと報告されています。\n\n── Luo 2009・18 年縦断研究 ──\nLuo 2009 の縦断研究。結婚してから 18 年間を追いかけた研究。性格の似ている度合いは、関係の満足度をほとんど予測しませんでした。代わりに強く効いていたのは、お互いの「きちんと系(誠実性)」の高さ。両方が高いカップルは、離別率がはっきり低く、満足度も高いままでした。\n\n── なぜ、これだけが残るのか ──\n結婚生活は、毎日の小さな約束で成り立っています。「ゴミ出し」「家計簿」「予定の共有」「連絡をちゃんと返す」。どれも派手さはないけれど、片方が怠ると、もう片方に負担が偏る。「きちんと系」が両方高いと、この負担が釣り合う、というのが仕組みです。\n\n── 片方だけ高いと、何が起きるか ──\n「できる方がやる」状態が続きます。最初は頑張れても、数年で「なぜ私ばかり」という不満に変わる。多くのすれ違いの原因が、このズレだと報告されています。最初の 3 年で不満が芽を出し、5-7 年で爆発する、というパターンが典型的です。\n\n── 小さな提案 ──\n→ 毎週 10 分、「次の 1 週間の約束」を話す時間を持つ\n→ 家事・お金の分担を、紙に書いて見える化する\n→ 相手が守れていない点より、自分が守れた点を伝える\n→ 「きちんと度」は後から育つ性質なので、責めずに話す\n→ 一緒に診断して、スコアを並べて見る(数字で話せると、感情的にならない)\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、パートナーと一緒に診断してみてください。コメントで、二人で決めているルールがあれば教えてね。\n\n#性格診断 #ビッグファイブ #カップル #恋愛心理 #paternia`
+  },
+  {id:6, roman:"VI", title:"『気にしすぎる自分』、実は特殊能力",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"『気にしすぎる自分』、\n実は特殊能力", size:"big", attribution:"脳画像研究+創造性研究", cliff:"正体は —"},
+      {type:"tension", main:"弱点?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"深い洞察力と、\n創造性", size:"xl", body:"不安が強いほど、\n新しい発想が出やすい。", attribution:"Perkins 2015 ほか", cliff:"向いている仕事3つ —"},
+      {type:"mechanism", lead:"three careers", main:"向いている仕事", items:["編集・ライティング", "デザイン・企画", "研究・分析"], cliff:"そして —"},
+      {type:"twist", lead:"使い方を変えるだけ", main:"欠点じゃない。\nチューニングの話。", body:"敏感さを削るより、\n刺激の量を調整する。\nそれだけで楽になる。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の敏感さ、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで強みに変わった瞬間"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「また気にしすぎた」と自分を責めてきた人に、研究の現場からの報告を並べます。敏感さは、直すものではなく、使うものです。同じ機能も、置き場所を変えれば、弱みから強みに切り替わります。\n\n── 脳画像研究が示したこと ──\n不安や警戒を感じやすい人(神経症傾向が高い人)の脳は、扁桃体の反応が強く、環境の小さな変化をすばやく拾います。人の表情、声のトーン、部屋の空気。普通の人が見落とすものに、自動的に気づいてしまう脳です。データとしては、人口の 15-20% に分布するといわれていて、決して珍しいタイプではありません。\n\n── Perkins 2015・創造性研究 ──\n敏感な人は、創造的な職業での成果が高いと報告されています。違和感に気づけるから、他の人と違う視点を出せる。悩みやすいからこそ、内省が深く、ものづくりや書き物に向く。「気にしすぎ」は、観察力が高すぎることの副作用です。弱くするのではなく、向ける先を変えるだけで、違う風景が見えてきます。\n\n── 向いている仕事 3 つ ──\n→ 編集・ライティング(言葉のニュアンスを拾える)\n→ デザイン・企画(使う人の気持ちを先回りできる)\n→ 研究・分析(小さな差異を見逃さない)\n\n── 小さな提案 ──\n→ 敏感さを削ろうとしない。刺激の量を減らすだけ\n→ 情報を浴びすぎた日は、SNS を閉じて静かな時間を作る\n→ 頭の中の言葉を、紙かメモに逃がす(外に出すと楽になる)\n→ 合う環境を選ぶ(騒がしい職場より、集中できる場所)\n→ 一緒にいて消耗しない人を大事にする(これが一番効く)\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、敏感さを強みに変える参考に。コメントで、気にしすぎが役に立った瞬間があれば教えてください。\n\n#性格診断 #ビッグファイブ #HSP #繊細さん #paternia`
+  },
+  {id:7, roman:"VII", title:"飽きっぽい人と続く人、脳が違った",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"飽きっぽい人と続く人、\n脳が違った", size:"big", attribution:"ドーパミン研究より", cliff:"違いは —"},
+      {type:"tension", main:"努力の差?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"報酬の出どころが、\n別だった", size:"xl", body:"新しさで出る脳と、\n習慣で出る脳。\n回路が違う。", attribution:"ドーパミン大規模研究", cliff:"タイプ別に対策 —"},
+      {type:"mechanism", lead:"three by type", main:"タイプ別の続け方", items:["飽きっぽい: 変化を混ぜる", "続く人: 記録で安定", "どちらも: 仲間を作る"], cliff:"そして —"},
+      {type:"twist", lead:"優劣はない", main:"飽きるから\n新しいものが生まれ、\n続くから積み上がる。", body:"役割が違うだけ。\nどちらも社会に要る脳。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の脳のタイプ、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで自分のタイプ"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「飽きっぽい」と「続けられる」は、意志の差じゃなくて、脳の設計の違い — という話を、静かに並べます。違う燃料で動く脳を、同じ方法で動かそうとしても、効率が悪いだけです。\n\n── ドーパミン研究が示したこと ──\n人間の「やる気」を作るドーパミンは、大きく 2 種類の場面で出ます。新しい刺激に触れたとき、そして、見慣れた行動で予想どおりの報酬を得たとき。前者が強い脳は、飽きっぽく見える。後者が強い脳は、続く人に見える。同じ性能の車でも、燃料が違うイメージです。\n\n── 飽きっぽい脳の特徴 ──\n・新しいことを始めるのが得意\n・学習が速く、環境適応が高い\n・マンネリにすぐ気づく\n・開放性(新しいもの好き)の数値が高めの傾向\n\n── 続く脳の特徴 ──\n・ルーティンに安心感を感じる\n・積み上げで成果を出しやすい\n・変化に少し疲れやすい\n・誠実性(きちんと系)の数値が高めの傾向\n\nどちらが良い悪いではなく、どちらの燃料で動く脳かを知ることが、戦略の出発点になります。\n\n── タイプ別の続け方 ──\n→ 飽きっぽい人: ルールを毎週少しずらす、短いスパンで区切る、記録を「前週との差分」で見せる\n→ 続く人: 毎日の記録を積む、変化は少なめに、長いスパンで計画する\n→ どちらも: 仲間と共有する、見られる環境に置く、小さな完了を重ねる\n\n── 優劣はない ──\n飽きる脳がいるから、新しいものが生まれる。続く脳がいるから、積み上がる。どちらも社会には必要な役割で、自分のタイプに合う戦略を選ぶだけで、ずいぶん楽になります。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、自分のタイプに合う戦略を選ぶ参考に。コメントで、続いた習慣・続かなかった習慣を教えてください。\n\n#性格診断 #ビッグファイブ #習慣化 #脳科学 #paternia`
+  },
+  {id:8, roman:"VIII", title:"『人気者』ほど、実は疲れやすい",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"『人気者』ほど、\n実は疲れやすい", size:"big", attribution:"社交疲労の研究より", cliff:"理由は —"},
+      {type:"tension", main:"楽しそう?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"期待に応え続ける、\n消耗", size:"xl", body:"みんなの機嫌を保つと、\n脳が走り続ける状態に。", attribution:"社交疲労の大規模調査", cliff:"サインは3つ —"},
+      {type:"mechanism", lead:"three signs", main:"消耗しているサイン", items:["帰宅後、無言になる", "休日に連絡を見ない", "会う前に緊張する"], cliff:"そして —"},
+      {type:"twist", lead:"必要なのは ──", main:"一人時間の、確保。", body:"嫌いになったんじゃない。\n脳の電池を\n充電しているだけ。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の社交疲労度、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで疲れるサイン"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`「人気者」と言われる人ほど、実は家でぐったりしている — という話を、静かに並べます。にぎやかさの裏側にある消耗の話です。\n\n── 社交疲労の研究より ──\n多くの人に好かれる人、場をまとめられる人は、たいてい「気配りの人(協調性が高い)」の性質を持っています。相手の表情を読んで、話を合わせて、全員の機嫌を保つ。これは能力なんですが、脳にとっては常に走り続けている状態で、コストがとても高い、と報告されています。\n\n── 消耗しているサイン 3 つ ──\n・楽しかった集まりのあと、家で一言も話したくなくなる\n・休日は、LINE や SNS の通知を見るのも重い\n・次の予定が近づくと、胃が少し重くなる\n・「また疲れた」と口に出るのに、人付き合いは断れない\n\n── 何が起きているのか ──\n気配りの人の脳は、他人の感情を常にスキャンしています。相手が不機嫌、退屈、気まずい、のサインを拾うたびに、自分の言動を微調整する。これは、ひとり会議を何時間も続けている状態に近い。会話が楽しくても、脳は疲弊していきます。\n\n── 小さな提案 ──\n→ 予定と予定の間に、30 分の回復時間を入れる\n→ 誘いを断る練習をする(「今日は電池が切れてる」でいい)\n→ 深い話ができる 2-3 人を大事にする\n→ 一人の趣味を持つ(読書、散歩、料理など)\n\n── 誤解されやすい点 ──\n人気者が一人時間を求めるのは、人が嫌いになったからではなく、脳の電池を充電しているだけ。自分を責める必要も、友達に謝る必要もない、というのが研究の見解です。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、疲れた日に読み返してみて。コメントで、あなたの「回復の仕方」を教えてください。\n\n#性格診断 #ビッグファイブ #HSP #社交疲労 #paternia`
+  },
+  {id:9, roman:"IX", title:"ケンカが長引く人と、すぐ解決する人の差",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"ケンカが長引く人と、\nすぐ解決する人の差", size:"big", attribution:"対立解決研究(Bono 2019)", cliff:"差は —"},
+      {type:"tension", main:"相性?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"相手の視点を、\n想像する力", size:"xl", body:"新しいもの好き(開放性)が、\n対立の長さを決めていた。", attribution:"Bono 2019 対立解決研究", cliff:"低い時の癖3つ —"},
+      {type:"mechanism", lead:"three habits", main:"長引く人の癖", items:["自分の正しさを繰り返す", "過去を持ち出す", "黙って距離を置く"], cliff:"そして —"},
+      {type:"twist", lead:"一言で変わる", main:"「そっちから\nどう見えた?」", body:"この一言で、\n脳が相手の視点に\n切り替わる。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の視点切替力、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで長引く原因"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`ケンカが長引くかどうかは、相性ではなく、ある 1 つの性質で決まっている — という話を、静かに並べます。相手が悪いのでも、自分が弱いのでもなく、脳の視点切替の癖の話です。\n\n── Bono 2019・対立解決研究 ──\n職場や家庭での対立がどれくらいで解決するかを調べた研究で、最も強く関係していたのは「新しいもの好き(開放性)」の高さでした。この性質が高い人は、相手の視点に立って状況を再構成するのが得意で、対立が短時間で収束する傾向が報告されています。低い人は、自分の正しさに集中してしまい、相手の立場を想像する余裕が一時的に消える、ともいわれています。\n\n── 長引く人の 3 つの癖 ──\n・自分の正しさを繰り返す(同じフレーズを角度を変えて)\n・過去を持ち出す(関係ない別件まで引っ張る)\n・黙って距離を置く(対話から撤退する)\n\nどれも、開放性が低いときに出やすい自動反応です。自分を責めるのではなく、脳の癖として知っておくと、次に同じ場面で止めやすくなります。\n\n── 一言で流れが変わるフレーズ ──\n→ 「そっちから、どう見えた?」\n→ 「自分が間違っていたとしたら、どこ?」\n→ 「いま、何を一番怖がってる?」\n\nこのどれかを途中で挟むと、脳が自分の正しさを守るモードから、相手の状況を想像するモードに切り替わります。開放性を一時的に高める、ちょっとした技術です。\n\n── 小さな提案 ──\n→ 対立したら、まず 10 分の休憩(脳の興奮を冷ます)\n→ その間に、自分がもし相手だったら何を感じるかを想像する\n→ 話に戻るときは、解決より理解を目的にする\n→ 終わったら、次に同じことが起きたときのルールを決める\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、次に衝突したときに読み返してみて。コメントで、長引きやすいパターンを教えてください。\n\n#性格診断 #ビッグファイブ #人間関係 #夫婦喧嘩 #paternia`
+  },
+  {id:10, roman:"X", title:"幸せかどうか、半分は性格で決まってた",
+    slides:[
+      {type:"hook", lead:"a quiet finding", main:"幸せかどうか、\n半分は性格で決まってた", size:"big", attribution:"世界中の研究をまとめた結果", cliff:"割合は —"},
+      {type:"tension", main:"環境の差?\n\n違った。", cliff:"本当は —"},
+      {type:"reveal", lead:"the answer", main:"45% は、\n性格で説明", size:"xl", body:"収入・学歴より、\n5 つの性質の合計が強い。", attribution:"Sun 2020 メタ分析", cliff:"レシピは4つ —"},
+      {type:"mechanism", lead:"four ingredients", main:"幸福レシピ", items:["敏感さ低め", "きちんと系高め", "人と話す時間", "新しさへの開き"], cliff:"そして —"},
+      {type:"twist", lead:"変えられる", main:"90 日で、\n数値は動く。", body:"Hudson & Fraley 2015。\n小さな練習で、\n性格は変わる。", cliff:"続きはキャプションへ —"},
+      {type:"cta", lead:"three small actions", main:"自分の幸福レシピ、\n測ってみる?", actions:[
+        {icon:"▢", text:"保存して診断へ"},
+        {icon:"◖", text:"コメントで伸ばしたい要素"},
+        {icon:"▸", text:"フォローで続きシリーズ"}
+      ], url:"paternia.vercel.app"}
+    ],
+    caption:`幸せかどうかは、どれくらい環境で決まり、どれくらい自分の中身で決まるのか — 世界中の研究をまとめた結果、静かな数字が出ていました。\n\n── Sun 2020・メタ分析 ──\n何万人ものデータを集めた結果、人生の幸福度のうち 45% が性格(Big5)で説明できる、と報告されました。収入、学歴、職業といった外側の条件より、5 つの性質の合計のほうが、はっきり効いていた、という結果です。\n\n── 幸福レシピの 4 要素 ──\n・敏感さ(神経症傾向)が低めであること\n・きちんと系(誠実性)が高めであること\n・人と話す時間をある程度持つこと\n・新しさへの開き(開放性)を保つこと\n\nこの 4 つのバランスが取れている人ほど、満足度が高い状態を長く維持できる、というのがメタ分析の結論です。\n\n── でも、変えられる ──\nHudson & Fraley 2015 の研究で、16 週間の小さな練習プログラムで、性格の各数値が実際に動くことが確認されています。生まれつきではなく、90 日単位で調整できる範囲にある、というのが最新の見解です。\n\n── 小さな提案 ──\n→ 敏感さを下げる: 睡眠を 7 時間確保する、SNS を減らす\n→ きちんと系を上げる: 小さな約束を守る、先延ばしを止める\n→ 人と話す時間を作る: 週に 1 回、深い会話ができる相手と\n→ 新しさへの開き: 月に 1 冊、普段読まないジャンルの本を\n\n── 出発点 ──\nどれを伸ばせばいちばん効くかは、いまの数値によって違います。全部をやろうとせず、自分のいちばん低いものを 1 つ選ぶ。それだけで、90 日後の自分が少し違う、というのが研究の含意です。\n\n🔗 無料診断(45 問・4 分): プロフィールのリンクから\n📝 詳しい記事: note.com/paternia\n\n保存して、自分の幸福レシピを確かめて。コメントで、伸ばしたい要素を教えてください。\n\n#性格診断 #ビッグファイブ #幸福論 #自己分析 #paternia`
+  }
+];
+
+// ===================================================
+// Rendering
+// ===================================================
+function renderSlide(post, slideIdx){
+  const slide = post.slides[slideIdx];
+  const total = post.slides.length;
+  const el = document.createElement("div");
+  el.className = "slide";
+  el.dataset.slideId = `post-${post.id}-slide-${slideIdx+1}`;
+  const inner = renderSlideInner(slide);
+  const cliff = slide.cliff && slideIdx < total - 1
+    ? `<div class="slide-cliff">${escapeLines(slide.cliff)}</div>` : "";
+  const credit = slide.credit
+    ? `<div class="slide-footer-credit">${escapeLines(slide.credit)}</div>`
+    : `<div class="slide-footer-credit">paternia · observer ${post.roman || ""}</div>`;
+  const mark = slide.type === "cta" ? "closing" : (post.roman ? `observation ${post.roman}` : "observation");
+  el.innerHTML = `
+    <div class="slide-header">
+      <span class="slide-mark">${mark}</span>
+      <span class="slide-index">${String(slideIdx+1).padStart(2,"0")} / ${String(total).padStart(2,"0")}</span>
+    </div>
+    <div class="slide-header-line"></div>
+    <div class="slide-body-area">${inner}</div>
+    ${cliff}
+    ${credit}
+  `;
+  return el;
+}
+
+function escapeLines(s){ return s.replace(/\n/g,"<br>"); }
+
+function renderSlideInner(slide){
+  const lead = slide.lead ? `<p class="slide-lead">${escapeLines(slide.lead)}</p>` : "";
+  const attribution = slide.attribution ? `<p class="slide-attribution">${escapeLines(slide.attribution)}</p>` : "";
+  switch(slide.type){
+    case "hook":
+      return `${lead}<h2 class="slide-main ${slide.size || "big"}">${escapeLines(slide.main)}</h2>${attribution}`;
+    case "tension":
+      return `${lead}<h2 class="slide-main ${slide.size || ""}">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body">${escapeLines(slide.body)}</p>` : ""}`;
+    case "reveal":
+      return `${lead}<h2 class="slide-main ${slide.size || "xl"}" style="text-align:center;margin-top:80px">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body" style="text-align:center">${escapeLines(slide.body)}</p>` : ""}${attribution ? `<p class="slide-attribution" style="text-align:center">${slide.attribution}</p>` : ""}`;
+    case "stat":
+      return `${lead}<div style="text-align:center;margin-top:60px"><span class="slide-stat-num">${slide.num}${slide.unit ? `<span class="unit">${slide.unit}</span>` : ""}</span><div class="slide-stat-label">${escapeLines(slide.label || "")}</div></div>${slide.body ? `<p class="slide-body" style="text-align:center;margin-top:40px">${escapeLines(slide.body)}</p>` : ""}`;
+    case "mechanism":
+      return `${lead}${slide.main ? `<h2 class="slide-main md">${escapeLines(slide.main)}</h2>` : ""}<ol class="slide-list">${slide.items.map((t,i)=>`<li data-n="${toRoman(i+1)}">${t}</li>`).join("")}</ol>`;
+    case "twist":
+      return `${lead}<h2 class="slide-main ${slide.size || "big"}">${escapeLines(slide.main)}</h2>${slide.body ? `<p class="slide-body">${escapeLines(slide.body)}</p>` : ""}`;
+    case "cta":
+      return `${lead}<h2 class="slide-main md" style="text-align:center">${escapeLines(slide.main)}</h2><ul class="slide-cta-list">${slide.actions.map(a=>`<li><span class="icon">${a.icon}</span>${a.text}</li>`).join("")}</ul><div class="slide-cta-url">${slide.url}</div>`;
+    case "type-intro":
+      return `${lead}<h2 class="slide-main md" style="text-align:center">${escapeLines(slide.main || "")}</h2><div class="slide-pattern-ring"></div><div class="slide-pattern"></div><div class="slide-type-code">${slide.code}</div>`;
+    case "type-portrait":
+      return `<div class="slide-type-roman">— ${slide.roman} —</div><p class="slide-lead" style="text-align:center;margin-bottom:0">${slide.archetype}</p><h2 class="slide-type-name">${slide.typename}</h2>${slide.body ? `<p class="slide-body" style="text-align:center;margin-top:50px">${escapeLines(slide.body)}</p>` : ""}`;
+    default:
+      return `<h2 class="slide-main">${escapeLines(slide.main || "")}</h2>`;
+  }
+}
+
+function toRoman(n){
+  const r = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+  return r[n-1] || String(n);
+}
+
+// ===================================================
+// UI
+// ===================================================
+function buildUI(){
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = "";
+  POSTS.forEach(post=>{
+    const postEl = document.createElement("div");
+    postEl.className = "post";
+    postEl.innerHTML = `
+      <div class="post-header">
+        <span class="post-id">No. ${String(post.id).padStart(2,"0")} · observation ${post.roman || ""}</span>
+        <button class="generate-post" data-post-id="${post.id}" style="background:transparent;border:0.5px solid var(--gold);color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:13px;padding:8px 16px;cursor:pointer;letter-spacing:0.1em">この投稿を生成</button>
+      </div>
+      <div class="post-title">${post.title}</div>
+      <div class="slides-grid"></div>
+      <div class="post-caption">${post.caption || ""}</div>
+    `;
+    const grid = postEl.querySelector(".slides-grid");
+    post.slides.forEach((_, idx)=>{
+      const thumb = document.createElement("div");
+      thumb.className = "slide-thumb";
+      const scaled = document.createElement("div");
+      scaled.className = "scaled";
+      scaled.appendChild(renderSlide(post, idx));
+      thumb.appendChild(scaled);
+      grid.appendChild(thumb);
+    });
+    postsContainer.appendChild(postEl);
+  });
+
+  document.querySelectorAll(".generate-post").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const id = Number(btn.dataset.postId);
+      document.querySelectorAll("button").forEach(b=>b.disabled=true);
+      generatePost(id).finally(()=>document.querySelectorAll("button").forEach(b=>b.disabled=false));
+    });
+  });
+  document.querySelectorAll(".slide-thumb").forEach(thumb=>{
+    thumb.addEventListener("click",()=>{
+      const w = window.open("","_blank");
+      w.document.write(`<html><head><title>Preview</title><style>body{margin:0;background:#0f0a18;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px}</style></head><body></body></html>`);
+      const clone = thumb.querySelector(".scaled").cloneNode(true);
+      clone.style.transform = "scale(0.5)";
+      clone.style.position = "static";
+      w.document.body.appendChild(clone);
+    });
+  });
+}
+
+// ===================================================
+// Export
+// ===================================================
+const status = document.getElementById("status");
+const stage = document.getElementById("render-stage");
+
+async function captureSlide(post, slideIdx){
+  const el = renderSlide(post, slideIdx);
+  stage.innerHTML = "";
+  stage.appendChild(el);
+  await new Promise(r=>setTimeout(r,80));
+  const canvas = await html2canvas(el, {width:1080, height:1920, scale:1, backgroundColor:"#0f0a18", logging:false, useCORS:true});
+  return new Promise(resolve=>canvas.toBlob(b=>resolve(b),"image/png"));
+}
+async function generatePost(postId){
+  const post = POSTS.find(p=>p.id===postId);
+  if(!post) return;
+  const zip = new JSZip();
+  const folder = zip.folder(`post-${String(post.id).padStart(2,"0")}_${post.title.replace(/[\\/:*?"<>|]/g,"")}`);
+  for(let i=0;i<post.slides.length;i++){
+    status.textContent = `投稿${post.id}: ${i+1}/${post.slides.length}`;
+    const blob = await captureSlide(post, i);
+    folder.file(`${String(i+1).padStart(2,"0")}.png`, blob);
+  }
+  folder.file("caption.txt", post.caption || "");
+  status.textContent = `投稿${post.id}: ZIP作成中…`;
+  const zipBlob = await zip.generateAsync({type:"blob"});
+  saveAs(zipBlob, `paternia_atlas_post-${String(post.id).padStart(2,"0")}.zip`);
+  status.textContent = `投稿${post.id} ✓`;
+}
+async function generateAll(){
+  document.querySelectorAll("button").forEach(b=>b.disabled=true);
+  try{
+    const zip = new JSZip();
+    for(const post of POSTS){
+      const folder = zip.folder(`post-${String(post.id).padStart(2,"0")}_${post.title.replace(/[\\/:*?"<>|]/g,"")}`);
+      for(let i=0;i<post.slides.length;i++){
+        status.textContent = `投稿${post.id} (${POSTS.indexOf(post)+1}/${POSTS.length}) - ${i+1}/${post.slides.length}`;
+        const blob = await captureSlide(post, i);
+        folder.file(`${String(i+1).padStart(2,"0")}.png`, blob);
+      }
+      folder.file("caption.txt", post.caption || "");
+    }
+    status.textContent = `全 ZIP 作成中…`;
+    const zipBlob = await zip.generateAsync({type:"blob"});
+    saveAs(zipBlob, `paternia_atlas_all.zip`);
+    status.textContent = `完了 ✓ 全${POSTS.length}投稿`;
+  } catch(e){
+    status.textContent = `エラー: ${e.message}`;
+    console.error(e);
+  } finally {
+    document.querySelectorAll("button").forEach(b=>b.disabled=false);
+  }
+}
+
+// Layout check
+function checkLayout(){
+  const issues = [];
+  POSTS.forEach(post=>{
+    post.slides.forEach((_, idx)=>{
+      const el = renderSlide(post, idx);
+      stage.innerHTML = "";
+      stage.appendChild(el);
+      const bodyArea = el.querySelector(".slide-body-area");
+      const cliff = el.querySelector(".slide-cliff");
+      if(bodyArea && cliff){
+        const bRect = bodyArea.getBoundingClientRect();
+        const cRect = cliff.getBoundingClientRect();
+        // bottom of body must be above top of cliff
+        if(bRect.bottom > cRect.top + 8){
+          issues.push(`Post ${post.id} slide ${idx+1}: body overflows into cliff`);
+        }
+      }
+      // overall overflow
+      const contentBottom = Array.from(el.children).reduce((max, ch)=>Math.max(max, ch.getBoundingClientRect().bottom), 0);
+      const slideBottom = el.getBoundingClientRect().bottom;
+      if(contentBottom > slideBottom + 8){
+        issues.push(`Post ${post.id} slide ${idx+1}: content exceeds slide height`);
+      }
+    });
+  });
+  stage.innerHTML = "";
+  if(issues.length === 0){
+    status.textContent = `✓ 全 ${POSTS.length} 投稿 × ${POSTS[0]?.slides.length || 6} スライド = 崩れなし`;
+  } else {
+    status.textContent = `⚠ ${issues.length} 件の崩れ: ${issues.slice(0,3).join(" / ")}${issues.length>3?" ...":""}`;
+    console.warn("Layout issues:", issues);
+  }
+  return issues;
+}
+
+document.getElementById("btn-all").addEventListener("click",generateAll);
+document.getElementById("btn-check").addEventListener("click",checkLayout);
+let zoomed = false;
+document.getElementById("btn-preview-toggle").addEventListener("click",()=>{
+  zoomed = !zoomed;
+  document.querySelectorAll(".slides-grid").forEach(g=>{g.style.gridTemplateColumns = zoomed ? "repeat(auto-fill,minmax(280px,1fr))" : "repeat(auto-fill,minmax(160px,1fr))"});
+  document.querySelectorAll(".slide-thumb .scaled").forEach(s=>{s.style.transform = zoomed ? "scale(calc(280/1080))" : "scale(calc(160/1080))"});
+});
+
+// Build on load
+buildUI();
+</script>
+</body>
+</html>

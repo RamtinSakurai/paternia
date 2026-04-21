@@ -8,6 +8,7 @@ import { getTypeCode, getTypeProfile } from "@/lib/diagnosis";
 import { UNIVERSAL_ARTICLES } from "@/data/type-profiles";
 import { AXIS_LABELS, type Axis } from "@/data/questions";
 import PatternCanvas from "@/components/PatternCanvas";
+import HoroscopeFrame from "@/components/HoroscopeFrame";
 import ScoreBar from "@/components/ScoreBar";
 import Big5Summary from "@/components/Big5Summary";
 import { trackShare, trackResultView, trackNoteClick } from "@/lib/analytics";
@@ -141,7 +142,13 @@ function ResultContent() {
           YOUR PATTERN
         </p>
 
-        <PatternCanvas scores={scores} size={260} />
+        <HoroscopeFrame
+          size={300}
+          variant="detail"
+          aspect={[scores.O, scores.C, scores.E, scores.A, scores.N]}
+        >
+          <PatternCanvas scores={scores} size={256} />
+        </HoroscopeFrame>
 
         <div className="text-center">
           <p
@@ -215,12 +222,9 @@ function ResultContent() {
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="w-12 h-px bg-border mx-auto mb-10" />
-
-      {/* Section 4: note deep-dive CTA (no price shown) */}
+      {/* Section 4: note deep-dive CTA — placed directly below Big5 scores */}
       {profile.noteUrl && (
-        <section className="mb-10 animate-fade-up stagger-3">
+        <section className="mb-12 animate-fade-up stagger-3">
           <h2
             className="text-sm tracking-[0.2em] text-text-muted mb-4 text-center"
             style={{ fontFamily: "var(--font-fredoka)" }}

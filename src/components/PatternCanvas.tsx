@@ -165,18 +165,18 @@ function drawKaleidoscope(ctx: CanvasRenderingContext2D, s: number, scores: Scor
 // 3. drawSumiE (O × A) -- 墨の流れ -- 藍+クリーム -- 水墨
 // ============================================================
 function drawSumiE(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noise: NoiseFn, t: number) {
-  fillBg(ctx, s, "rgb(245,240,225)"); // cream paper
+  fillBg(ctx, s, "rgb(5,8,26)"); // void night sky
   const cx = s / 2, cy = s / 2;
 
-  // Paper grain
+  // Stellar grain (faint silver dust)
   for (let i = 0; i < 300; i++) {
     const x = noise(i, 0) * s * 0.5 + cx;
     const y = noise(i + 100, 0) * s * 0.5 + cy;
-    ctx.fillStyle = `rgba(100,80,50,${Math.abs(noise(i * 2, 0)) * 0.04})`;
+    ctx.fillStyle = `rgba(181,184,200,${Math.abs(noise(i * 2, 0)) * 0.08})`;
     ctx.fillRect(x, y, 2, 2);
   }
 
-  // Ink strokes -- horizontal gestural brush marks
+  // Moonlight brush strokes -- horizontal gestural marks in silver/ivory
   const strokes = 5 + Math.floor(scores.O * 3);
   for (let s2 = 0; s2 < strokes; s2++) {
     const baseY = cy + (s2 - strokes / 2) * 30;
@@ -190,20 +190,20 @@ function drawSumiE(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noi
       const width = 15 - progress * 12 + Math.abs(noise(seg, s2)) * 8;
       const opacity = (1 - progress * 0.6) * 0.4 * (0.6 + noise(seg, t) * 0.4);
 
-      // Ink dot with bleed
+      // Silver ink with moonlight bleed
       const g = ctx.createRadialGradient(x, y, 0, x, y, width);
-      g.addColorStop(0, `rgba(20,30,70,${opacity})`);
-      g.addColorStop(0.6, `rgba(30,40,80,${opacity * 0.4})`);
+      g.addColorStop(0, `rgba(235,229,245,${opacity})`);
+      g.addColorStop(0.6, `rgba(184,176,204,${opacity * 0.4})`);
       g.addColorStop(1, "transparent");
       ctx.fillStyle = g;
       ctx.fillRect(x - width, y - width, width * 2, width * 2);
     }
   }
 
-  // Red seal
-  ctx.fillStyle = "rgba(170,40,40,0.7)";
+  // Gold seal (sealed by the stars)
+  ctx.fillStyle = "rgba(212,181,128,0.8)";
   ctx.fillRect(s - 50, s - 50, 24, 24);
-  ctx.fillStyle = "rgba(245,240,225,0.9)";
+  ctx.fillStyle = "rgba(235,229,245,0.95)";
   ctx.font = "12px serif";
   ctx.fillText("印", s - 44, s - 34);
 }
@@ -450,21 +450,21 @@ function drawSeigaiha(ctx: CanvasRenderingContext2D, s: number, scores: Scores, 
 // 8. drawSeismograph (C × N) -- 地震計 -- セピア+赤
 // ============================================================
 function drawSeismograph(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noise: NoiseFn, t: number) {
-  fillBg(ctx, s, "rgb(240,225,200)"); // sepia paper
+  fillBg(ctx, s, "rgb(10,13,31)"); // midnight navy
   const cx = s / 2, cy = s / 2;
 
-  // Paper grain
+  // Star dust grain
   for (let i = 0; i < 250; i++) {
     const x = noise(i * 0.5, 0) * s * 0.5 + cx;
     const y = noise(i + 50, 0) * s * 0.5 + cy;
-    ctx.fillStyle = `rgba(120,90,50,${Math.abs(noise(i, 0)) * 0.06})`;
+    ctx.fillStyle = `rgba(184,176,204,${Math.abs(noise(i, 0)) * 0.1})`;
     ctx.fillRect(x, y, 1.5, 1.5);
   }
 
-  // Horizontal faint grid lines
+  // Horizontal faint grid lines (nebula threads)
   for (let row = 0; row < 6; row++) {
     const y = cy - 90 + row * 32;
-    ctx.strokeStyle = "rgba(100,70,40,0.12)";
+    ctx.strokeStyle = "rgba(155,143,212,0.16)";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.moveTo(20, y);
@@ -472,11 +472,11 @@ function drawSeismograph(ctx: CanvasRenderingContext2D, s: number, scores: Score
     ctx.stroke();
   }
 
-  // Seismograph traces -- 3 parallel tracks
+  // Seismograph traces -- 3 parallel tracks (gold center, silver sides)
   const tracks = 3;
   for (let tr = 0; tr < tracks; tr++) {
     const trY = cy - 50 + tr * 50;
-    ctx.strokeStyle = tr === 1 ? "rgba(150,30,30,0.85)" : "rgba(50,35,25,0.75)";
+    ctx.strokeStyle = tr === 1 ? "rgba(212,181,128,0.9)" : "rgba(181,184,200,0.8)";
     ctx.lineWidth = 1.1;
     ctx.beginPath();
     for (let x = 20; x < s - 20; x += 1.5) {
@@ -494,9 +494,9 @@ function drawSeismograph(ctx: CanvasRenderingContext2D, s: number, scores: Score
     ctx.stroke();
   }
 
-  // Moving playhead
+  // Moving gold playhead
   const ph = 30 + ((t * 40) % (s - 60));
-  ctx.strokeStyle = "rgba(150,30,30,0.4)";
+  ctx.strokeStyle = "rgba(232,203,149,0.45)";
   ctx.lineWidth = 0.8;
   ctx.beginPath();
   ctx.moveTo(ph, cy - 80);
@@ -872,7 +872,7 @@ function drawMycelium(ctx: CanvasRenderingContext2D, s: number, scores: Scores, 
 // 14. drawKnit (A × C) -- 編み物 -- クリーム+ローズ+セージ
 // ============================================================
 function drawKnit(ctx: CanvasRenderingContext2D, s: number, scores: Scores, _noise: NoiseFn, t: number) {
-  fillBg(ctx, s, "rgb(60,40,40)");
+  fillBg(ctx, s, "rgb(20,24,46)");
 
   const stitchW = 14;
   const stitchH = 16;
@@ -880,9 +880,9 @@ function drawKnit(ctx: CanvasRenderingContext2D, s: number, scores: Scores, _noi
   const rows = Math.ceil(s / stitchH) + 1;
 
   const palettes = [
-    [230, 200, 170], // cream
-    [220, 140, 150], // rose
-    [170, 190, 150], // sage
+    [235, 229, 245], // ivory-star
+    [212, 181, 128], // solar-gold
+    [155, 143, 212], // mystic purple
   ];
 
   for (let r = 0; r < rows; r++) {
@@ -929,15 +929,15 @@ function drawKnit(ctx: CanvasRenderingContext2D, s: number, scores: Scores, _noi
 // 15. drawSunshine (A × E) -- 日だまりの雲 -- ピーチ+サーモン+金
 // ============================================================
 function drawSunshine(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noise: NoiseFn, t: number) {
-  fillBg(ctx, s, "rgb(70,40,50)");
+  fillBg(ctx, s, "rgb(10,13,31)");
   const cx = s / 2, cy = s / 2;
 
   const colors = [
-    [255, 200, 150],
-    [255, 160, 140],
-    [255, 220, 140],
-    [250, 180, 190],
-    [255, 235, 190],
+    [212, 181, 128], // solar-gold
+    [232, 203, 149], // star-gold
+    [235, 229, 245], // ivory-star
+    [196, 180, 232], // mystic-soft
+    [184, 176, 204], // moonlight
   ];
 
   // Soft radial sun rays (14 directions)
@@ -994,19 +994,19 @@ function drawSunshine(ctx: CanvasRenderingContext2D, s: number, scores: Scores, 
     ctx.fill();
   }
 
-  // Corona (broad central glow)
+  // Corona (broad central glow) -- gold halo
   const coronaR = 78 + Math.sin(t * 0.8) * 8;
   const gCorona = ctx.createRadialGradient(cx, cy, 0, cx, cy, coronaR);
-  gCorona.addColorStop(0, "rgba(255,240,200,0.7)");
-  gCorona.addColorStop(0.45, "rgba(255,210,160,0.3)");
+  gCorona.addColorStop(0, "rgba(232,203,149,0.7)");
+  gCorona.addColorStop(0.45, "rgba(212,181,128,0.3)");
   gCorona.addColorStop(1, "transparent");
   ctx.fillStyle = gCorona;
   ctx.fillRect(cx - coronaR, cy - coronaR, coronaR * 2, coronaR * 2);
 
-  // Pure center bright core
+  // Pure center bright core (ivory starlight)
   const gCore = ctx.createRadialGradient(cx, cy, 0, cx, cy, 22);
-  gCore.addColorStop(0, "rgba(255,255,230,0.92)");
-  gCore.addColorStop(1, "rgba(255,240,200,0)");
+  gCore.addColorStop(0, "rgba(235,229,245,0.95)");
+  gCore.addColorStop(1, "rgba(232,203,149,0)");
   ctx.fillStyle = gCore;
   ctx.beginPath();
   ctx.arc(cx, cy, 22, 0, Math.PI * 2);
@@ -1017,23 +1017,23 @@ function drawSunshine(ctx: CanvasRenderingContext2D, s: number, scores: Scores, 
 // 16. drawPetals (A × N) -- 散らばる花びら -- パステル on 白灰
 // ============================================================
 function drawPetals(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noise: NoiseFn, t: number) {
-  // Pale misty background (different from #15/17 dark purple)
-  fillBg(ctx, s, "rgb(220,215,225)");
+  // Night mist background
+  fillBg(ctx, s, "rgb(20,24,46)");
   const cx = s / 2, cy = s / 2;
 
-  // Subtle texture
+  // Subtle nebula texture
   for (let i = 0; i < 200; i++) {
     const x = (i * 47) % s;
     const y = (i * 31) % s;
-    ctx.fillStyle = `rgba(200,180,210,${Math.abs(noise(i, 0)) * 0.15})`;
+    ctx.fillStyle = `rgba(155,143,212,${Math.abs(noise(i, 0)) * 0.18})`;
     ctx.fillRect(x, y, 2, 2);
   }
 
   const colors = [
-    [255, 150, 180],  // pink
-    [200, 150, 220],  // lavender
-    [255, 200, 220],  // soft pink
-    [180, 200, 230],  // periwinkle
+    [196, 180, 232],  // mystic-soft
+    [155, 143, 212],  // mystic
+    [235, 229, 245],  // ivory-star
+    [184, 176, 204],  // moonlight
   ];
 
   // Scattered individual petals falling (non-symmetric, random positions)
@@ -1072,10 +1072,10 @@ function drawPetals(ctx: CanvasRenderingContext2D, s: number, scores: Scores, no
     ctx.restore();
   }
 
-  // Subtle gray mist overlay
+  // Void vignette overlay
   const mistGrad = ctx.createRadialGradient(cx, cy, s * 0.2, cx, cy, s * 0.5);
   mistGrad.addColorStop(0, "transparent");
-  mistGrad.addColorStop(1, "rgba(180,180,200,0.3)");
+  mistGrad.addColorStop(1, "rgba(5,8,26,0.55)");
   ctx.fillStyle = mistGrad;
   ctx.fillRect(0, 0, s, s);
 }
@@ -1159,19 +1159,19 @@ function drawMelting(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
 // 18. drawStipple (N × C) -- 強迫の点描 -- セピア+黒
 // ============================================================
 function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, noise: NoiseFn, t: number) {
-  fillBg(ctx, s, "rgb(235,220,195)"); // aged paper
+  fillBg(ctx, s, "rgb(10,13,31)"); // midnight navy
   const cx = s / 2, cy = s / 2;
 
-  // Central golden halo (paper glow)
+  // Central golden halo (starlight glow)
   const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, s * 0.45);
-  halo.addColorStop(0, "rgba(255,220,140,0.38)");
-  halo.addColorStop(0.55, "rgba(255,200,110,0.1)");
+  halo.addColorStop(0, "rgba(232,203,149,0.38)");
+  halo.addColorStop(0.55, "rgba(212,181,128,0.1)");
   halo.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = halo;
   ctx.fillRect(0, 0, s, s);
 
   // ============================================================
-  // Fibonacci (golden-angle) seed pattern — sunflower mandala
+  // Fibonacci (golden-angle) seed pattern — stellar mandala
   // ============================================================
   const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ≈ 137.5°
   const fibCount = 1100;
@@ -1185,17 +1185,17 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
     let color: string;
     let size: number;
     if (i % 89 === 0) {
-      // Fibonacci 89: rare vermilion highlight
-      color = "rgba(170,50,30,0.82)";
+      // Fibonacci 89: rare mystic highlight
+      color = "rgba(155,143,212,0.85)";
       size = 2.6;
     } else if (ring % 3 === 0) {
-      color = `rgba(200,160,70,${0.55 + Math.sin(t * 0.5 + i * 0.03) * 0.1})`;
+      color = `rgba(232,203,149,${0.6 + Math.sin(t * 0.5 + i * 0.03) * 0.1})`;
       size = i % 21 === 0 ? 1.8 : 1.3;
     } else if (ring % 3 === 1) {
-      color = "rgba(60,40,25,0.5)";
+      color = "rgba(235,229,245,0.55)";
       size = 1.2;
     } else {
-      color = "rgba(140,110,60,0.32)";
+      color = "rgba(184,176,204,0.38)";
       size = 1.1;
     }
     ctx.fillStyle = color;
@@ -1206,7 +1206,7 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
 
   const tremor = Math.sin(t * 8) * 0.5;
 
-  // Double spiral stipple: main (CW ink) + counter (CCW gold) — slightly thinned
+  // Double spiral stipple: main (CW ivory) + counter (CCW gold)
   const dotCount = 3200;
   for (let i = 0; i < dotCount; i++) {
     const phi1 = i * 0.15 + t * 0.04;
@@ -1216,10 +1216,10 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
       const py = cy + Math.sin(phi1) * rBase1 + tremor * Math.cos(i);
       const inkDensity = 0.3 + Math.abs(noise(i * 0.02, 0)) * 0.6;
       if (i % 23 === 0) {
-        ctx.fillStyle = `rgba(170,50,30,${inkDensity * 0.85})`;
+        ctx.fillStyle = `rgba(196,180,232,${inkDensity * 0.9})`;
         ctx.fillRect(px - 0.5, py - 0.5, 2, 2);
       } else {
-        ctx.fillStyle = `rgba(25,15,10,${inkDensity * 0.7})`;
+        ctx.fillStyle = `rgba(235,229,245,${inkDensity * 0.75})`;
         ctx.fillRect(px, py, 1, 1);
       }
     }
@@ -1230,7 +1230,7 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
       if (rBase2 < s * 0.47 && Math.abs(noise(i * 0.1 + 100, 0)) >= 0.3) {
         const px = cx + Math.cos(phi2) * rBase2;
         const py = cy + Math.sin(phi2) * rBase2;
-        ctx.fillStyle = `rgba(190,150,60,${0.4 + Math.abs(noise(i * 0.02, t * 0.1)) * 0.45})`;
+        ctx.fillStyle = `rgba(212,181,128,${0.45 + Math.abs(noise(i * 0.02, t * 0.1)) * 0.45})`;
         ctx.fillRect(px, py, 1, 1);
       }
     }
@@ -1239,7 +1239,7 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
   // Obsessive rings (tremor)
   for (let ring = 0; ring < 8 + Math.floor(scores.N * 4); ring++) {
     const r = 15 + ring * 12;
-    ctx.strokeStyle = `rgba(40,25,15,${0.25 - ring * 0.02})`;
+    ctx.strokeStyle = `rgba(184,176,204,${0.28 - ring * 0.02})`;
     ctx.lineWidth = 0.4;
     ctx.beginPath();
     for (let a = 0; a <= Math.PI * 2; a += 0.08) {
@@ -1254,7 +1254,7 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
   }
 
   // ============================================================
-  // Pilgrim walkers — moving light points spiraling outward
+  // Pilgrim walkers — moving starlight points spiraling outward
   // ============================================================
   const walkerCount = 3;
   for (let w = 0; w < walkerCount; w++) {
@@ -1268,8 +1268,8 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
       const fade = 1 - trail / 8;
       const size = (3 + fade * 3) * (trail === 0 ? 1 : 0.8);
       const wGlow = ctx.createRadialGradient(wx, wy, 0, wx, wy, size * 2);
-      wGlow.addColorStop(0, `rgba(255,240,180,${0.85 * fade})`);
-      wGlow.addColorStop(1, "rgba(255,220,140,0)");
+      wGlow.addColorStop(0, `rgba(235,229,245,${0.9 * fade})`);
+      wGlow.addColorStop(1, "rgba(232,203,149,0)");
       ctx.fillStyle = wGlow;
       ctx.beginPath();
       ctx.arc(wx, wy, size * 2, 0, Math.PI * 2);
@@ -1280,7 +1280,7 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
   // Outer gold ritual bounds (3 thin circles)
   for (let gc = 0; gc < 3; gc++) {
     const rR = s * 0.45 + gc * 3;
-    ctx.strokeStyle = `rgba(180,140,60,${0.38 - gc * 0.1})`;
+    ctx.strokeStyle = `rgba(212,181,128,${0.42 - gc * 0.1})`;
     ctx.lineWidth = 0.7;
     ctx.beginPath();
     ctx.arc(cx, cy, rR, 0, Math.PI * 2);
@@ -1301,18 +1301,18 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
     const gemSize = isCardinal ? 3.5 : 2.2;
     const gGlow = ctx.createRadialGradient(gx, gy, 0, gx, gy, gemSize * 3);
     if (isCardinal) {
-      gGlow.addColorStop(0, `rgba(220,80,50,${0.7 + pulse * 0.3})`);
-      gGlow.addColorStop(1, "rgba(220,80,50,0)");
+      gGlow.addColorStop(0, `rgba(155,143,212,${0.75 + pulse * 0.25})`);
+      gGlow.addColorStop(1, "rgba(155,143,212,0)");
     } else {
-      gGlow.addColorStop(0, `rgba(220,170,80,${0.6 + pulse * 0.2})`);
-      gGlow.addColorStop(1, "rgba(220,170,80,0)");
+      gGlow.addColorStop(0, `rgba(212,181,128,${0.65 + pulse * 0.2})`);
+      gGlow.addColorStop(1, "rgba(212,181,128,0)");
     }
     ctx.fillStyle = gGlow;
     ctx.beginPath();
     ctx.arc(gx, gy, gemSize * 3, 0, Math.PI * 2);
     ctx.fill();
     // bright inner point
-    ctx.fillStyle = isCardinal ? "rgba(255,150,120,0.95)" : "rgba(255,220,140,0.9)";
+    ctx.fillStyle = isCardinal ? "rgba(196,180,232,0.95)" : "rgba(232,203,149,0.95)";
     ctx.beginPath();
     ctx.arc(gx, gy, gemSize, 0, Math.PI * 2);
     ctx.fill();
@@ -1320,8 +1320,8 @@ function drawStipple(ctx: CanvasRenderingContext2D, s: number, scores: Scores, n
 
   // Central focal dot (pilgrimage destination)
   const coreGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 16);
-  coreGlow.addColorStop(0, "rgba(255,240,180,0.92)");
-  coreGlow.addColorStop(1, "rgba(255,220,140,0)");
+  coreGlow.addColorStop(0, "rgba(235,229,245,0.95)");
+  coreGlow.addColorStop(1, "rgba(212,181,128,0)");
   ctx.fillStyle = coreGlow;
   ctx.beginPath();
   ctx.arc(cx, cy, 16, 0, Math.PI * 2);
