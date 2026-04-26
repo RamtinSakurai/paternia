@@ -66,19 +66,18 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
 }
 
 /* header */
-.slide-header{position:absolute;top:90px;left:100px;right:100px;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
+.slide-header{position:absolute;top:calc(90px + var(--slide-y-shift,0px));left:100px;right:100px;display:flex;justify-content:space-between;align-items:baseline;z-index:3}
 .slide-mark{font-family:"Inter",sans-serif;font-weight:400;font-size:26px;letter-spacing:0.4em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:18px}
 .slide-mark::before{content:"✦";color:var(--gold);font-size:22px;opacity:0.9}
 .slide-index{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:38px;color:var(--gold);letter-spacing:0.08em}
-.slide-header-line{position:absolute;top:148px;left:100px;right:100px;height:1px;background:var(--line);z-index:3}
+.slide-header-line{position:absolute;top:calc(148px + var(--slide-y-shift,0px));left:100px;right:100px;height:1px;background:var(--line);z-index:3}
 
-/* SAFE AREA = top 70% (y:0-1344). Bottom 30% cropped in TikTok feed preview. */
-/* content area — TOP anchored so main headline stays at same y across all slides */
-.slide-body-area{position:absolute;top:200px;bottom:770px;left:100px;right:100px;z-index:3;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;padding-top:60px}
+/* content area — CENTER anchored so text sits in the middle band (y:30-70%) */
+.slide-body-area{position:absolute;top:calc(200px + var(--slide-y-shift,0px));bottom:200px;left:100px;right:100px;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .slide-body-area > *{max-width:100%}
 
-/* cliffhanger — connected visually to main text, not separated */
-.slide-cliff{position:absolute;top:1150px;left:60px;right:60px;font-family:"Shippori Mincho",serif;font-weight:500;font-size:64px;color:var(--ivory);letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:20px;z-index:3;white-space:nowrap}
+/* cliffhanger — sits right below main content (inside body-area) with a tight gap */
+.slide-cliff{margin-top:60px;font-family:"Shippori Mincho",serif;font-weight:500;font-size:64px;color:var(--ivory);letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:20px;z-index:3;white-space:nowrap}
 .slide-cliff::before{content:"▸";color:var(--gold);font-size:64px;font-weight:500}
 
 /* footer credit — bottom 30% cropped zone (attribution for expanded view) */
@@ -88,9 +87,9 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
 .slide-lead{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;font-size:36px;color:var(--muted);letter-spacing:0.08em;margin-bottom:40px}
 
 /* Unified main headline size — same across all slides so vertical position is stable */
-.slide-main{font-family:"Shippori Mincho",serif;font-weight:600;font-size:88px;line-height:1.45;color:var(--ivory);letter-spacing:0.04em;word-break:keep-all;overflow-wrap:break-word}
-.slide-main.big,.slide-main.xl{font-size:88px;font-weight:600;line-height:1.45}
-.slide-main.md{font-size:64px;font-weight:600;line-height:1.55}
+.slide-main{font-family:"Shippori Mincho",serif;font-weight:600;font-size:88px;line-height:1.1;color:var(--ivory);letter-spacing:0.04em;word-break:keep-all;overflow-wrap:break-word}
+.slide-main.big,.slide-main.xl{font-size:88px;font-weight:600;line-height:1.1}
+.slide-main.md{font-size:64px;font-weight:600;line-height:1.2}
 .slide-main .accent{color:var(--gold-bright);border-bottom:2px solid var(--gold);padding-bottom:2px}
 .slide-main .mauve{color:var(--mauve)}
 
@@ -140,6 +139,12 @@ header p{font-size:13px;color:var(--ivory-dim);line-height:1.8;font-family:"Ship
   <button id="btn-all">全て生成してZIPダウンロード</button>
   <button class="secondary" id="btn-preview-toggle">プレビュー拡大</button>
   <button class="secondary" id="btn-check">全スライドの崩れチェック</button>
+  <label style="display:flex;align-items:center;gap:10px;color:var(--ivory-dim);font-family:'Shippori Mincho',serif;font-size:13px;margin-left:auto">
+    TikTok Yシフト
+    <input type="range" id="y-shift-range" min="0" max="300" step="10" value="0" style="width:160px;accent-color:var(--gold)">
+    <input type="number" id="y-shift" min="0" max="300" step="10" value="0" style="width:80px;background:var(--night-deep);color:var(--gold-bright);border:0.5px solid var(--line-strong);padding:8px 10px;font-family:'Cormorant Garamond',serif;font-size:15px">
+    px
+  </label>
 </div>
 
 <div class="status" id="status">準備完了。</div>
@@ -328,8 +333,7 @@ function renderSlide(post, slideIdx){
       <span class="slide-index">${String(slideIdx+1).padStart(2,"0")} / ${String(total).padStart(2,"0")}</span>
     </div>
     <div class="slide-header-line"></div>
-    <div class="slide-body-area">${inner}</div>
-    ${cliff}
+    <div class="slide-body-area">${inner}${cliff}</div>
     ${credit}
   `;
   return el;
@@ -484,13 +488,13 @@ function checkLayout(){
       stage.innerHTML = "";
       stage.appendChild(el);
       const bodyArea = el.querySelector(".slide-body-area");
-      const cliff = el.querySelector(".slide-cliff");
-      if(bodyArea && cliff){
+      if(bodyArea){
+        // content (incl. cliff) must fit inside body-area
         const bRect = bodyArea.getBoundingClientRect();
-        const cRect = cliff.getBoundingClientRect();
-        // bottom of body must be above top of cliff
-        if(bRect.bottom > cRect.top + 8){
-          issues.push(`Post ${post.id} slide ${idx+1}: body overflows into cliff`);
+        const kids = Array.from(bodyArea.children);
+        const innerBottom = kids.reduce((m,c)=>Math.max(m, c.getBoundingClientRect().bottom), bRect.top);
+        if(innerBottom > bRect.bottom + 8){
+          issues.push(`Post ${post.id} slide ${idx+1}: content overflows body-area`);
         }
       }
       // overall overflow
@@ -513,6 +517,21 @@ function checkLayout(){
 
 document.getElementById("btn-all").addEventListener("click",generateAll);
 document.getElementById("btn-check").addEventListener("click",checkLayout);
+
+// Y-shift control (TikTok UI overlays top of slide — shift content down)
+const yInput = document.getElementById("y-shift");
+const yRange = document.getElementById("y-shift-range");
+const savedY = localStorage.getItem("paternia-y-shift") || "0";
+function applyYShift(v){
+  const clamped = Math.max(0, Math.min(300, Number(v) || 0));
+  yInput.value = clamped;
+  yRange.value = clamped;
+  localStorage.setItem("paternia-y-shift", String(clamped));
+  document.documentElement.style.setProperty("--slide-y-shift", clamped + "px");
+}
+applyYShift(savedY);
+yInput.addEventListener("input",()=>applyYShift(yInput.value));
+yRange.addEventListener("input",()=>applyYShift(yRange.value));
 let zoomed = false;
 document.getElementById("btn-preview-toggle").addEventListener("click",()=>{
   zoomed = !zoomed;

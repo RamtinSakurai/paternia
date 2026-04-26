@@ -414,6 +414,25 @@ export default function Home() {
         <p className="animate-fade-up stagger-5 text-[10px] text-text-muted/50 mt-1">
           Based on Big Five Personality Model
         </p>
+
+        <div className="animate-fade-up stagger-5 mt-6 flex flex-col items-center gap-1.5">
+          <p
+            className="text-[12px] text-text-muted/75"
+            style={{ fontFamily: "var(--font-kiwi-maru)" }}
+          >
+            黒幕の心理学を知りたい方はこちら
+          </p>
+          <span className="text-accent/60 text-[14px] leading-none">↓</span>
+          <a
+            href="https://lit.link/kuromaku_shinri"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[13px] text-accent/85 hover:text-accent transition-colors underline underline-offset-4 decoration-accent/40 hover:decoration-accent/70 tracking-wide"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            lit.link/kuromaku_shinri
+          </a>
+        </div>
       </div>
     </div>
   );
