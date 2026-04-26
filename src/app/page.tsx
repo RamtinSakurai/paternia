@@ -417,7 +417,7 @@ export default function Home() {
 
         <div className="animate-fade-up stagger-5 mt-6 flex flex-col items-center gap-1.5">
           <p
-            className="text-[12px] text-text-muted/75"
+            className="text-[13px] text-text/85"
             style={{ fontFamily: "var(--font-kiwi-maru)" }}
           >
             黒幕の心理学を知りたい方はこちら
